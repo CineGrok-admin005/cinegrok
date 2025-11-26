@@ -107,3 +107,45 @@ function onFormSubmit(e) {
         Logger.log("Error sending data: " + e);
     }
 }
+
+/**
+ * Run this function ONCE manually to process rows that are already in the sheet.
+ */
+function processExistingRows() {
+    // OPTIONAL: If you get an error saying "Cannot read properties of null", 
+    // paste your Spreadsheet ID here. It is the long string in your Google Sheet URL.
+    // Example: https://docs.google.com/spreadsheets/d/1aBcD.../edit -> ID is "1aBcD..."
+    var SPREADSHEET_ID = "";
+
+    var sheet;
+    try {
+        sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+    } catch (e) {
+        if (SPREADSHEET_ID) {
+            sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheets()[0];
+        } else {
+            Logger.log("ERROR: Could not find the spreadsheet. Please fill in the SPREADSHEET_ID variable in the script.");
+            return;
+        }
+    }
+
+    var data = sheet.getDataRange().getValues();
+    var headers = data[0];
+
+    // Start from row 1 (skipping header row 0)
+    for (var i = 1; i < data.length; i++) {
+        var row = data[i];
+        var e = { namedValues: {} };
+
+        // Reconstruct the event object structure
+        for (var j = 0; j < headers.length; j++) {
+            e.namedValues[headers[j]] = [row[j]];
+        }
+
+        Logger.log("Processing row " + (i + 1) + "...");
+        onFormSubmit(e);
+        // Wait a bit to not overwhelm the API
+        Utilities.sleep(1000);
+    }
+    Logger.log("Done processing existing rows.");
+}
