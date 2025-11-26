@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Filmmaker Profile Page
  * 
