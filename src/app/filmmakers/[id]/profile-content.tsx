@@ -28,7 +28,7 @@ interface FilmmakerProfileContentProps {
         primary: string;
         gradient: string;
     };
-    location: string;
+    location: string | null;
     socialLinks: any;
     films: any[];
     shouldShowSection: (value: any) => boolean;
@@ -167,7 +167,7 @@ export default function FilmmakerProfileContent({
                         <section className="bio-section">
                             <h2>About</h2>
                             <div className="bio-text">
-                                {ai_generated_bio.split('\n\n').map((paragraph, index) => (
+                                {ai_generated_bio && ai_generated_bio.split('\n\n').map((paragraph, index) => (
                                     <p key={index}>{paragraph}</p>
                                 ))}
                             </div>
