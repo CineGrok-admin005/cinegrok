@@ -1,0 +1,108 @@
+/* Browse Page Styles */
+
+.browse-page {
+    min-height: 100vh;
+    background: #fafafa;
+}
+
+.browse-header {
+    text-align: center;
+    padding: 3rem 0 2rem;
+}
+
+.browse-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #1a1a1a;
+}
+
+.subtitle {
+    font-size: 1.125rem;
+    color: #666;
+}
+
+.filter-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.filter-section h3 {
+    font-size: 1.125rem;
+    margin-bottom: 1rem;
+    color: #1a1a1a;
+}
+
+.role-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.filter-pill {
+    padding: 0.5rem 1.25rem;
+    border-radius: 999px;
+    border: 1px solid #e0e0e0;
+    background: white;
+    color: #666;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.filter-pill:hover {
+    border-color: #3A7BD5;
+    color: #3A7BD5;
+}
+
+.filter-pill.active {
+    background: #3A7BD5;
+    border-color: #3A7BD5;
+    color: white;
+}
+
+.filmmakers-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding-bottom: 4rem;
+}
+
+@media (min-width: 640px) {
+    .filmmakers-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .filmmakers-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 12px;
+}
+
+.empty-state p {
+    font-size: 1.125rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+@media (max-width: 767px) {
+    .browse-header h1 {
+        font-size: 2rem;
+    }
+
+    .filter-section {
+        padding: 1.5rem;
+    }
+}
