@@ -30,11 +30,7 @@ export default function Navigation() {
         <div className="nav-content">
           {/* CineGrok Logo */}
           <Link href="/" className="logo">
-            <svg className="logo-icon" width="32" height="32" viewBox="0 0 32 32" fill="none">
-              <circle cx="16" cy="16" r="14" fill="#3A7BD5" opacity="0.1" />
-              <path d="M16 8L20 12L16 16L12 12L16 8Z" fill="#3A7BD5" />
-              <path d="M16 16L20 20L16 24L12 20L16 16Z" fill="#8B5CF6" />
-            </svg>
+            <img src="/logo.svg" alt="CineGrok" className="logo-icon" />
             <span className="logo-text">CineGrok</span>
           </Link>
 
@@ -56,7 +52,8 @@ export default function Navigation() {
           {/* Desktop Nav Links */}
           <div className="nav-actions desktop-only">
             <Link href="/browse" className="nav-btn">Browse</Link>
-            <Link href="/submit" className="nav-btn nav-btn-primary">Submit</Link>
+            <Link href="/about" className="nav-btn">About</Link>
+            <Link href="https://forms.gle/YOUR_FORM_ID" target="_blank" className="nav-btn nav-btn-primary">Submit</Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -96,7 +93,10 @@ export default function Navigation() {
             <Link href="/browse" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
               Browse
             </Link>
-            <Link href="/submit" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
+            <Link href="/about" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
+              About
+            </Link>
+            <Link href="https://forms.gle/YOUR_FORM_ID" target="_blank" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
               Submit Profile
             </Link>
           </div>
@@ -138,6 +138,8 @@ export default function Navigation() {
 
         .logo-icon {
           flex-shrink: 0;
+          width: 32px;
+          height: 32px;
         }
 
         .logo-text {
