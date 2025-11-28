@@ -1,0 +1,63 @@
+name: Monitor Production Deployment
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+  schedule:
+    # Check deployment status every 10 minutes
+    - cron: '*/10 * * * *'
+
+jobs:
+  check-vercel-deployment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get Vercel Deployment Status
+        id: vercel-check
+        run: |
+          # Get deployment info from Vercel
+          DEPLOYMENT_INFO=$(curl -s -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+            "https://api.vercel.com/v6/deployments?projectId=${{ secrets.VERCEL_PROJECT_ID }}&limit=5")
+          
+          echo "Deployment info retrieved"
+          echo "$DEPLOYMENT_INFO" | jq '.' > /tmp/deployments.json
+          cat /tmp/deployments.json
+          
+          # Extract production deployment
+          PROD_DEPLOYMENT=$(echo "$DEPLOYMENT_INFO" | jq '.deployments[] | select(.environment=="production") | select(.state=="ready") | .url' | head -1)
+          PROD_STATE=$(echo "$DEPLOYMENT_INFO" | jq '.deployments[] | select(.environment=="production") | .state' | head -1)
+          PROD_CREATED=$(echo "$DEPLOYMENT_INFO" | jq '.deployments[] | select(.environment=="production") | .created' | head -1)
+          
+          echo "production_url=$PROD_DEPLOYMENT" >> $GITHUB_OUTPUT
+          echo "production_state=$PROD_STATE" >> $GITHUB_OUTPUT
+          echo "production_created=$PROD_CREATED" >> $GITHUB_OUTPUT
+
+      - name: Log Production Promotion
+        if: steps.vercel-check.outputs.production_state == '"ready"'
+        run: |
+          echo "✅ Production Deployment Promoted"
+          echo "URL: ${{ steps.vercel-check.outputs.production_url }}"
+          echo "State: ${{ steps.vercel-check.outputs.production_state }}"
+          echo "Created: ${{ steps.vercel-check.outputs.production_created }}"
+
+      - name: Check for Deployment Issues
+        if: steps.vercel-check.outputs.production_state == '"error"'
+        run: |
+          echo "❌ Production Deployment Failed"
+          exit 1
+
+      - name: Create Deployment Summary
+        if: always()
+        run: |
+          echo "## 🚀 Deployment Status Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Production Environment:**" >> $GITHUB_STEP_SUMMARY
+          echo "- State: ${{ steps.vercel-check.outputs.production_state }}" >> $GITHUB_STEP_SUMMARY
+          echo "- URL: ${{ steps.vercel-check.outputs.production_url }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Deployed: ${{ steps.vercel-check.outputs.production_created }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Timestamp:** $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
