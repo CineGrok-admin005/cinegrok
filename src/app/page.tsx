@@ -13,6 +13,7 @@
 import Link from 'next/link';
 import Navigation from '@/components/Navigation';
 import FilmmakerCard from '@/components/FilmmakerCard';
+import AboutSection from '@/components/AboutSection';
 import { supabase } from '@/lib/supabase';
 import { Filmmaker } from '@/lib/api';
 import './homepage.css';
@@ -92,6 +93,9 @@ export default async function HomePage() {
           )}
         </div>
       </section>
+
+      {/* About CineGrok */}
+      <AboutSection />
 
       {/* Browse by Role */}
       <section className="browse-section">
