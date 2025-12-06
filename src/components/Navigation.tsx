@@ -68,7 +68,7 @@ export default function Navigation() {
             </svg>
             <input
               type="search"
-              placeholder="Search by name, style, or genre..."
+              placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="search-input"
@@ -78,17 +78,20 @@ export default function Navigation() {
           {/* Desktop Nav Links */}
           <div className="nav-actions desktop-only">
             <Link href="/browse" className="nav-btn">Browse</Link>
+            <Link href="/pricing" className="nav-btn">Pricing</Link>
             <Link href="/about" className="nav-btn">About</Link>
 
             {user ? (
               <>
-                <Link href="/pricing" className="nav-btn">Pricing</Link>
                 <Link href="/dashboard" className="nav-btn">Dashboard</Link>
-                <Link href="/profile-builder" className="nav-btn nav-btn-primary">Create Profile</Link>
+                <Link href="/profile-builder" className="nav-btn nav-btn-primary">Edit Profile</Link>
                 <button onClick={handleLogout} className="nav-btn" style={{ border: 'none', background: 'none', cursor: 'pointer' }}>Logout</button>
               </>
             ) : (
-              <Link href="/auth/login" className="nav-btn">Login</Link>
+              <>
+                <Link href="/profile-builder" className="nav-btn nav-btn-primary">Create Profile</Link>
+                <Link href="/auth/login" className="nav-btn">Login</Link>
+              </>
             )}
           </div>
 
@@ -129,29 +132,34 @@ export default function Navigation() {
             <Link href="/browse" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
               Browse
             </Link>
+            <Link href="/pricing" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
+              Pricing
+            </Link>
             <Link href="/about" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
               About
             </Link>
 
             {user ? (
               <>
-                <Link href="/pricing" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
-                  Pricing
-                </Link>
                 <Link href="/dashboard" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
                   Dashboard
                 </Link>
                 <Link href="/profile-builder" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
-                  Create Profile
+                  Edit Profile
                 </Link>
                 <button onClick={() => { handleLogout(); setIsMenuOpen(false); }} className="mobile-link" style={{ textAlign: 'left', border: 'none', background: 'none', cursor: 'pointer', width: '100%' }}>
                   Logout
                 </button>
               </>
             ) : (
-              <Link href="/auth/login" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
-                Login
-              </Link>
+              <>
+                <Link href="/profile-builder" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
+                  Create Profile
+                </Link>
+                <Link href="/auth/login" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
+                  Login
+                </Link>
+              </>
             )}
           </div>
         )}
