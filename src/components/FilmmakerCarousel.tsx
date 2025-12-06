@@ -26,7 +26,13 @@ export default function FilmmakerCarousel({ filmmakers }: FilmmakerCarouselProps
                 {/* Duplicate list for seamless infinite scroll */}
                 {[...featured, ...featured].map((filmmaker, index) => {
                     const profilePhoto = filmmaker.raw_form_data?.profile_photo_url || '/placeholder-avatar.png';
-                    const role = filmmaker.raw_form_data?.roles?.split(',')[0] || 'Filmmaker';
+                    let role = 'Filmmaker';
+                    const roles = filmmaker.raw_form_data?.roles;
+                    if (Array.isArray(roles)) {
+                        role = roles[0] || 'Filmmaker';
+                    } else if (typeof roles === 'string') {
+                        role = roles.split(',')[0] || 'Filmmaker';
+                    }
 
                     return (
                         <Link

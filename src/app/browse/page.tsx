@@ -50,7 +50,16 @@ export default async function BrowsePage({
 
     // 1. Role Filter
     if (params.role) {
-      if (!f.raw_form_data.roles?.toLowerCase().includes(params.role.toLowerCase())) {
+      const rolesData = f.raw_form_data.roles;
+      let rolesStr = '';
+
+      if (Array.isArray(rolesData)) {
+        rolesStr = rolesData.join(' ').toLowerCase();
+      } else if (typeof rolesData === 'string') {
+        rolesStr = rolesData.toLowerCase();
+      }
+
+      if (!rolesStr.includes(params.role.toLowerCase())) {
         return false;
       }
     }
