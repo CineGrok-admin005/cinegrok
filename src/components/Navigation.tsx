@@ -7,14 +7,34 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { createSupabaseBrowserClient } from '@/lib/supabase';
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [user, setUser] = useState<any>(null);
   const router = useRouter();
+  const supabase = createSupabaseBrowserClient();
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+
+    checkUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [supabase]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,6 +42,12 @@ export default function Navigation() {
       router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
       setSearchQuery('');
     }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push('/');
+    router.refresh();
   };
 
   return (
@@ -52,11 +78,18 @@ export default function Navigation() {
           {/* Desktop Nav Links */}
           <div className="nav-actions desktop-only">
             <Link href="/browse" className="nav-btn">Browse</Link>
-            <Link href="/pricing" className="nav-btn">Pricing</Link>
             <Link href="/about" className="nav-btn">About</Link>
-            <Link href="/dashboard" className="nav-btn">Dashboard</Link>
-            <Link href="/profile-builder" className="nav-btn nav-btn-primary">Create Profile</Link>
-            <Link href="/auth/login" className="nav-btn">Login</Link>
+
+            {user ? (
+              <>
+                <Link href="/pricing" className="nav-btn">Pricing</Link>
+                <Link href="/dashboard" className="nav-btn">Dashboard</Link>
+                <Link href="/profile-builder" className="nav-btn nav-btn-primary">Create Profile</Link>
+                <button onClick={handleLogout} className="nav-btn" style={{ border: 'none', background: 'none', cursor: 'pointer' }}>Logout</button>
+              </>
+            ) : (
+              <Link href="/auth/login" className="nav-btn">Login</Link>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -96,21 +129,30 @@ export default function Navigation() {
             <Link href="/browse" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
               Browse
             </Link>
-            <Link href="/pricing" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
-              Pricing
-            </Link>
             <Link href="/about" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
               About
             </Link>
-            <Link href="/dashboard" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
-              Dashboard
-            </Link>
-            <Link href="/profile-builder" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
-              Create Profile
-            </Link>
-            <Link href="/auth/login" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
-              Login
-            </Link>
+
+            {user ? (
+              <>
+                <Link href="/pricing" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
+                  Pricing
+                </Link>
+                <Link href="/dashboard" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
+                  Dashboard
+                </Link>
+                <Link href="/profile-builder" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
+                  Create Profile
+                </Link>
+                <button onClick={() => { handleLogout(); setIsMenuOpen(false); }} className="mobile-link" style={{ textAlign: 'left', border: 'none', background: 'none', cursor: 'pointer', width: '100%' }}>
+                  Logout
+                </button>
+              </>
+            ) : (
+              <Link href="/auth/login" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
+                Login
+              </Link>
+            )}
           </div>
         )}
       </div>
@@ -215,6 +257,8 @@ export default function Navigation() {
           text-decoration: none;
           transition: all 0.2s;
           color: #666;
+          background: transparent;
+          font-family: inherit;
         }
 
         .nav-btn:hover {
@@ -259,6 +303,8 @@ export default function Navigation() {
           font-size: 0.9375rem;
           border-radius: 6px;
           transition: background 0.2s;
+          display: block;
+          font-family: inherit;
         }
 
         .mobile-link:hover {
