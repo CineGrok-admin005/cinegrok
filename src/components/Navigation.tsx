@@ -52,8 +52,11 @@ export default function Navigation() {
           {/* Desktop Nav Links */}
           <div className="nav-actions desktop-only">
             <Link href="/browse" className="nav-btn">Browse</Link>
+            <Link href="/pricing" className="nav-btn">Pricing</Link>
             <Link href="/about" className="nav-btn">About</Link>
-            <Link href="https://forms.gle/YOUR_FORM_ID" target="_blank" className="nav-btn nav-btn-primary">Submit</Link>
+            <Link href="/dashboard" className="nav-btn">Dashboard</Link>
+            <Link href="/profile-builder" className="nav-btn nav-btn-primary">Create Profile</Link>
+            <Link href="/auth/login" className="nav-btn">Login</Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -93,11 +96,20 @@ export default function Navigation() {
             <Link href="/browse" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
               Browse
             </Link>
+            <Link href="/pricing" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
+              Pricing
+            </Link>
             <Link href="/about" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
               About
             </Link>
-            <Link href="https://forms.gle/YOUR_FORM_ID" target="_blank" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
-              Submit Profile
+            <Link href="/dashboard" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
+              Dashboard
+            </Link>
+            <Link href="/profile-builder" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
+              Create Profile
+            </Link>
+            <Link href="/auth/login" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
+              Login
             </Link>
           </div>
         )}

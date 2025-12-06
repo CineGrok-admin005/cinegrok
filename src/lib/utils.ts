@@ -193,10 +193,12 @@ function hasSignificantAwards(awards?: string, screenings?: string): boolean {
  * Get primary role from roles string
  * Used for color palette assignment
  */
-export function getPrimaryRole(roles?: string): keyof typeof ROLE_COLORS {
+export function getPrimaryRole(roles?: string | string[]): keyof typeof ROLE_COLORS {
     if (!roles) return 'default';
 
-    const rolesLower = roles.toLowerCase();
+    // Convert array to string if needed
+    const rolesStr = Array.isArray(roles) ? roles.join(' ') : roles;
+    const rolesLower = rolesStr.toLowerCase();
 
     // Check in priority order
     if (rolesLower.includes('director')) return 'director';
@@ -213,7 +215,7 @@ export function getPrimaryRole(roles?: string): keyof typeof ROLE_COLORS {
 /**
  * Get role color palette
  */
-export function getRoleColors(roles?: string) {
+export function getRoleColors(roles?: string | string[]) {
     const role = getPrimaryRole(roles);
     return ROLE_COLORS[role];
 }

@@ -63,7 +63,7 @@ export default async function FilmmakerPage({ params }: { params: Promise<{ id: 
   const { id } = await params;
   const filmmaker = await getFilmmaker(id);
 
-  if (!filmmaker || !filmmaker.ai_generated_bio) {
+  if (!filmmaker) {
     notFound();
   }
 
@@ -194,14 +194,16 @@ export default async function FilmmakerPage({ params }: { params: Promise<{ id: 
           {/* Left Column - Bio and Films */}
           <div className="content-main">
             {/* AI-Generated Bio */}
-            <section className="bio-section">
-              <h2>About</h2>
-              <div className="bio-text">
-                {ai_generated_bio.split('\n\n').map((paragraph, index) => (
-                  <p key={index}>{paragraph}</p>
-                ))}
-              </div>
-            </section>
+            {ai_generated_bio && (
+              <section className="bio-section">
+                <h2>About</h2>
+                <div className="bio-text">
+                  {ai_generated_bio.split('\n\n').map((paragraph, index) => (
+                    <p key={index}>{paragraph}</p>
+                  ))}
+                </div>
+              </section>
+            )}
 
             {/* Selected Work */}
             {films.length > 0 && (

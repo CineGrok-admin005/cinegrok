@@ -1,44 +1,50 @@
 /**
  * Homepage - CineGrok
  * 
- * Features:
- * - Hero section with search
- * - Featured filmmakers grid with tier/role visualization
- * - Browse by role categories
- * - Mobile-first responsive design
- * 
- * Performance: Server-side rendering with caching
+ * Client-side rendered landing page with featured filmmakers
  */
 
+'use client';
+
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Navigation from '@/components/Navigation';
 import FilmmakerCard from '@/components/FilmmakerCard';
 import AboutSection from '@/components/AboutSection';
-import { supabase } from '@/lib/supabase';
+import { createSupabaseBrowserClient } from '@/lib/supabase';
 import { Filmmaker } from '@/lib/api';
 import './homepage.css';
 
-// Revalidate every 5 minutes
-export const revalidate = 300;
+export default function HomePage() {
+  const [filmmakers, setFilmmakers] = useState<Filmmaker[]>([]);
+  const [loading, setLoading] = useState(true);
 
-async function getFeaturedFilmmakers(): Promise<Filmmaker[]> {
-  const { data, error } = await supabase
-    .from('filmmakers')
-    .select('*')
-    .not('ai_generated_bio', 'is', null)
-    .order('created_at', { ascending: false })
-    .limit(8);
+  useEffect(() => {
+    async function loadFilmmakers() {
+      try {
+        const supabase = createSupabaseBrowserClient();
+        const { data, error } = await supabase
+          .from('filmmakers')
+          .select('*')
+          .eq('status', 'published')
+          .not('ai_generated_bio', 'is', null)
+          .order('created_at', { ascending: false })
+          .limit(8);
 
-  if (error) {
-    console.error('Error fetching filmmakers:', error);
-    return [];
-  }
+        if (error) {
+          console.error('Error fetching filmmakers:', error);
+        } else {
+          setFilmmakers(data || []);
+        }
+      } catch (error) {
+        console.error('Error loading filmmakers:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
 
-  return data || [];
-}
-
-export default async function HomePage() {
-  const filmmakers = await getFeaturedFilmmakers();
+    loadFilmmakers();
+  }, []);
 
   return (
     <div className="homepage">
@@ -58,6 +64,9 @@ export default async function HomePage() {
             <Link href="/browse" className="btn btn-primary btn-large">
               Browse All Filmmakers
             </Link>
+            <Link href="/auth/signup" className="btn btn-secondary btn-large">
+              Create Your Profile
+            </Link>
           </div>
         </div>
       </section>
@@ -72,7 +81,11 @@ export default async function HomePage() {
             </p>
           </div>
 
-          {filmmakers.length > 0 ? (
+          {loading ? (
+            <div className="loading-state">
+              <p>Loading filmmakers...</p>
+            </div>
+          ) : filmmakers.length > 0 ? (
             <div className="filmmakers-grid">
               {filmmakers.map((filmmaker) => (
                 <FilmmakerCard key={filmmaker.id} filmmaker={filmmaker} />
@@ -80,7 +93,10 @@ export default async function HomePage() {
             </div>
           ) : (
             <div className="empty-state">
-              <p>No filmmakers yet. Be the first to submit your profile!</p>
+              <p>No filmmakers yet. Be the first to create your profile!</p>
+              <Link href="/auth/signup" className="btn btn-primary">
+                Get Started
+              </Link>
             </div>
           )}
 
