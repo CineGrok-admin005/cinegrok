@@ -24,7 +24,7 @@ const ROLES = [
     'Actor',
     'Sound Designer',
     'Production Designer',
-    'Composer',
+    'Music Director',
     'VFX Artist',
 ]
 
