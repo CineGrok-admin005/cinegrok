@@ -35,7 +35,9 @@ export interface RawFormData {
     // Location & Origin
     country?: string;
     native_location?: string;
+    native_state?: string;
     current_location?: string;
+    current_state?: string;
     nationality?: string;
     languages?: string;
 

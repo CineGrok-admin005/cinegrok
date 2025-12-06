@@ -39,7 +39,9 @@ export default function ProfileBuilderPage() {
         // Location
         country: '',
         current_location: '',
+        current_state: '',
         native_location: '',
+        native_state: '',
         nationality: '',
         languages: '',
 

@@ -8,6 +8,7 @@
 
 import { useState } from 'react'
 import { createSupabaseBrowserClient } from '@/lib/supabase'
+import { INDIAN_STATES } from '@/lib/constants'
 
 interface PersonalInfoFormProps {
     data: any
@@ -211,25 +212,57 @@ export default function PersonalInfoForm({ data, updateData, onNext }: PersonalI
                     {errors.country && <span className="error-message">{errors.country}</span>}
                 </div>
 
-                {/* Current Location */}
+                {/* Current State (Drop Down for India) */}
                 <div className="form-group">
-                    <label htmlFor="current_location">Current Location</label>
+                    <label htmlFor="current_state">Current State / Region</label>
+                    <select
+                        id="current_state"
+                        value={data.current_state || ''}
+                        onChange={(e) => handleChange('current_state', e.target.value)}
+                    >
+                        <option value="">Select State</option>
+                        {INDIAN_STATES.map(state => (
+                            <option key={state} value={state}>{state}</option>
+                        ))}
+                        <option value="other">Other / International</option>
+                    </select>
+                </div>
+
+                {/* Native State (Drop Down for India) */}
+                <div className="form-group">
+                    <label htmlFor="native_state">Native State / Region</label>
+                    <select
+                        id="native_state"
+                        value={data.native_state || ''}
+                        onChange={(e) => handleChange('native_state', e.target.value)}
+                    >
+                        <option value="">Select State</option>
+                        {INDIAN_STATES.map(state => (
+                            <option key={state} value={state}>{state}</option>
+                        ))}
+                        <option value="other">Other / International</option>
+                    </select>
+                </div>
+
+                {/* Current Location (City) */}
+                <div className="form-group">
+                    <label htmlFor="current_location">Current City</label>
                     <input
                         id="current_location"
                         type="text"
-                        placeholder="e.g., Mumbai, India"
+                        placeholder="e.g., Mumbai"
                         value={data.current_location || ''}
                         onChange={(e) => handleChange('current_location', e.target.value)}
                     />
                 </div>
 
-                {/* Native Location */}
+                {/* Native Location (City) */}
                 <div className="form-group">
-                    <label htmlFor="native_location">Native Location</label>
+                    <label htmlFor="native_location">Native City / Hometown</label>
                     <input
                         id="native_location"
                         type="text"
-                        placeholder="e.g., Bangalore, India"
+                        placeholder="e.g., Bangalore"
                         value={data.native_location || ''}
                         onChange={(e) => handleChange('native_location', e.target.value)}
                     />
