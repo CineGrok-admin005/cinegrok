@@ -100,15 +100,17 @@ export default async function BrowsePage({
     <div className="browse-page">
       <Navigation />
 
-      <div className="container">
-        {/* Hero Section */}
-        <div className="browse-header">
+      {/* Hero Section */}
+      <div className="browse-header">
+        <div className="container">
           <h1>Browse Filmmakers</h1>
           <p className="subtitle">
             Discover emerging filmmakers, collaborators, and talent.
           </p>
         </div>
+      </div>
 
+      <div className="container">
         {/* Featured Carousel */}
         {!roleFilter && !stateFilter && !collabFilter && (
           <div className="featured-section">
