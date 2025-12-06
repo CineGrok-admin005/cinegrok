@@ -24,27 +24,30 @@ export default function FilmmakerCarousel({ filmmakers }: FilmmakerCarouselProps
         <div className="filmmaker-carousel-container">
             <div className="carousel-track">
                 {/* Duplicate list for seamless infinite scroll */}
-                {[...featured, ...featured].map((filmmaker, index) => (
-                    <Link
-                        href={`/filmmakers/${filmmaker.id}`}
-                        key={`${filmmaker.id}-${index}`}
-                        className="carousel-card"
-                    >
-                        <div className="carousel-image-wrapper">
-                            <img
-                                src={filmmaker.raw_form_data.profile_photo_url || '/placeholder-avatar.png'}
-                                alt={filmmaker.name}
-                                className="carousel-image"
-                            />
-                        </div>
-                        <div className="carousel-info">
-                            <span className="carousel-name">{filmmaker.name}</span>
-                            <span className="carousel-role">
-                                {filmmaker.raw_form_data.roles?.split(',')[0] || 'Filmmaker'}
-                            </span>
-                        </div>
-                    </Link>
-                ))}
+                {[...featured, ...featured].map((filmmaker, index) => {
+                    const profilePhoto = filmmaker.raw_form_data?.profile_photo_url || '/placeholder-avatar.png';
+                    const role = filmmaker.raw_form_data?.roles?.split(',')[0] || 'Filmmaker';
+
+                    return (
+                        <Link
+                            href={`/filmmakers/${filmmaker.id}`}
+                            key={`${filmmaker.id}-${index}`}
+                            className="carousel-card"
+                        >
+                            <div className="carousel-image-wrapper">
+                                <img
+                                    src={profilePhoto}
+                                    alt={filmmaker.name}
+                                    className="carousel-image"
+                                />
+                            </div>
+                            <div className="carousel-info">
+                                <span className="carousel-name">{filmmaker.name}</span>
+                                <span className="carousel-role">{role}</span>
+                            </div>
+                        </Link>
+                    )
+                })}
             </div>
         </div>
     );

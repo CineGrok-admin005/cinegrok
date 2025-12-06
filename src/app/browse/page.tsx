@@ -45,6 +45,9 @@ export default async function BrowsePage({
 
   // Filter Logic
   const filteredFilmmakers = filmmakers.filter(f => {
+    // Safety check for raw_form_data
+    if (!f.raw_form_data) return false;
+
     // 1. Role Filter
     if (params.role) {
       if (!f.raw_form_data.roles?.toLowerCase().includes(params.role.toLowerCase())) {
