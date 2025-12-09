@@ -23,12 +23,38 @@ export default function Navigation() {
     const checkUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
+
+      if (user) {
+        // Check if user has a profile
+        const { data: filmmaker } = await supabase
+          .from('filmmakers')
+          .select('id')
+          .eq('user_id', user.id)
+          .single();
+
+        // If they have a filmmaker record, they are in "Edit" mode
+        if (filmmaker) {
+          setUser(prev => ({ ...prev, hasProfile: true }));
+        }
+      }
     };
 
     checkUser();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      const currentUser = session?.user ?? null;
+      if (currentUser) {
+        // Re-check profile on auth change
+        const { data: filmmaker } = await supabase
+          .from('filmmakers')
+          .select('id')
+          .eq('user_id', currentUser.id)
+          .single();
+        if (filmmaker) {
+          (currentUser as any).hasProfile = true;
+        }
+      }
+      setUser(currentUser);
     });
 
     return () => {
@@ -84,7 +110,9 @@ export default function Navigation() {
             {user ? (
               <>
                 <Link href="/dashboard" className="nav-btn">Dashboard</Link>
-                <Link href="/profile-builder" className="nav-btn nav-btn-primary">Edit Profile</Link>
+                <Link href="/profile-builder" className="nav-btn nav-btn-primary">
+                  {user.hasProfile ? 'Edit Profile' : 'Create Profile'}
+                </Link>
                 <button onClick={handleLogout} className="nav-btn" style={{ border: 'none', background: 'none', cursor: 'pointer' }}>Logout</button>
               </>
             ) : (
@@ -145,7 +173,7 @@ export default function Navigation() {
                   Dashboard
                 </Link>
                 <Link href="/profile-builder" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
-                  Edit Profile
+                  {user.hasProfile ? 'Edit Profile' : 'Create Profile'}
                 </Link>
                 <button onClick={() => { handleLogout(); setIsMenuOpen(false); }} className="mobile-link" style={{ textAlign: 'left', border: 'none', background: 'none', cursor: 'pointer', width: '100%' }}>
                   Logout

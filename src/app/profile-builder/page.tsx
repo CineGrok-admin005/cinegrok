@@ -118,6 +118,7 @@ export default function ProfileBuilderPage() {
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) return
 
+        // 1. Try to load draft first
         const { data: draft } = await supabase
             .from('profile_drafts')
             .select('*')
@@ -130,6 +131,19 @@ export default function ProfileBuilderPage() {
             setFormData(draft.draft_data)
             setCurrentStep(draft.current_step)
             setDraftId(draft.id)
+        } else {
+            // 2. If no draft, check for existing published profile (Edit Mode)
+            const { data: filmmaker } = await supabase
+                .from('filmmakers')
+                .select('raw_form_data, id')
+                .eq('user_id', user.id)
+                .single()
+
+            if (filmmaker && filmmaker.raw_form_data) {
+                setFormData(filmmaker.raw_form_data)
+                // Start at beginning for edit, or maybe preview? Let's start at 1
+                setCurrentStep(1)
+            }
         }
     }
 
@@ -209,27 +223,55 @@ export default function ProfileBuilderPage() {
             }
             */
 
-            // Create filmmaker profile
-            const { data: filmmaker, error: filmmakerError } = await supabase
+            // Check for existing filmmaker profile to decide Insert vs Update
+            const { data: existingFilmmaker } = await supabase
                 .from('filmmakers')
-                .insert([{
-                    user_id: user.id,
-                    name: formData.name,
-                    profile_url: `${formData.name.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`,
-                    raw_form_data: formData,
-                    ai_generated_bio: formData.ai_generated_bio,
-                    status: 'published',
-                    published_at: new Date().toISOString(),
-                }])
                 .select('id')
+                .eq('user_id', user.id)
                 .single()
 
-            if (filmmakerError) throw filmmakerError
+            let filmmakerId = existingFilmmaker?.id;
 
-            // Update profile with filmmaker_id
+            if (existingFilmmaker) {
+                // UPDATE existing profile
+                const { error: updateError } = await supabase
+                    .from('filmmakers')
+                    .update({
+                        name: formData.name,
+                        // profile_url: ... // Keeping strict URL based on first creation or allowing update? Let's keep URL stable for SEO usually
+                        raw_form_data: formData,
+                        ai_generated_bio: formData.ai_generated_bio,
+                        // status: 'published', // Already published
+                        // published_at: ... // Keep original date
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', existingFilmmaker.id)
+
+                if (updateError) throw updateError
+            } else {
+                // INSERT new profile
+                const { data: newFilmmaker, error: insertError } = await supabase
+                    .from('filmmakers')
+                    .insert([{
+                        user_id: user.id,
+                        name: formData.name,
+                        profile_url: `${formData.name.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`,
+                        raw_form_data: formData,
+                        ai_generated_bio: formData.ai_generated_bio,
+                        status: 'published',
+                        published_at: new Date().toISOString(),
+                    }])
+                    .select('id')
+                    .single()
+
+                if (insertError) throw insertError
+                filmmakerId = newFilmmaker.id
+            }
+
+            // Update profile with filmmaker_id (idempotent)
             await supabase
                 .from('profiles')
-                .update({ filmmaker_id: filmmaker.id })
+                .update({ filmmaker_id: filmmakerId })
                 .eq('id', user.id)
 
             // Delete draft
@@ -241,7 +283,7 @@ export default function ProfileBuilderPage() {
             }
 
             // Redirect to profile
-            router.push(`/filmmakers/${filmmaker.id}`)
+            router.push(`/filmmakers/${filmmakerId}`)
         } catch (err: any) {
             setError(err.message)
             setLoading(false)
