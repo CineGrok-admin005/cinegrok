@@ -78,7 +78,7 @@ export default function Navigation() {
             src="/logo_final.png"
             alt="CineGrok"
             className="logo-icon"
-            style={{ height: '40px', width: 'auto' }}
+            style={{ height: '50px', width: 'auto', objectFit: 'contain' }}
           />
         </Link>
 
@@ -212,9 +212,11 @@ export default function Navigation() {
           gap: 0.625rem;
           font-size: 1.25rem;
           font-weight: 600;
+          font-weight: 600;
           color: #1a1a1a;
           text-decoration: none;
           transition: opacity 0.2s;
+          height: 50px;
         }
 
         .logo:hover {
@@ -223,8 +225,9 @@ export default function Navigation() {
 
         .logo-icon {
           flex-shrink: 0;
-          width: 32px;
-          height: 32px;
+          height: 100%;
+          width: auto;
+          max-height: 50px;
         }
 
         .logo-text {
