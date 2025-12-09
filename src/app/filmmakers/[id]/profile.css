@@ -255,6 +255,15 @@
 .collab-box {
     background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
     border: 2px solid #86efac;
+    color: #064e3b;
+    /* Enforce dark green/black text for visibility */
+}
+
+.collab-box h3,
+.collab-box p,
+.collab-box strong {
+    color: #064e3b;
+    /* Ensure children inherit or use dark color */
 }
 
 .contact-info {

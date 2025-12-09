@@ -7,6 +7,7 @@
 import { createSupabaseServerClient, getUser, getUserProfile } from '@/lib/supabase-server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import SignOutButton from '@/components/SignOutButton'
 import './dashboard.css'
 
 import { Database } from '@/lib/supabase'
@@ -50,12 +51,10 @@ export default async function DashboardPage() {
                         <h1>Welcome back, {(profile as any)?.full_name || user.email}!</h1>
                         <p className="subtitle">Manage your filmmaker profile</p>
                     </div>
-                    <Link href="/auth/logout" className="btn btn-secondary">
-                        Sign Out
-                    </Link>
+                    <SignOutButton />
                 </div>
 
-                {/* Beta Notice */}
+                {/* Beta Note */}
                 <div className="dashboard-grid">
                     <div className="card" style={{ gridColumn: '1 / -1', background: 'linear-gradient(135deg, #4caf50 0%, #45a049 100%)', color: 'white' }}>
                         <div className="card-body">
@@ -137,7 +136,7 @@ export default async function DashboardPage() {
                 </div>
             </div>
 
-            {/* Quick Actions */}
+            {/* Quick Actions - Simplified */}
             <div className="quick-actions">
                 <h3>Quick Actions</h3>
                 <div className="action-grid">
@@ -146,6 +145,7 @@ export default async function DashboardPage() {
                         <h4>Browse Filmmakers</h4>
                         <p>Discover other talented filmmakers</p>
                     </Link>
+                    {/* Settings and Help temporarily hidden until implemented 
                     <Link href="/settings" className="action-card">
                         <div className="action-icon">⚙️</div>
                         <h4>Settings</h4>
@@ -156,6 +156,7 @@ export default async function DashboardPage() {
                         <h4>Help & Support</h4>
                         <p>Get help with your account</p>
                     </Link>
+                    */}
                 </div>
             </div>
         </div>

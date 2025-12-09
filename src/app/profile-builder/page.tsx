@@ -118,7 +118,20 @@ export default function ProfileBuilderPage() {
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) return
 
-        // 1. Try to load draft first
+        // 1. Check for existing published profile FIRST (Edit Mode)
+        const { data: filmmaker } = await supabase
+            .from('filmmakers')
+            .select('raw_form_data, id')
+            .eq('user_id', user.id)
+            .single()
+
+        if (filmmaker && filmmaker.raw_form_data) {
+            setFormData(filmmaker.raw_form_data)
+            setCurrentStep(1)
+            return // Stop here if we found a published profile
+        }
+
+        // 2. If no published profile, check for draft
         const { data: draft } = await supabase
             .from('profile_drafts')
             .select('*')
@@ -131,19 +144,6 @@ export default function ProfileBuilderPage() {
             setFormData(draft.draft_data)
             setCurrentStep(draft.current_step)
             setDraftId(draft.id)
-        } else {
-            // 2. If no draft, check for existing published profile (Edit Mode)
-            const { data: filmmaker } = await supabase
-                .from('filmmakers')
-                .select('raw_form_data, id')
-                .eq('user_id', user.id)
-                .single()
-
-            if (filmmaker && filmmaker.raw_form_data) {
-                setFormData(filmmaker.raw_form_data)
-                // Start at beginning for edit, or maybe preview? Let's start at 1
-                setCurrentStep(1)
-            }
         }
     }
 

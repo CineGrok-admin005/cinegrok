@@ -249,6 +249,7 @@ export default function ProfessionalDetailsForm({
                         <option value="Available">Available</option>
                         <option value="Busy">Busy</option>
                         <option value="Selective">Selective Projects Only</option>
+                        <option value="Part-time">Part-time</option>
                     </select>
                 </div>
 
