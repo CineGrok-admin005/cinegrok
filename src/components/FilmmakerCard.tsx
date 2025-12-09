@@ -68,7 +68,11 @@ export default function FilmmakerCard({ filmmaker, variant = 'grid' }: Filmmaker
         {/* Role and Location */}
         <div className="filmmaker-meta">
           {raw_form_data.roles && (
-            <span className="role">{raw_form_data.roles}</span>
+            <span className="role">
+              {Array.isArray(raw_form_data.roles)
+                ? raw_form_data.roles.join(', ')
+                : raw_form_data.roles}
+            </span>
           )}
           {location && raw_form_data.roles && <span className="separator">•</span>}
           {location && (
@@ -90,16 +94,18 @@ export default function FilmmakerCard({ filmmaker, variant = 'grid' }: Filmmaker
           background: #ffffff;
           border: 1px solid #f0f0f0;
           border-radius: 12px;
-          transition: all 0.2s ease;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           text-decoration: none;
           color: inherit;
           text-align: center;
+          height: 100%;
+          min-height: 320px;
         }
 
         .filmmaker-card:hover {
-          border-color: #e0e0e0;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-          transform: translateY(-2px);
+          border-color: #3A7BD5;
+          box-shadow: 0 8px 16px rgba(58, 123, 213, 0.1);
+          transform: translateY(-4px);
         }
 
         .filmmaker-photo {

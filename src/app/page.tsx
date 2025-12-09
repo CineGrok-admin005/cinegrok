@@ -54,10 +54,10 @@ export default function HomePage() {
       <section className="hero">
         <div className="container">
           <h1 className="hero-title">
-            Discover Emerging Filmmakers
+            Connect with Emerging and Independent Filmmakers
           </h1>
           <p className="hero-subtitle">
-            Explore AI-curated profiles of talented directors, cinematographers, editors, and more
+            The premier platform to discover and collaborate with talented directors, cinematographers, editors, and creative talent.
           </p>
 
           <div className="hero-cta">

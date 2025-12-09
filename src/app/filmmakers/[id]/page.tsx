@@ -241,7 +241,7 @@ export default async function FilmmakerPage({ params }: { params: Promise<{ id: 
                 {raw_form_data.genres && (
                   <div className="info-item">
                     <strong>Genres:</strong>
-                    <p>{raw_form_data.genres}</p>
+                    <p>{Array.isArray(raw_form_data.genres) ? raw_form_data.genres.join(', ') : raw_form_data.genres}</p>
                   </div>
                 )}
                 {raw_form_data.style && (

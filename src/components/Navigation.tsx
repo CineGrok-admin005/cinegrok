@@ -75,12 +75,11 @@ export default function Navigation() {
         {/* Logo */}
         <Link href="/" className="logo">
           <img
-            src="/logo.jpg"
+            src="/logo_final.png"
             alt="CineGrok"
             className="logo-icon"
-            style={{ height: '40px', width: 'auto', borderRadius: '8px' }}
+            style={{ height: '40px', width: 'auto' }}
           />
-          <span className="logo-text">CineGrok</span>
         </Link>
 
         {/* Search Bar (Desktop) */}
