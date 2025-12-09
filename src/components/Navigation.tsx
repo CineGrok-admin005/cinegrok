@@ -34,7 +34,7 @@ export default function Navigation() {
 
         // If they have a filmmaker record, they are in "Edit" mode
         if (filmmaker) {
-          setUser(prev => ({ ...prev, hasProfile: true }));
+          setUser((prev: any) => ({ ...prev, hasProfile: true }));
         }
       }
     };
