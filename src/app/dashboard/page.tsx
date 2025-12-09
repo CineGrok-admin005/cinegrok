@@ -145,7 +145,6 @@ export default async function DashboardPage() {
                         <h4>Browse Filmmakers</h4>
                         <p>Discover other talented filmmakers</p>
                     </Link>
-                    {/* Settings and Help temporarily hidden until implemented 
                     <Link href="/settings" className="action-card">
                         <div className="action-icon">⚙️</div>
                         <h4>Settings</h4>
@@ -156,7 +155,6 @@ export default async function DashboardPage() {
                         <h4>Help & Support</h4>
                         <p>Get help with your account</p>
                     </Link>
-                    */}
                 </div>
             </div>
         </div>

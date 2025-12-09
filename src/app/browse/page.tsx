@@ -15,7 +15,7 @@ import './browse.css';
 
 export const metadata = {
   title: 'Browse Filmmakers - CineGrok',
-  description: 'Discover talented filmmakers from around the world. Filter by role, experience, and style.',
+  description: 'Find your creative crew. Discover emerging filmmakers, collaborators, and talent.',
 };
 
 // Revalidate every 5 minutes
@@ -39,7 +39,7 @@ async function getAllFilmmakers(): Promise<Filmmaker[]> {
 export default async function BrowsePage({
   searchParams,
 }: {
-  searchParams: Promise<{ role?: string; state?: string; collab?: string }>;
+  searchParams: Promise<{ role?: string; state?: string; collab?: string; genre?: string }>;
 }) {
   const params = await searchParams;
   const filmmakers = await getAllFilmmakers();
@@ -60,8 +60,16 @@ export default async function BrowsePage({
         rolesStr = rolesData.toLowerCase();
       }
 
-      if (!rolesStr.includes(params.role.toLowerCase())) {
-        return false;
+      const searchRole = params.role.toLowerCase();
+      // Special handling for Music Director / Composer Mapping
+      if (searchRole === 'music director' || searchRole === 'composer') {
+        if (!rolesStr.includes('music director') && !rolesStr.includes('composer')) {
+          return false;
+        }
+      } else {
+        if (!rolesStr.includes(searchRole)) {
+          return false;
+        }
       }
     }
 
@@ -84,16 +92,43 @@ export default async function BrowsePage({
       }
     }
 
+    // 4. Genre Filter
+    if (params.genre) {
+      const genresData = f.raw_form_data.genres; // Array or string
+      let genreStr = '';
+      if (Array.isArray(genresData)) genreStr = genresData.join(' ').toLowerCase();
+      else if (typeof genresData === 'string') genreStr = genresData.toLowerCase();
+
+      if (!genreStr.includes(params.genre.toLowerCase())) {
+        return false;
+      }
+    }
+
     return true;
   });
 
   const roleFilter = params.role;
   const stateFilter = params.state;
   const collabFilter = params.collab;
+  const genreFilter = params.genre;
 
+  // Ordered by popularity/industry standard as requested
   const ALL_ROLES = [
-    'Director', 'Cinematographer', 'Editor', 'Writer', 'Producer',
-    'Actor', 'Sound Designer', 'Production Designer', 'Composer', 'VFX Artist'
+    'Director',
+    'Cinematographer',
+    'Editor',
+    'Writer',
+    'Producer',
+    'Actor',
+    'Sound Designer',
+    'Production Designer',
+    'Music Director',
+    'VFX Artist'
+  ];
+
+  const GENRES = [
+    'Drama', 'Comedy', 'Thriller', 'Horror', 'Documentary',
+    'Sci-Fi', 'Action', 'Romance', 'Animation'
   ];
 
   return (
@@ -103,7 +138,7 @@ export default async function BrowsePage({
       {/* Hero Section */}
       <div className="browse-header">
         <div className="container">
-          <h1>Browse Filmmakers</h1>
+          <h1>Find Your Creative Crew</h1>
           <p className="subtitle">
             Discover emerging filmmakers, collaborators, and talent.
           </p>
@@ -112,7 +147,7 @@ export default async function BrowsePage({
 
       <div className="container">
         {/* Featured Carousel */}
-        {!roleFilter && !stateFilter && !collabFilter && (
+        {!roleFilter && !stateFilter && !collabFilter && !genreFilter && (
           <div className="featured-section">
             <h2>Featured Filmmakers</h2>
             <FilmmakerCarousel filmmakers={filmmakers} />
@@ -126,16 +161,16 @@ export default async function BrowsePage({
           <div className="filter-header">
             <h3>Filter by Role</h3>
             <div className="role-filters">
-              <Link href={`/browse?${new URLSearchParams({ ...(stateFilter ? { state: stateFilter } : {}), ...(collabFilter ? { collab: collabFilter } : {}) }).toString()}`} className={`filter-pill ${!roleFilter ? 'active' : ''}`}>
+              <Link href={`/browse?${new URLSearchParams({ ...(stateFilter ? { state: stateFilter } : {}), ...(collabFilter ? { collab: collabFilter } : {}), ...(genreFilter ? { genre: genreFilter } : {}) }).toString()}`} className={`filter-pill ${!roleFilter ? 'active' : ''}`}>
                 All
               </Link>
               {ALL_ROLES.map(role => (
                 <Link
                   key={role}
-                  href={`/browse?${new URLSearchParams({ role: role.toLowerCase(), ...(stateFilter ? { state: stateFilter } : {}), ...(collabFilter ? { collab: collabFilter } : {}) }).toString()}`}
+                  href={`/browse?${new URLSearchParams({ role: role.toLowerCase(), ...(stateFilter ? { state: stateFilter } : {}), ...(collabFilter ? { collab: collabFilter } : {}), ...(genreFilter ? { genre: genreFilter } : {}) }).toString()}`}
                   className={`filter-pill ${roleFilter === role.toLowerCase() ? 'active' : ''}`}
                 >
-                  {role}s
+                  {role === 'Music Director' ? 'Music Directors' : `${role}s`}
                 </Link>
               ))}
             </div>
@@ -145,15 +180,17 @@ export default async function BrowsePage({
           <div className="filter-header" style={{ marginTop: '1.5rem' }}>
             <h3>Filter by Location (India)</h3>
 
-            {/* Common States (Always Visible) */}
+            {/* Common States (Major Hubs) */}
+            <h4 style={{ fontSize: '0.9rem', color: '#666', marginBottom: '0.5rem', fontWeight: 'normal' }}>Major Film Hubs</h4>
             <div className="state-filters" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.5rem' }}>
-              <Link href={`/browse?${new URLSearchParams({ ...(roleFilter ? { role: roleFilter } : {}), ...(collabFilter ? { collab: collabFilter } : {}) }).toString()}`} className={`filter-pill ${!stateFilter ? 'active' : ''}`}>
+              <Link href={`/browse?${new URLSearchParams({ ...(roleFilter ? { role: roleFilter } : {}), ...(collabFilter ? { collab: collabFilter } : {}), ...(genreFilter ? { genre: genreFilter } : {}) }).toString()}`} className={`filter-pill ${!stateFilter ? 'active' : ''}`}>
                 Anywhere
               </Link>
+              {/* Ordered alphabetically or by importance?  Keeping major list as per user request/custom */}
               {['Maharashtra', 'Karnataka', 'Tamil Nadu', 'Kerala', 'Delhi', 'Telangana', 'West Bengal'].map(state => (
                 <Link
                   key={state}
-                  href={`/browse?${new URLSearchParams({ state: state, ...(roleFilter ? { role: roleFilter } : {}), ...(collabFilter ? { collab: collabFilter } : {}) }).toString()}`}
+                  href={`/browse?${new URLSearchParams({ state: state, ...(roleFilter ? { role: roleFilter } : {}), ...(collabFilter ? { collab: collabFilter } : {}), ...(genreFilter ? { genre: genreFilter } : {}) }).toString()}`}
                   className={`filter-pill ${stateFilter === state ? 'active' : ''}`}
                 >
                   {state}
@@ -161,16 +198,16 @@ export default async function BrowsePage({
               ))}
             </div>
 
-            {/* Other States (Collapsible Details) */}
-            <details className="more-states-details" style={{ width: '100%', marginTop: '0.5rem' }}>
-              <summary style={{ cursor: 'pointer', color: '#666', fontSize: '0.9rem', marginBottom: '0.5rem', userSelect: 'none' }}>
-                Show All States/Regions
+            {/* Other States (Collapsible) */}
+            <details className="more-states-details" style={{ width: '100%', marginTop: '1rem' }}>
+              <summary style={{ cursor: 'pointer', color: '#3A7BD5', fontSize: '0.9rem', marginBottom: '0.5rem', userSelect: 'none', fontWeight: 500 }}>
+                Show All States / Regions
               </summary>
-              <div className="state-filters" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.5rem', padding: '0.5rem', background: '#f9f9f9', borderRadius: '8px' }}>
+              <div className="state-filters" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.5rem', padding: '1rem', background: '#f8f9fa', borderRadius: '8px', border: '1px solid #eee' }}>
                 {INDIAN_STATES.filter(state => !['Maharashtra', 'Karnataka', 'Tamil Nadu', 'Kerala', 'Delhi', 'Telangana', 'West Bengal'].includes(state)).map(state => (
                   <Link
                     key={state}
-                    href={`/browse?${new URLSearchParams({ state: state, ...(roleFilter ? { role: roleFilter } : {}), ...(collabFilter ? { collab: collabFilter } : {}) }).toString()}`}
+                    href={`/browse?${new URLSearchParams({ state: state, ...(roleFilter ? { role: roleFilter } : {}), ...(collabFilter ? { collab: collabFilter } : {}), ...(genreFilter ? { genre: genreFilter } : {}) }).toString()}`}
                     className={`filter-pill ${stateFilter === state ? 'active' : ''}`}
                   >
                     {state}
@@ -180,22 +217,49 @@ export default async function BrowsePage({
             </details>
           </div>
 
-          {/* Availability */}
-          <div className="filter-header" style={{ marginTop: '1.5rem' }}>
-            <h3>Availability</h3>
-            <div className="role-filters">
-              <Link
-                href={`/browse?${new URLSearchParams({ ...(roleFilter ? { role: roleFilter } : {}), ...(stateFilter ? { state: stateFilter } : {}) }).toString()}`}
-                className={`filter-pill ${!collabFilter ? 'active' : ''}`}
-              >
-                All
-              </Link>
-              <Link
-                href={`/browse?${new URLSearchParams({ collab: 'true', ...(roleFilter ? { role: roleFilter } : {}), ...(stateFilter ? { state: stateFilter } : {}) }).toString()}`}
-                className={`filter-pill ${collabFilter === 'true' ? 'active' : ''}`}
-              >
-                Open to Collaboration
-              </Link>
+          {/* Genre & Availability Row */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', marginTop: '1.5rem' }}>
+
+            {/* Genre */}
+            <div style={{ flex: 1, minWidth: '300px' }}>
+              <div className="filter-header">
+                <h3>Filter by Genre</h3>
+                <div className="role-filters">
+                  <Link href={`/browse?${new URLSearchParams({ ...(roleFilter ? { role: roleFilter } : {}), ...(stateFilter ? { state: stateFilter } : {}), ...(collabFilter ? { collab: collabFilter } : {}) }).toString()}`} className={`filter-pill ${!genreFilter ? 'active' : ''}`}>
+                    All
+                  </Link>
+                  {GENRES.map(genre => (
+                    <Link
+                      key={genre}
+                      href={`/browse?${new URLSearchParams({ genre: genre.toLowerCase(), ...(roleFilter ? { role: roleFilter } : {}), ...(stateFilter ? { state: stateFilter } : {}), ...(collabFilter ? { collab: collabFilter } : {}) }).toString()}`}
+                      className={`filter-pill ${genreFilter === genre.toLowerCase() ? 'active' : ''}`}
+                    >
+                      {genre}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Availability */}
+            <div style={{ flex: 1, minWidth: '200px' }}>
+              <div className="filter-header">
+                <h3>Availability</h3>
+                <div className="role-filters">
+                  <Link
+                    href={`/browse?${new URLSearchParams({ ...(roleFilter ? { role: roleFilter } : {}), ...(stateFilter ? { state: stateFilter } : {}), ...(genreFilter ? { genre: genreFilter } : {}) }).toString()}`}
+                    className={`filter-pill ${!collabFilter ? 'active' : ''}`}
+                  >
+                    All
+                  </Link>
+                  <Link
+                    href={`/browse?${new URLSearchParams({ collab: 'true', ...(roleFilter ? { role: roleFilter } : {}), ...(stateFilter ? { state: stateFilter } : {}), ...(genreFilter ? { genre: genreFilter } : {}) }).toString()}`}
+                    className={`filter-pill ${collabFilter === 'true' ? 'active' : ''}`}
+                  >
+                    Open to Collaboration
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
 

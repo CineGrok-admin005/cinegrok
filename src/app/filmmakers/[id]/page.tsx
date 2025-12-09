@@ -22,6 +22,8 @@ import {
   formatFilms,
   shouldShowSection,
 } from '@/lib/utils';
+import { getUser } from '@/lib/supabase-server';
+import CollabButton from '@/components/CollabButton';
 import './profile.css';
 
 // Revalidate every hour
@@ -62,6 +64,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 export default async function FilmmakerPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const filmmaker = await getFilmmaker(id);
+  const user = await getUser();
 
   if (!filmmaker) {
     notFound();
@@ -284,10 +287,18 @@ export default async function FilmmakerPage({ params }: { params: Promise<{ id: 
             )}
 
             {/* Collaboration */}
+            {/* Collaboration */}
             {raw_form_data.open_to_collab === 'Yes' && (
               <div className="info-box collab-box">
                 <h3>Open to Collaborations</h3>
                 <p>This filmmaker is currently open to new projects and collaborations.</p>
+
+                {/* Collab Button Logic */}
+                <CollabButton
+                  email={raw_form_data.email || raw_form_data.contact_method}
+                  isLoggedIn={!!user}
+                />
+
                 {raw_form_data.contact_method && (
                   <p className="contact-info">
                     <strong>Contact:</strong> {raw_form_data.contact_method}
@@ -297,7 +308,7 @@ export default async function FilmmakerPage({ params }: { params: Promise<{ id: 
             )}
           </aside>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 }

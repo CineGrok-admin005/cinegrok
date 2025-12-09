@@ -1,10 +1,3 @@
-/**
- * Navigation Component
- * 
- * Clean, minimalist navigation inspired by best UX practices
- * Features CineGrok branding and subtle theme integration
- */
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -78,16 +71,77 @@ export default function Navigation() {
 
   return (
     <nav className="navigation">
-      <div className="container">
-        <div className="nav-content">
-          {/* CineGrok Logo */}
-          <Link href="/" className="logo">
-            <img src="/logo.svg" alt="CineGrok" className="logo-icon" />
-            <span className="logo-text">CineGrok</span>
-          </Link>
+      <div className="container nav-content">
+        {/* Logo */}
+        <Link href="/" className="logo">
+          <img
+            src="/logo.jpg"
+            alt="CineGrok"
+            className="logo-icon"
+            style={{ height: '40px', width: 'auto', borderRadius: '8px' }}
+          />
+          <span className="logo-text">CineGrok</span>
+        </Link>
 
-          {/* Desktop Search */}
-          <form onSubmit={handleSearch} className="search-form desktop-only">
+        {/* Search Bar (Desktop) */}
+        <form onSubmit={handleSearch} className="search-form desktop-only">
+          <svg className="search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <circle cx="7" cy="7" r="5" stroke="currentColor" strokeWidth="1.5" />
+            <path d="M11 11L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+          <input
+            type="search"
+            placeholder="Search..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="search-input"
+          />
+        </form>
+
+        {/* Desktop Nav Links */}
+        <div className="nav-actions desktop-only">
+          <Link href="/browse" className="nav-btn">Browse</Link>
+          <Link href="/pricing" className="nav-btn">Pricing</Link>
+          <Link href="/about" className="nav-btn">About</Link>
+
+          {user ? (
+            <>
+              <Link href="/dashboard" className="nav-btn">Dashboard</Link>
+              <Link href="/profile-builder" className="nav-btn nav-btn-primary">
+                {user.hasProfile ? 'Edit Profile' : 'Create Profile'}
+              </Link>
+              <button onClick={handleLogout} className="nav-btn" style={{ border: 'none', background: 'none', cursor: 'pointer' }}>Logout</button>
+            </>
+          ) : (
+            <>
+              <Link href="/profile-builder" className="nav-btn nav-btn-primary">Create Profile</Link>
+              <Link href="/auth/login" className="nav-btn">Login</Link>
+            </>
+          )}
+        </div>
+
+        {/* Mobile Menu Button */}
+        <button
+          className="menu-button mobile-only"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-label="Toggle menu"
+        >
+          {isMenuOpen ? (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          ) : (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M3 12H21M3 6H21M3 18H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          )}
+        </button>
+      </div>
+
+      {/* Mobile Menu */}
+      {isMenuOpen && (
+        <div className="mobile-menu">
+          <form onSubmit={handleSearch} className="search-form">
             <svg className="search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
               <circle cx="7" cy="7" r="5" stroke="currentColor" strokeWidth="1.5" />
               <path d="M11 11L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -100,98 +154,40 @@ export default function Navigation() {
               className="search-input"
             />
           </form>
+          <Link href="/browse" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
+            Browse
+          </Link>
+          <Link href="/pricing" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
+            Pricing
+          </Link>
+          <Link href="/about" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
+            About
+          </Link>
 
-          {/* Desktop Nav Links */}
-          <div className="nav-actions desktop-only">
-            <Link href="/browse" className="nav-btn">Browse</Link>
-            <Link href="/pricing" className="nav-btn">Pricing</Link>
-            <Link href="/about" className="nav-btn">About</Link>
-
-            {user ? (
-              <>
-                <Link href="/dashboard" className="nav-btn">Dashboard</Link>
-                <Link href="/profile-builder" className="nav-btn nav-btn-primary">
-                  {user.hasProfile ? 'Edit Profile' : 'Create Profile'}
-                </Link>
-                <button onClick={handleLogout} className="nav-btn" style={{ border: 'none', background: 'none', cursor: 'pointer' }}>Logout</button>
-              </>
-            ) : (
-              <>
-                <Link href="/profile-builder" className="nav-btn nav-btn-primary">Create Profile</Link>
-                <Link href="/auth/login" className="nav-btn">Login</Link>
-              </>
-            )}
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            className="menu-button mobile-only"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            {isMenuOpen ? (
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-            ) : (
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M3 12H21M3 6H21M3 18H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-            )}
-          </button>
+          {user ? (
+            <>
+              <Link href="/dashboard" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
+                Dashboard
+              </Link>
+              <Link href="/profile-builder" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
+                {user.hasProfile ? 'Edit Profile' : 'Create Profile'}
+              </Link>
+              <button onClick={() => { handleLogout(); setIsMenuOpen(false); }} className="mobile-link" style={{ textAlign: 'left', border: 'none', background: 'none', cursor: 'pointer', width: '100%' }}>
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href="/profile-builder" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
+                Create Profile
+              </Link>
+              <Link href="/auth/login" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
+                Login
+              </Link>
+            </>
+          )}
         </div>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="mobile-menu">
-            <form onSubmit={handleSearch} className="search-form">
-              <svg className="search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <circle cx="7" cy="7" r="5" stroke="currentColor" strokeWidth="1.5" />
-                <path d="M11 11L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
-              <input
-                type="search"
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="search-input"
-              />
-            </form>
-            <Link href="/browse" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
-              Browse
-            </Link>
-            <Link href="/pricing" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
-              Pricing
-            </Link>
-            <Link href="/about" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
-              About
-            </Link>
-
-            {user ? (
-              <>
-                <Link href="/dashboard" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
-                  Dashboard
-                </Link>
-                <Link href="/profile-builder" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
-                  {user.hasProfile ? 'Edit Profile' : 'Create Profile'}
-                </Link>
-                <button onClick={() => { handleLogout(); setIsMenuOpen(false); }} className="mobile-link" style={{ textAlign: 'left', border: 'none', background: 'none', cursor: 'pointer', width: '100%' }}>
-                  Logout
-                </button>
-              </>
-            ) : (
-              <>
-                <Link href="/profile-builder" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
-                  Create Profile
-                </Link>
-                <Link href="/auth/login" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
-                  Login
-                </Link>
-              </>
-            )}
-          </div>
-        )}
-      </div>
+      )}
 
       <style jsx>{`
         .navigation {
