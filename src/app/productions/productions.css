@@ -1,0 +1,493 @@
+/* Productions Page Styles */
+
+.productions-page {
+  min-height: 100vh;
+  background: #fafafa;
+}
+
+/* ============================================================================
+   HERO SECTION
+   ============================================================================ */
+
+.productions-hero {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 5rem 2rem;
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.hero-content {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.productions-hero h1 {
+  font-size: 2.8rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.hero-features {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1rem;
+  opacity: 0.95;
+}
+
+.feature-icon {
+  font-size: 1.5rem;
+}
+
+/* ============================================================================
+   CONTAINER & LAYOUT
+   ============================================================================ */
+
+.productions-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem 3rem;
+}
+
+/* ============================================================================
+   CTA SECTION
+   ============================================================================ */
+
+.cta-section {
+  background: white;
+  border-radius: 12px;
+  padding: 2.5rem;
+  margin-bottom: 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+  gap: 2rem;
+}
+
+.cta-section.cta-login {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.cta-content h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #1a1a1a;
+}
+
+.cta-content p {
+  color: #666;
+  margin: 0;
+}
+
+.btn-lg {
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .cta-section {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .btn-lg {
+    width: 100%;
+  }
+}
+
+/* ============================================================================
+   FILTER SECTION
+   ============================================================================ */
+
+.filter-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 3rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.filter-section h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+  color: #1a1a1a;
+}
+
+.filter-group {
+  margin-bottom: 2rem;
+}
+
+.filter-group:last-child {
+  margin-bottom: 0;
+}
+
+.filter-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+/* Status Filters */
+.status-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.filter-btn {
+  padding: 0.6rem 1.2rem;
+  border: 2px solid #e5e5e5;
+  background: white;
+  border-radius: 24px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  color: #555;
+  font-weight: 500;
+}
+
+.filter-btn:hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.filter-btn.active {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+}
+
+/* Location Filter */
+.filter-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e5e5e5;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.filter-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.location-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.suggestion-btn {
+  padding: 0.4rem 0.8rem;
+  background: #f0f0f0;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: #555;
+  transition: all 0.2s ease;
+}
+
+.suggestion-btn:hover {
+  background: #667eea;
+  color: white;
+}
+
+/* ============================================================================
+   PRODUCTIONS GRID
+   ============================================================================ */
+
+.productions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+  .productions-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+/* ============================================================================
+   PRODUCTION CARD
+   ============================================================================ */
+
+.production-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.production-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.status-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.card-header {
+  margin-bottom: 1rem;
+  margin-top: 0.5rem;
+}
+
+.card-header h3 {
+  font-size: 1.3rem;
+  color: #1a1a1a;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+.project-code {
+  font-size: 0.8rem;
+  color: #999;
+  margin: 0;
+  font-family: monospace;
+}
+
+.description {
+  color: #666;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
+}
+
+/* Details Grid */
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  background: #f9f9f9;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.detail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.detail .label {
+  font-size: 0.8rem;
+  color: #999;
+  font-weight: 500;
+}
+
+.detail .value {
+  font-size: 0.95rem;
+  color: #333;
+  font-weight: 600;
+}
+
+/* Announcements */
+.announcements {
+  background: #fff8e1;
+  border-left: 4px solid #ffc107;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.announcements p {
+  margin: 0;
+  color: #333;
+  line-height: 1.4;
+}
+
+/* Creator Info */
+.creator-info {
+  padding: 1rem;
+  background: #f5f5f5;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.creator-info p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Button Block */
+.btn-block {
+  width: 100%;
+}
+
+/* ============================================================================
+   EMPTY STATES
+   ============================================================================ */
+
+.loading,
+.error,
+.no-results {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: white;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+}
+
+.loading {
+  font-size: 1.1rem;
+  color: #667eea;
+}
+
+.error {
+  background: #fee;
+  color: #c33;
+  padding: 2rem;
+  border-radius: 8px;
+}
+
+.no-results {
+  padding: 4rem 2rem;
+}
+
+.no-results p {
+  font-size: 1.2rem;
+  color: #999;
+  margin-bottom: 2rem;
+}
+
+/* ============================================================================
+   RESPONSIVE
+   ============================================================================ */
+
+@media (max-width: 1024px) {
+  .productions-hero h1 {
+    font-size: 2.2rem;
+  }
+
+  .hero-features {
+    gap: 2rem;
+  }
+
+  .filter-section {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .productions-container {
+    padding: 0 1rem 2rem;
+  }
+
+  .productions-hero {
+    padding: 3rem 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .productions-hero h1 {
+    font-size: 1.8rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-features {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .feature {
+    font-size: 0.9rem;
+  }
+
+  .cta-section {
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .filter-section {
+    padding: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .filter-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .status-filters {
+    gap: 0.5rem;
+  }
+
+  .filter-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  .production-card {
+    padding: 1rem;
+  }
+
+  .production-card:hover {
+    transform: none;
+  }
+
+  .status-badge {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .card-header h3 {
+    font-size: 1.1rem;
+  }
+
+  .details-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+  }
+}

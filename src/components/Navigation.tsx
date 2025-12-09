@@ -78,7 +78,6 @@ export default function Navigation() {
             src="/logo_final.png"
             alt="CineGrok"
             className="logo-icon"
-            style={{ height: '50px', width: 'auto', objectFit: 'contain' }}
           />
         </Link>
 
@@ -100,6 +99,7 @@ export default function Navigation() {
         {/* Desktop Nav Links */}
         <div className="nav-actions desktop-only">
           <Link href="/browse" className="nav-btn">Browse</Link>
+          <Link href="/productions" className="nav-btn">Productions</Link>
           <Link href="/pricing" className="nav-btn">Pricing</Link>
           <Link href="/about" className="nav-btn">About</Link>
 
@@ -156,6 +156,9 @@ export default function Navigation() {
           <Link href="/browse" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
             Browse
           </Link>
+          <Link href="/productions" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
+            Productions
+          </Link>
           <Link href="/pricing" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
             Pricing
           </Link>
@@ -202,7 +205,7 @@ export default function Navigation() {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 1rem 0;
+          padding: 0.75rem 0;
           gap: 2rem;
         }
 
@@ -216,7 +219,6 @@ export default function Navigation() {
           color: #1a1a1a;
           text-decoration: none;
           transition: opacity 0.2s;
-          height: 50px;
         }
 
         .logo:hover {
@@ -225,9 +227,15 @@ export default function Navigation() {
 
         .logo-icon {
           flex-shrink: 0;
-          height: 100%;
+          height: 50px;
           width: auto;
-          max-height: 50px;
+          object-fit: contain;
+        }
+
+        @media (min-width: 640px) {
+          .logo-icon {
+            height: 80px;
+          }
         }
 
         .logo-text {
