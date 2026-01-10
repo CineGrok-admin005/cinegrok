@@ -33,7 +33,7 @@ export default function Navigation() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
+      router.push(`/browse?search=${encodeURIComponent(searchQuery)}`);
       setSearchQuery('');
     }
   };
@@ -65,7 +65,7 @@ export default function Navigation() {
           </svg>
           <input
             type="search"
-            placeholder="Search..."
+            placeholder="Search filmmakers, roles, or locations..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="search-input"
@@ -120,7 +120,7 @@ export default function Navigation() {
             </svg>
             <input
               type="search"
-              placeholder="Search..."
+              placeholder="Search filmmakers, roles, or locations..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="search-input"

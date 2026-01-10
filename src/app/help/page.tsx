@@ -50,8 +50,8 @@ export default function HelpPage() {
                     </div>
                 </div>
 
-                <Link href="/dashboard" className="btn btn-secondary back-btn">
-                    ← Back to Dashboard
+                <Link href="/" className="btn btn-secondary back-btn">
+                    ← Back to Home
                 </Link>
             </div>
         </div>

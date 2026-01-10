@@ -76,9 +76,7 @@ export default function AboutSection() {
               </div>
 
               <div className="cta-row">
-                <Link href="/about" className="btn btn-secondary">
-                  Learn More
-                </Link>
+                <SmartCTA text="Create Your Page" variant="primary" />
               </div>
             </div>
           )}

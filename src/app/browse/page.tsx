@@ -43,7 +43,7 @@ async function getAllFilmmakers(page: number = 1, limit: number = 12): Promise<{
 export default async function BrowsePage({
   searchParams,
 }: {
-  searchParams: Promise<{ role?: string; state?: string; collab?: string; genre?: string; page?: string }>;
+  searchParams: Promise<{ role?: string; state?: string; collab?: string; genre?: string; page?: string; search?: string }>;
 }) {
   const params = await searchParams;
   const page = parseInt(params.page || '1');
@@ -157,6 +157,22 @@ export default async function BrowsePage({
       }
     }
 
+    // 5. Search Filter
+    if (searchFilter) {
+      const name = (f.full_name || '').toLowerCase();
+      const bio = (f.ai_generated_bio || '').toLowerCase();
+      // Also search in raw data if needed, e.g. location
+      const location = (f.raw_form_data.current_location || '').toLowerCase();
+      const roles = (Array.isArray(f.raw_form_data.primary_roles) ? f.raw_form_data.primary_roles.join(' ') : (f.raw_form_data.primary_roles || '')).toLowerCase();
+
+      if (!name.includes(searchFilter) &&
+        !bio.includes(searchFilter) &&
+        !location.includes(searchFilter) &&
+        !roles.includes(searchFilter)) {
+        return false;
+      }
+    }
+
     return true;
   });
 
@@ -177,7 +193,11 @@ export default async function BrowsePage({
   const roleFilter = params.role;
   const stateFilter = params.state;
   const collabFilter = params.collab;
+  const roleFilter = params.role;
+  const stateFilter = params.state;
+  const collabFilter = params.collab;
   const genreFilter = params.genre;
+  const searchFilter = params.search?.toLowerCase();
 
   // Ordered by popularity/industry standard as requested
   const ALL_ROLES = [
@@ -324,7 +344,11 @@ export default async function BrowsePage({
 
         <div className="results-count" style={{ margin: '1rem 0', color: '#666', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span>
-            Showing {(page - 1) * limit + 1}-{Math.min(page * limit, displayCount)} of {displayCount} results
+            {displayCount < 50 ? (
+              `${displayCount} Filmmakers found`
+            ) : (
+              `Showing ${(page - 1) * limit + 1}-${Math.min(page * limit, displayCount)} of ${displayCount} results`
+            )}
           </span>
           {totalPages > 1 && (
             <span style={{ fontSize: '0.85rem' }}>

@@ -19,7 +19,7 @@ export default function NotFound() {
 
                 <Link
                     href="/"
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-black text-white rounded-full font-medium transition-transform active:scale-95 hover:bg-gray-800"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-900 text-gray-50 rounded-full font-medium transition-transform active:scale-95 hover:bg-black"
                 >
                     <Home size={18} />
                     Return to Set
