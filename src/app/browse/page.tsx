@@ -42,8 +42,8 @@ async function getFilmmakers(options: {
   // 1. Search (Robust)
   if (search) {
     const s = search.toLowerCase();
-    // Search in name, bio, and JSON location/city keys (both camelCase and snake_case)
-    query = query.or(`name.ilike.%${s}%,ai_generated_bio.ilike.%${s}%,raw_form_data->>current_city.ilike.%${s}%,raw_form_data->>currentCity.ilike.%${s}%,raw_form_data->>current_location.ilike.%${s}%`);
+    // Search in name, bio, JSON location/city keys, and films arrays
+    query = query.or(`name.ilike.%${s}%,ai_generated_bio.ilike.%${s}%,raw_form_data->>current_city.ilike.%${s}%,raw_form_data->>currentCity.ilike.%${s}%,raw_form_data->>current_location.ilike.%${s}%,raw_form_data->>films.ilike.%${s}%,raw_form_data->>filmography.ilike.%${s}%`);
   }
 
   // 2. Role Filter (JSONB)
