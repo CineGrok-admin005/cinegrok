@@ -78,39 +78,39 @@ export enum ExperienceTier {
  */
 export const TIER_STYLES = {
     [ExperienceTier.EMERGING]: {
-        badge: '🌱 Emerging',
+        badge: 'Emerging',
         color: '#10B981',
         bgColor: '#D1FAE5',
         borderColor: '#6EE7B7',
-        icon: '🌱',
+        icon: 'sprout', // Lucide icon name
     },
     [ExperienceTier.RISING]: {
-        badge: '⭐ Rising',
+        badge: 'Rising',
         color: '#3B82F6',
         bgColor: '#DBEAFE',
         borderColor: '#93C5FD',
-        icon: '⭐',
+        icon: 'star',
     },
     [ExperienceTier.ESTABLISHED]: {
-        badge: '🎬 Established',
+        badge: 'Established',
         color: '#8B5CF6',
         bgColor: '#EDE9FE',
         borderColor: '#C4B5FD',
-        icon: '🎬',
+        icon: 'clapperboard',
     },
     [ExperienceTier.VETERAN]: {
-        badge: '🏆 Veteran',
+        badge: 'Veteran',
         color: '#D97706',
         bgColor: '#FEF3C7',
         borderColor: '#FCD34D',
-        icon: '🏆',
+        icon: 'trophy',
     },
     [ExperienceTier.ACCLAIMED]: {
-        badge: '👑 Acclaimed',
+        badge: 'Acclaimed',
         color: '#DC2626',
         bgColor: '#FEE2E2',
         borderColor: '#FCA5A5',
-        icon: '👑',
+        icon: 'crown',
     },
 } as const;
 

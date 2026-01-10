@@ -29,14 +29,11 @@ export default function AboutSection() {
               <div className="mission-grid">
                 <div className="mission-item">
                   <div className="mission-icon">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    {/* Target/Bullseye - filled center for impact */}
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <circle cx="12" cy="12" r="10" />
                       <circle cx="12" cy="12" r="6" />
-                      <circle cx="12" cy="12" r="2" />
-                      <path d="M12 2v2" />
-                      <path d="M12 20v2" />
-                      <path d="M2 12h2" />
-                      <path d="M20 12h2" />
+                      <circle cx="12" cy="12" r="2" fill="currentColor" />
                     </svg>
                   </div>
                   <h3>Our Mission</h3>
@@ -48,8 +45,9 @@ export default function AboutSection() {
 
                 <div className="mission-item">
                   <div className="mission-icon">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="m12 17.27 6.18 3.73-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                    {/* Star - filled for visibility */}
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                     </svg>
                   </div>
                   <h3>Our Vision</h3>
@@ -61,10 +59,12 @@ export default function AboutSection() {
 
                 <div className="mission-item">
                   <div className="mission-icon">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    {/* Lightbulb - filled bulb for impact */}
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M9 18h6" />
                       <path d="M10 22h4" />
-                      <path d="M12 2a7 7 0 0 0-7 7c0 2 2 3 2 4.5V15a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1.5c0-1.5 2-2.5 2-4.5a7 7 0 0 0-7-7z" />
+                      <path d="M12 2a7 7 0 0 0-7 7c0 2 2 3 2 4.5V15a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1.5c0-1.5 2-2.5 2-4.5a7 7 0 0 0-7-7z" fill="rgba(26,26,26,0.1)" />
+                      <circle cx="12" cy="9" r="1" fill="currentColor" />
                     </svg>
                   </div>
                   <h3>Our Purpose</h3>

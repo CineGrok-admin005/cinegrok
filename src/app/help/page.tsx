@@ -4,6 +4,7 @@
 
 import Navigation from '@/components/Navigation';
 import Link from 'next/link';
+import { Mail } from 'lucide-react';
 import './help.css';
 
 export default function HelpPage() {
@@ -19,7 +20,7 @@ export default function HelpPage() {
                     <p>Have questions, suggestions, or found a bug? We'd love to hear from you!</p>
 
                     <div className="contact-method">
-                        <span className="icon">📧</span>
+                        <span className="icon"><Mail size={24} /></span>
                         <div className="details">
                             <h3>Email Support</h3>
                             <a href="mailto:docmail1131@gmail.com" className="email-link">

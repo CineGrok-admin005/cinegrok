@@ -9,6 +9,7 @@ import Link from 'next/link';
 import Navigation from '@/components/Navigation';
 import FilmmakerCard from '@/components/FilmmakerCard';
 import { Filmmaker } from '@/lib/api';
+import { Clapperboard, Camera, Scissors, PenTool, Users, Drama } from 'lucide-react';
 
 interface HomePageContentProps {
   filmmakers: Filmmaker[];
@@ -77,32 +78,32 @@ export default function HomePageContent({ filmmakers }: HomePageContentProps) {
 
           <div className="role-grid">
             <Link href="/browse?role=director" className="role-card director">
-              <span className="role-icon">🎬</span>
+              <span className="role-icon"><Clapperboard size={40} strokeWidth={1.5} /></span>
               <span className="role-name">Directors</span>
             </Link>
 
             <Link href="/browse?role=cinematographer" className="role-card cinematographer">
-              <span className="role-icon">📹</span>
+              <span className="role-icon"><Camera size={40} strokeWidth={1.5} /></span>
               <span className="role-name">Cinematographers</span>
             </Link>
 
             <Link href="/browse?role=editor" className="role-card editor">
-              <span className="role-icon">✂️</span>
+              <span className="role-icon"><Scissors size={40} strokeWidth={1.5} /></span>
               <span className="role-name">Editors</span>
             </Link>
 
             <Link href="/browse?role=writer" className="role-card writer">
-              <span className="role-icon">✍️</span>
+              <span className="role-icon"><PenTool size={40} strokeWidth={1.5} /></span>
               <span className="role-name">Writers</span>
             </Link>
 
             <Link href="/browse?role=producer" className="role-card producer">
-              <span className="role-icon">🎭</span>
+              <span className="role-icon"><Users size={40} strokeWidth={1.5} /></span>
               <span className="role-name">Producers</span>
             </Link>
 
             <Link href="/browse?role=actor" className="role-card actor">
-              <span className="role-icon">🎪</span>
+              <span className="role-icon"><Drama size={40} strokeWidth={1.5} /></span>
               <span className="role-name">Actors</span>
             </Link>
           </div>

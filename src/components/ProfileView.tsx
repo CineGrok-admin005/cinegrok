@@ -7,6 +7,7 @@ import '../app/filmmakers/[id]/profile.css'
 
 import FilmGallery from './FilmGallery';
 import ProducerDashboard from './ProducerDashboard';
+import { Lock, MapPin } from 'lucide-react';
 
 interface ProfilePreviewProps {
     data: any
@@ -129,7 +130,7 @@ export default function ProfileView({
                             }}
                         >
                             Producer
-                            {!isLoggedIn && <span style={{ fontSize: '0.8em', opacity: 0.7 }}>🔒</span>}
+                            {!isLoggedIn && <Lock size={14} style={{ opacity: 0.7 }} />}
                         </button>
                     </div>
                 </div>
@@ -177,7 +178,8 @@ export default function ProfileView({
                                     </div>
 
                                     <div className="profile-location">
-                                        📍 {data.current_location || data.country || 'Location'}
+                                        <MapPin size={14} style={{ display: 'inline', marginRight: '4px' }} />
+                                        {data.current_location || data.country || 'Location'}
                                     </div>
 
                                     <div className="social-links">

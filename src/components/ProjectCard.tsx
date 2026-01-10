@@ -8,6 +8,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { MapPin, Calendar, DollarSign } from 'lucide-react';
 
 export interface ProjectData {
   id: string;
@@ -47,14 +48,14 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         textDecoration: 'none',
         display: 'block',
       }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
-        e.currentTarget.style.borderColor = '#ccc';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow = 'none';
-        e.currentTarget.style.borderColor = '#e5e5e5';
-      }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+          e.currentTarget.style.borderColor = '#ccc';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.boxShadow = 'none';
+          e.currentTarget.style.borderColor = '#e5e5e5';
+        }}
       >
         {/* Creator Info */}
         {creator && (
@@ -101,17 +102,17 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         {/* Location & Dates */}
         <div style={{ display: 'flex', gap: '1rem', fontSize: '0.9rem', color: '#777', marginBottom: '1rem' }}>
           {project.shoot_location && (
-            <div>📍 {project.shoot_location}</div>
+            <div><MapPin size={14} style={{ display: 'inline', marginRight: '4px' }} />{project.shoot_location}</div>
           )}
           {project.shoot_start_date && (
-            <div>📅 {project.shoot_start_date}</div>
+            <div><Calendar size={14} style={{ display: 'inline', marginRight: '4px' }} />{project.shoot_start_date}</div>
           )}
         </div>
 
         {/* Budget */}
         {project.is_paid && project.budget_min && (
           <div style={{ fontSize: '0.9rem', color: '#333', marginBottom: '1rem', fontWeight: '500' }}>
-            💰 ${project.budget_min}k - ${project.budget_max}k
+            <DollarSign size={14} style={{ display: 'inline', marginRight: '4px' }} />${project.budget_min}k - ${project.budget_max}k
           </div>
         )}
 

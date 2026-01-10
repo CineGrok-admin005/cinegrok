@@ -9,280 +9,282 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Navigation from '@/components/Navigation';
 import {
-    getInitials,
-    hasSocialLinks,
-    getSocialLinks,
+  getInitials,
+  hasSocialLinks,
+  getSocialLinks,
 } from '@/lib/utils';
 import { Filmmaker } from '@/lib/api';
+import { MapPin, Globe, Youtube, Instagram, Twitter, Film, Clapperboard, Linkedin } from 'lucide-react';
 
 interface FilmmakerProfileContentProps {
-    filmmaker: Filmmaker;
-    tierStyle: {
-        icon: string;
-        badge: string;
-        bgColor: string;
-        color: string;
-        borderColor: string;
-    };
-    roleColors: {
-        primary: string;
-        gradient: string;
-    };
-    location: string | null;
-    socialLinks: any;
-    films: any[];
-    shouldShowSection: (value: any) => boolean;
+  filmmaker: Filmmaker;
+  tierStyle: {
+    icon: string;
+    badge: string;
+    bgColor: string;
+    color: string;
+    borderColor: string;
+  };
+  roleColors: {
+    primary: string;
+    gradient: string;
+  };
+  location: string | null;
+  socialLinks: any;
+  films: any[];
+  shouldShowSection: (value: any) => boolean;
 }
 
 export default function FilmmakerProfileContent({
-    filmmaker,
-    tierStyle,
-    roleColors,
-    location,
-    socialLinks,
-    films,
-    shouldShowSection,
+  filmmaker,
+  tierStyle,
+  roleColors,
+  location,
+  socialLinks,
+  films,
+  shouldShowSection,
 }: FilmmakerProfileContentProps) {
-    const { raw_form_data, ai_generated_bio, name } = filmmaker;
-    const photoUrl = raw_form_data.profile_photo_url;
+  const { raw_form_data, ai_generated_bio, name } = filmmaker;
+  const photoUrl = raw_form_data.profile_photo_url;
 
-    return (
-        <div className="profile-page">
-            <Navigation />
+  return (
+    <div className="profile-page">
+      <Navigation />
 
-            <div className="container profile-container">
-                {/* Back Button */}
-                <Link href="/" className="back-button">
-                    ← Back to Home
-                </Link>
+      <div className="container profile-container">
+        {/* Back Button */}
+        <Link href="/" className="back-button">
+          ← Back to Home
+        </Link>
 
-                {/* Header Section */}
-                <header
-                    className="profile-header"
-                    style={{ borderTopColor: roleColors.primary }}
+        {/* Header Section */}
+        <header
+          className="profile-header"
+          style={{ borderTopColor: roleColors.primary }}
+        >
+          {/* Tier Badge */}
+          <div
+            className="tier-badge-large"
+            style={{
+              backgroundColor: tierStyle.bgColor,
+              color: tierStyle.color,
+              borderColor: tierStyle.borderColor,
+            }}
+          >
+            {tierStyle.badge}
+          </div>
+
+          <div className="header-content">
+            {/* Profile Photo */}
+            <div className="profile-photo-section">
+              {photoUrl ? (
+                <Image
+                  src={photoUrl}
+                  alt={name}
+                  width={200}
+                  height={200}
+                  className="profile-photo"
+                  priority
+                />
+              ) : (
+                <div
+                  className="profile-photo-initials"
+                  style={{ background: roleColors.gradient }}
                 >
-                    {/* Tier Badge */}
-                    <div
-                        className="tier-badge-large"
-                        style={{
-                            backgroundColor: tierStyle.bgColor,
-                            color: tierStyle.color,
-                            borderColor: tierStyle.borderColor,
-                        }}
-                    >
-                        {tierStyle.icon} {tierStyle.badge}
-                    </div>
-
-                    <div className="header-content">
-                        {/* Profile Photo */}
-                        <div className="profile-photo-section">
-                            {photoUrl ? (
-                                <Image
-                                    src={photoUrl}
-                                    alt={name}
-                                    width={200}
-                                    height={200}
-                                    className="profile-photo"
-                                    priority
-                                />
-                            ) : (
-                                <div
-                                    className="profile-photo-initials"
-                                    style={{ background: roleColors.gradient }}
-                                >
-                                    {getInitials(name)}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Name and Role */}
-                        <div className="profile-info">
-                            <h1 className="profile-name">{name}</h1>
-
-                            {raw_form_data.roles && (
-                                <div className="profile-role">
-                                    <span
-                                        className="role-indicator"
-                                        style={{ backgroundColor: roleColors.primary }}
-                                    />
-                                    {raw_form_data.roles}
-                                </div>
-                            )}
-
-                            {location && (
-                                <div className="profile-location">
-                                    📍 {location}
-                                </div>
-                            )}
-
-                            {/* Social Links */}
-                            {hasSocialLinks(raw_form_data) && (
-                                <div className="social-links">
-                                    {socialLinks.website && (
-                                        <a href={socialLinks.website} target="_blank" rel="noopener noreferrer" className="social-icon" title="Website">
-                                            🌐
-                                        </a>
-                                    )}
-                                    {socialLinks.youtube && (
-                                        <a href={socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="social-icon" title="YouTube">
-                                            ▶️
-                                        </a>
-                                    )}
-                                    {socialLinks.instagram && (
-                                        <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="social-icon" title="Instagram">
-                                            📸
-                                        </a>
-                                    )}
-                                    {socialLinks.twitter && (
-                                        <a href={socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="social-icon" title="Twitter">
-                                            🐦
-                                        </a>
-                                    )}
-                                    {socialLinks.imdb && (
-                                        <a href={socialLinks.imdb} target="_blank" rel="noopener noreferrer" className="social-icon" title="IMDb">
-                                            🎬
-                                        </a>
-                                    )}
-                                    {socialLinks.letterboxd && (
-                                        <a href={socialLinks.letterboxd} target="_blank" rel="noopener noreferrer" className="social-icon" title="Letterboxd">
-                                            🎞️
-                                        </a>
-                                    )}
-                                    {socialLinks.linkedin && (
-                                        <a href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="social-icon" title="LinkedIn">
-                                            💼
-                                        </a>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </header>
-
-                {/* Main Content */}
-                <div className="profile-content">
-                    {/* Left Column - Bio and Films */}
-                    <div className="content-main">
-                        {/* AI-Generated Bio */}
-                        <section className="bio-section">
-                            <h2>About</h2>
-                            <div className="bio-text">
-                                {ai_generated_bio && ai_generated_bio.split('\n\n').map((paragraph, index) => (
-                                    <p key={index}>{paragraph}</p>
-                                ))}
-                            </div>
-                        </section>
-
-                        {/* Selected Work */}
-                        {films.length > 0 && (
-                            <section className="films-section">
-                                <h2>Selected Work</h2>
-                                <div className="films-grid">
-                                    {films.map((film, index) => (
-                                        <div key={index} className="film-card">
-                                            {film.poster ? (
-                                                <Image
-                                                    src={film.poster}
-                                                    alt={film.title}
-                                                    width={300}
-                                                    height={450}
-                                                    className="film-poster"
-                                                />
-                                            ) : (
-                                                <div className="film-poster-placeholder">
-                                                    🎬
-                                                </div>
-                                            )}
-                                            <div className="film-info">
-                                                <h3 className="film-title">{film.title}</h3>
-                                                <p className="film-meta">
-                                                    {film.role && <span>{film.role}</span>}
-                                                    {film.year && <span> • {film.year}</span>}
-                                                </p>
-                                                {film.link && (
-                                                    <a href={film.link} target="_blank" rel="noopener noreferrer" className="film-link">
-                                                        Watch →
-                                                    </a>
-                                                )}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </section>
-                        )}
-                    </div>
-
-                    {/* Right Column - Quick Facts */}
-                    <aside className="content-sidebar">
-                        {/* Creative Style */}
-                        {(shouldShowSection(raw_form_data.genres) || shouldShowSection(raw_form_data.style)) && (
-                            <div className="info-box">
-                                <h3>Creative Style</h3>
-                                {raw_form_data.genres && (
-                                    <div className="info-item">
-                                        <strong>Genres:</strong>
-                                        <p>{raw_form_data.genres}</p>
-                                    </div>
-                                )}
-                                {raw_form_data.style && (
-                                    <div className="info-item">
-                                        <strong>Style:</strong>
-                                        <p>{raw_form_data.style}</p>
-                                    </div>
-                                )}
-                                {raw_form_data.influences && (
-                                    <div className="info-item">
-                                        <strong>Influences:</strong>
-                                        <p>{raw_form_data.influences}</p>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-
-                        {/* Awards & Recognition */}
-                        {(shouldShowSection(raw_form_data.awards) || shouldShowSection(raw_form_data.screenings)) && (
-                            <div className="info-box">
-                                <h3>Festivals & Awards</h3>
-                                {raw_form_data.screenings && (
-                                    <div className="info-item">
-                                        <strong>Screenings:</strong>
-                                        <p>{raw_form_data.screenings}</p>
-                                    </div>
-                                )}
-                                {raw_form_data.awards && (
-                                    <div className="info-item">
-                                        <strong>Awards:</strong>
-                                        <p>{raw_form_data.awards}</p>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-
-                        {/* Philosophy */}
-                        {shouldShowSection(raw_form_data.philosophy) && (
-                            <div className="info-box">
-                                <h3>Creative Philosophy</h3>
-                                <p className="quote">{raw_form_data.philosophy}</p>
-                            </div>
-                        )}
-
-                        {/* Collaboration */}
-                        {raw_form_data.open_to_collab === 'Yes' && (
-                            <div className="info-box collab-box">
-                                <h3>Open to Collaborations</h3>
-                                <p>This filmmaker is currently open to new projects and collaborations.</p>
-                                {raw_form_data.contact_method && (
-                                    <p className="contact-info">
-                                        <strong>Contact:</strong> {raw_form_data.contact_method}
-                                    </p>
-                                )}
-                            </div>
-                        )}
-                    </aside>
+                  {getInitials(name)}
                 </div>
+              )}
             </div>
 
-            <style jsx>{`
+            {/* Name and Role */}
+            <div className="profile-info">
+              <h1 className="profile-name">{name}</h1>
+
+              {raw_form_data.roles && (
+                <div className="profile-role">
+                  <span
+                    className="role-indicator"
+                    style={{ backgroundColor: roleColors.primary }}
+                  />
+                  {raw_form_data.roles}
+                </div>
+              )}
+
+              {location && (
+                <div className="profile-location">
+                  <MapPin size={16} style={{ display: 'inline', marginRight: '4px' }} />
+                  {location}
+                </div>
+              )}
+
+              {/* Social Links */}
+              {hasSocialLinks(raw_form_data) && (
+                <div className="social-links">
+                  {socialLinks.website && (
+                    <a href={socialLinks.website} target="_blank" rel="noopener noreferrer" className="social-icon" title="Website">
+                      <Globe size={24} />
+                    </a>
+                  )}
+                  {socialLinks.youtube && (
+                    <a href={socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="social-icon" title="YouTube">
+                      <Youtube size={24} />
+                    </a>
+                  )}
+                  {socialLinks.instagram && (
+                    <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="social-icon" title="Instagram">
+                      <Instagram size={24} />
+                    </a>
+                  )}
+                  {socialLinks.twitter && (
+                    <a href={socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="social-icon" title="Twitter">
+                      <Twitter size={24} />
+                    </a>
+                  )}
+                  {socialLinks.imdb && (
+                    <a href={socialLinks.imdb} target="_blank" rel="noopener noreferrer" className="social-icon" title="IMDb">
+                      <Film size={24} />
+                    </a>
+                  )}
+                  {socialLinks.letterboxd && (
+                    <a href={socialLinks.letterboxd} target="_blank" rel="noopener noreferrer" className="social-icon" title="Letterboxd">
+                      <Clapperboard size={24} />
+                    </a>
+                  )}
+                  {socialLinks.linkedin && (
+                    <a href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="social-icon" title="LinkedIn">
+                      <Linkedin size={24} />
+                    </a>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </header>
+
+        {/* Main Content */}
+        <div className="profile-content">
+          {/* Left Column - Bio and Films */}
+          <div className="content-main">
+            {/* AI-Generated Bio */}
+            <section className="bio-section">
+              <h2>About</h2>
+              <div className="bio-text">
+                {ai_generated_bio && ai_generated_bio.split('\n\n').map((paragraph, index) => (
+                  <p key={index}>{paragraph}</p>
+                ))}
+              </div>
+            </section>
+
+            {/* Selected Work */}
+            {films.length > 0 && (
+              <section className="films-section">
+                <h2>Selected Work</h2>
+                <div className="films-grid">
+                  {films.map((film, index) => (
+                    <div key={index} className="film-card">
+                      {film.poster ? (
+                        <Image
+                          src={film.poster}
+                          alt={film.title}
+                          width={300}
+                          height={450}
+                          className="film-poster"
+                        />
+                      ) : (
+                        <div className="film-poster-placeholder">
+                          <Clapperboard size={32} />
+                        </div>
+                      )}
+                      <div className="film-info">
+                        <h3 className="film-title">{film.title}</h3>
+                        <p className="film-meta">
+                          {film.role && <span>{film.role}</span>}
+                          {film.year && <span> • {film.year}</span>}
+                        </p>
+                        {film.link && (
+                          <a href={film.link} target="_blank" rel="noopener noreferrer" className="film-link">
+                            Watch →
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+          </div>
+
+          {/* Right Column - Quick Facts */}
+          <aside className="content-sidebar">
+            {/* Creative Style */}
+            {(shouldShowSection(raw_form_data.genres) || shouldShowSection(raw_form_data.style)) && (
+              <div className="info-box">
+                <h3>Creative Style</h3>
+                {raw_form_data.genres && (
+                  <div className="info-item">
+                    <strong>Genres:</strong>
+                    <p>{raw_form_data.genres}</p>
+                  </div>
+                )}
+                {raw_form_data.style && (
+                  <div className="info-item">
+                    <strong>Style:</strong>
+                    <p>{raw_form_data.style}</p>
+                  </div>
+                )}
+                {raw_form_data.influences && (
+                  <div className="info-item">
+                    <strong>Influences:</strong>
+                    <p>{raw_form_data.influences}</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Awards & Recognition */}
+            {(shouldShowSection(raw_form_data.awards) || shouldShowSection(raw_form_data.screenings)) && (
+              <div className="info-box">
+                <h3>Festivals & Awards</h3>
+                {raw_form_data.screenings && (
+                  <div className="info-item">
+                    <strong>Screenings:</strong>
+                    <p>{raw_form_data.screenings}</p>
+                  </div>
+                )}
+                {raw_form_data.awards && (
+                  <div className="info-item">
+                    <strong>Awards:</strong>
+                    <p>{raw_form_data.awards}</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Philosophy */}
+            {shouldShowSection(raw_form_data.philosophy) && (
+              <div className="info-box">
+                <h3>Creative Philosophy</h3>
+                <p className="quote">{raw_form_data.philosophy}</p>
+              </div>
+            )}
+
+            {/* Collaboration */}
+            {raw_form_data.open_to_collab === 'Yes' && (
+              <div className="info-box collab-box">
+                <h3>Open to Collaborations</h3>
+                <p>This filmmaker is currently open to new projects and collaborations.</p>
+                {raw_form_data.contact_method && (
+                  <p className="contact-info">
+                    <strong>Contact:</strong> {raw_form_data.contact_method}
+                  </p>
+                )}
+              </div>
+            )}
+          </aside>
+        </div>
+      </div>
+
+      <style jsx>{`
         .profile-page {
           min-height: 100vh;
           background: var(--bg-accent);
@@ -594,6 +596,6 @@ export default function FilmmakerProfileContent({
           }
         }
       `}</style>
-        </div>
-    );
+    </div>
+  );
 }

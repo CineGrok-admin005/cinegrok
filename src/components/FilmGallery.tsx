@@ -10,6 +10,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { Film } from '@/lib/api';
+import { Clapperboard, Play, Info } from 'lucide-react';
 import './FilmGallery.css';
 
 interface FilmGalleryProps {
@@ -52,7 +53,7 @@ export default function FilmGallery({ films }: FilmGalleryProps) {
                                 />
                             ) : (
                                 <div className="poster-placeholder">
-                                    🎬
+                                    <Clapperboard size={40} />
                                 </div>
                             )}
                         </div>
@@ -78,7 +79,7 @@ export default function FilmGallery({ films }: FilmGalleryProps) {
                                         rel="noopener noreferrer"
                                         className="btn-watch"
                                     >
-                                        <span>▶ Watch</span>
+                                        <span><Play size={14} style={{ display: 'inline', marginRight: '4px' }} /> Watch</span>
                                     </a>
                                 ) : (
                                     <button className="btn-watch" disabled style={{ opacity: 0.5, cursor: 'not-allowed' }}>
@@ -91,7 +92,7 @@ export default function FilmGallery({ films }: FilmGalleryProps) {
                                     onClick={() => openModal(film)}
                                     title="More Info"
                                 >
-                                    ℹ️
+                                    <Info size={18} />
                                 </button>
                             </div>
                         </div>
@@ -115,7 +116,7 @@ export default function FilmGallery({ films }: FilmGalleryProps) {
                                 />
                             ) : (
                                 <div className="poster-placeholder" style={{ fontSize: '5rem' }}>
-                                    🎬
+                                    <Clapperboard size={80} />
                                 </div>
                             )}
                         </div>
@@ -178,7 +179,7 @@ export default function FilmGallery({ films }: FilmGalleryProps) {
                                         rel="noopener noreferrer"
                                         className="btn-watch-large"
                                     >
-                                        ▶ Watch Film
+                                        <Play size={18} style={{ display: 'inline', marginRight: '8px' }} /> Watch Film
                                     </a>
                                 </div>
                             )}

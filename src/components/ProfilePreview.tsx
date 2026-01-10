@@ -87,7 +87,7 @@ export default function ProfilePreview({
                 <div className="bio-actions" style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
                     {bioError && (
                         <div className="error-message" style={{ color: '#ef4444', backgroundColor: '#fef2f2', padding: '0.75rem 1rem', borderRadius: '4px', border: '1px solid #fee2e2', fontSize: '0.9rem', width: '100%', textAlign: 'center' }}>
-                            ⚠️ {bioError}
+                            {bioError}
                         </div>
                     )}
 
@@ -111,7 +111,7 @@ export default function ProfilePreview({
                             </>
                         ) : (
                             <>
-                                {data.ai_generated_bio ? '✨ Regenerate from Template' : '✨ Generate Bio from Profile'}
+                                {data.ai_generated_bio ? 'Regenerate from Template' : 'Generate Bio from Profile'}
                             </>
                         )}
                     </button>
@@ -135,7 +135,7 @@ export default function ProfilePreview({
                     onClick={onPublish}
                     disabled={loading}
                 >
-                    {loading ? 'Publishing...' : '🚀 Publish Profile'}
+                    {loading ? 'Publishing...' : 'Publish Profile'}
                 </button>
             </div>
 
