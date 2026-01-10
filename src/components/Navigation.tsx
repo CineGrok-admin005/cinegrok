@@ -68,7 +68,7 @@ export default function Navigation() {
           </svg>
           <input
             type="search"
-            placeholder="Search filmmakers, roles, or locations..."
+            placeholder="Search by name, film, role, or city..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="search-input"
