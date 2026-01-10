@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { getCurrentUser, logout } from '@/lib/api';
 import CineGrokLogo from '@/components/CineGrokLogo';
 
@@ -11,6 +11,9 @@ export default function Navigation() {
   const [searchQuery, setSearchQuery] = useState('');
   const [user, setUser] = useState<any>(null);
   const router = useRouter();
+  const pathname = usePathname();
+
+  const isActive = (path: string) => pathname === path ? 'active' : '';
 
   useEffect(() => {
     const checkUser = async () => {
@@ -74,10 +77,10 @@ export default function Navigation() {
 
         {/* Desktop Nav Links */}
         <div className="nav-actions desktop-only">
-          <Link href="/browse" className="nav-btn">Browse</Link>
-          <Link href="/pricing" className="nav-btn">Pricing</Link>
-          <Link href="/help" className="nav-btn">Help</Link>
-          <Link href="/about" className="nav-btn">About</Link>
+          <Link href="/browse" className={`nav-btn ${isActive('/browse')}`}>Browse</Link>
+          <Link href="/pricing" className={`nav-btn ${isActive('/pricing')}`}>Pricing</Link>
+          <Link href="/help" className={`nav-btn ${isActive('/help')}`}>Help</Link>
+          <Link href="/about" className={`nav-btn ${isActive('/about')}`}>About</Link>
 
           {user ? (
             <>

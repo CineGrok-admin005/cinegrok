@@ -204,6 +204,16 @@ a:hover {
   border: 1px solid transparent;
 }
 
+/* Active Nav State */
+.nav-btn.active {
+  color: var(--text-primary);
+  font-weight: 600;
+  border-bottom: 2px solid var(--text-primary);
+  border-radius: 0;
+  padding-bottom: 0.6rem;
+  /* Adjust padding due to border */
+}
+
 .btn-primary {
   background-color: var(--text-primary);
   color: #fff;

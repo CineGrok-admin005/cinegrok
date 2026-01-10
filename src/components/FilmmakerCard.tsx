@@ -100,8 +100,9 @@ export default function FilmmakerCard({ filmmaker, variant = 'grid' }: Filmmaker
 
         .filmmaker-card:hover {
           border-color: var(--text-primary);
-          transform: translateY(-2px);
-          box-shadow: var(--shadow-sm);
+          transform: translateY(-4px) scale(1.02);
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+          background: #fafafa;
         }
 
         .filmmaker-photo {

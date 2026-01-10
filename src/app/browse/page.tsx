@@ -334,10 +334,20 @@ export default async function BrowsePage({
             )}
           </>
         ) : (
-          <div className="empty-state">
-            <p>No filmmakers found matching your criteria.</p>
+          <div className="empty-state" style={{
+            textAlign: 'center',
+            padding: '4rem 2rem',
+            background: '#f9f9f9',
+            borderRadius: '8px',
+            margin: '2rem 0'
+          }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔍</div>
+            <h3 style={{ marginBottom: '0.5rem', color: 'var(--text-primary)' }}>No filmmakers found</h3>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', maxWidth: '400px', margin: '0 auto 1.5rem' }}>
+              We couldn't find any matches for your search. Try adjusting your filters or search terms.
+            </p>
             <Link href="/browse" className="btn btn-secondary">
-              Clear Filters
+              Clear All Filters
             </Link>
           </div>
         )}
