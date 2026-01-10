@@ -21,16 +21,66 @@ export const metadata = {
 // Revalidate every 5 minutes
 export const revalidate = 300;
 
-async function getAllFilmmakers(page: number = 1, limit: number = 12): Promise<{ data: Filmmaker[], count: number }> {
+async function getFilmmakers(options: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  role?: string;
+  state?: string;
+  genre?: string;
+  collab?: boolean;
+}): Promise<{ data: Filmmaker[], count: number }> {
+  const { page = 1, limit = 12, search, role, state, genre, collab } = options;
   const from = (page - 1) * limit;
   const to = from + limit - 1;
 
-  const { data, error, count } = await supabase
+  let query = supabase
     .from('filmmakers')
     .select('*', { count: 'exact' })
-    .not('ai_generated_bio', 'is', null)
+    .not('ai_generated_bio', 'is', null);
+
+  // 1. Search (Full Text-ish)
+  if (search) {
+    const s = search.toLowerCase();
+    // Search in name, bio, and explicitly in JSON location/roles
+    // Note: 'or' with JSON arrow operators requires proper syntax
+    query = query.or(`full_name.ilike.%${s}%,ai_generated_bio.ilike.%${s}%`);
+    // Note: Searching inside JSONB with 'or' across columns is tricky in standard Supabase JS client without RPC.
+    // For reliability in this "Search Crash" context, we focus on the main columns first.
+    // If we want to search JSON, we can chain filters, but 'OR' across JSON and Columns is hard.
+    // Workaround: We heavily rely on 'ai_generated_bio' containing the location/role info, which it usually does.
+  }
+
+  // 2. Role Filter (JSONB)
+  if (role) {
+    // Check if role is in the string representation of the JSON array/string
+    // Using ilike on the casted text representation of the jsonb column
+    query = query.textSearch('raw_form_data', `'${role}'`);
+    // OR simpler: 
+    // query = query.ilike('raw_form_data->>primary_roles', `%${role}%`); // If it's a string
+  }
+
+  // 3. State Filter
+  if (state) {
+    query = query.or(`raw_form_data->>current_state.ilike.%${state}%,raw_form_data->>native_state.ilike.%${state}%`);
+  }
+
+  // 4. Genre Filter
+  if (genre) {
+    // Naive text match in JSON
+    query = query.textSearch('raw_form_data', `'${genre}'`);
+  }
+
+  // 5. Collab Filter
+  if (collab) {
+    query = query.or('raw_form_data->>open_to_collab.eq.Yes,raw_form_data->>open_to_collab.eq.Selective');
+  }
+
+  query = query
     .order('created_at', { ascending: false })
     .range(from, to);
+
+  const { data, error, count } = await query;
 
   if (error) {
     console.error('Error fetching filmmakers:', error);
@@ -63,155 +113,31 @@ export default async function BrowsePage({
   // If we paginate FIRST, we might miss filtered items.
   // CORRECT APPROACH: We should ideally fetch all (or a large limit) if filters are on, OR implement JSONB filtering in Supabase.
 
-  // STRATEGY: 
-  // 1. If NO filters: Use DB pagination.
-  // 2. If filters: Fetch a larger set (e.g. 100) and filter in memory, then paginate in memory? 
-  //    OR just fetch all for filtering.
-  //    The user asked for "Best Practice". 
-  //    Best practice is DB filtering.
-  //    Let's try to pass filters to the DB query if possible.
-
-  //    Actually, simple `getAllFilmmakers` is used above.
-  //    Let's modify `getAllFilmmakers` to accept filters later if needed.
-  //    For now, let's keep it simple: Fetch ALL for filtering (current behavior) if filters exist, 
-  //    else use DB pagination.
-
-  let filmmakers: Filmmaker[] = [];
-  let totalCount = 0;
-
-  const hasFilters = params.role || params.state || params.collab || params.genre;
-
-  if (hasFilters) {
-    // Fetch all to filter in memory (Fallback for complex JSONB)
-    // This isn't infinite scalability but works for <1000 profiles.
-    // In a real huge app, we'd index JSONB columns.
-    const { data } = await supabase
-      .from('filmmakers')
-      .select('*')
-      .not('ai_generated_bio', 'is', null)
-      .order('created_at', { ascending: false });
-    filmmakers = data || [];
-  } else {
-    const result = await getAllFilmmakers(page, limit);
-    filmmakers = result.data;
-    totalCount = result.count;
-  }
-
-  // Filter Logic (In-Memory)
-  const filteredFilmmakers = filmmakers.filter(f => {
-    // Safety check for raw_form_data
-    if (!f.raw_form_data) return false;
-
-    // 1. Role Filter
-    if (params.role) {
-      const rolesData = f.raw_form_data.roles;
-      let rolesStr = '';
-
-      if (Array.isArray(rolesData)) {
-        rolesStr = rolesData.join(' ').toLowerCase();
-      } else if (typeof rolesData === 'string') {
-        rolesStr = rolesData.toLowerCase();
-      }
-
-      const searchRole = params.role.toLowerCase();
-      // Special handling for Music Director / Composer Mapping
-      if (searchRole === 'music director' || searchRole === 'composer') {
-        if (!rolesStr.includes('music director') && !rolesStr.includes('composer')) {
-          return false;
-        }
-      } else {
-        if (!rolesStr.includes(searchRole)) {
-          return false;
-        }
-      }
-    }
-
-    // 2. State Filter
-    if (params.state) {
-      const currentState = f.raw_form_data.current_state || '';
-      const nativeState = f.raw_form_data.native_state || '';
-      // Check both current and native state for maximum discovery
-      if (!currentState.includes(params.state) && !nativeState.includes(params.state)) {
-        return false;
-      }
-    }
-
-    // 3. Collab Filter
-    if (params.collab === 'true') {
-      const isOpen = f.raw_form_data.open_to_collab || '';
-      // "Yes" or "Selective" means they are generally open
-      if (isOpen !== 'Yes' && isOpen !== 'Selective') {
-        return false;
-      }
-    }
-
-    // 4. Genre Filter
-    if (params.genre) {
-      const genresData = f.raw_form_data.genres; // Array or string
-      let genreStr = '';
-      if (Array.isArray(genresData)) genreStr = genresData.join(' ').toLowerCase();
-      else if (typeof genresData === 'string') genreStr = genresData.toLowerCase();
-
-      if (!genreStr.includes(params.genre.toLowerCase())) {
-        return false;
-      }
-    }
-
-    // 5. Search Filter
-    if (searchFilter) {
-      try {
-        const name = String(f.full_name || f.name || '').toLowerCase();
-        const bio = String(f.ai_generated_bio || '').toLowerCase();
-
-        // Safe access for raw_form_data using String() casting
-        const rawData = f.raw_form_data || {};
-        const location = String(rawData.current_location || '').toLowerCase();
-
-        const rolesVal = rawData.primary_roles;
-        let rolesStr = '';
-        if (Array.isArray(rolesVal)) {
-          rolesStr = rolesVal.join(' ');
-        } else if (rolesVal) {
-          rolesStr = String(rolesVal);
-        }
-        const roles = rolesStr.toLowerCase();
-
-        if (!name.includes(searchFilter) &&
-          !bio.includes(searchFilter) &&
-          !location.includes(searchFilter) &&
-          !roles.includes(searchFilter)) {
-          return false;
-        }
-      } catch (e) {
-        // Log error but don't crash the page
-        console.error('Error filtering filmmaker:', f.id, e);
-        return false;
-      }
-    }
-
-    return true;
-  });
-
-  // If we had filters, we need to paginate the RESULT now.
-  let displayFilmmakers = filteredFilmmakers;
-  let displayCount = filteredFilmmakers.length;
-
-  if (hasFilters) {
-    const from = (page - 1) * limit;
-    const to = from + limit;
-    displayFilmmakers = filteredFilmmakers.slice(from, to);
-  } else {
-    displayCount = totalCount;
-  }
-
-  const totalPages = Math.ceil(displayCount / limit);
-
+  // Parse filters
   const roleFilter = params.role;
   const stateFilter = params.state;
   const collabFilter = params.collab;
-
   const genreFilter = params.genre;
-  const searchFilter = params.search?.toLowerCase();
+  const searchFilter = params.search;
+
+  // Fetch data from DB with filters
+  const { data: filmmakers, count: totalCount } = await getFilmmakers({
+    page,
+    limit,
+    search: searchFilter,
+    role: roleFilter,
+    state: stateFilter,
+    genre: genreFilter,
+    collab: collabFilter === 'true'
+  });
+
+  const displayFilmmakers = filmmakers;
+  const displayCount = totalCount;
+
+  // Calculate pages based on DB count
+  const totalPages = Math.ceil(displayCount / limit);
+
+
 
   // Ordered by popularity/industry standard as requested
   const ALL_ROLES = [
