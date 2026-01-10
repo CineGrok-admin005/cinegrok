@@ -132,5 +132,9 @@ export const mockProfile: ProfileData = {
   higherSecondary: "Loyola College, Chennai - Science, 2008",
   undergraduate: "B.A. in English Literature, Delhi University - 2011",
   postgraduate: "Cinematography, FTII Pune - 2015",
-  certifications: "Workshop: Advanced Color Grading (DaVinci Resolve) - 2019\nWorkshop: Documentary Ethics and Practice - 2018\nCertification: Drone Cinematography - 2020"
+  certifications: "Workshop: Advanced Color Grading (DaVinci Resolve) - 2019\nWorkshop: Documentary Ethics and Practice - 2018\nCertification: Drone Cinematography - 2020",
+
+  // Status
+  isComplete: true,
+  lastUpdated: new Date()
 };

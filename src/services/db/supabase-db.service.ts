@@ -105,9 +105,9 @@ export class SupabaseDBService implements IDBService {
         const { error } = await supabase
             .from('interested_profiles')
             .upsert({
-                user_id: userId,
-                filmmaker_id: filmmakerId,
-            }, { onConflict: 'user_id,filmmaker_id' });
+                inquirer_id: userId,
+                target_profile_id: filmmakerId,
+            }, { onConflict: 'inquirer_id,target_profile_id' });
 
         if (error) throw error;
     }
@@ -117,8 +117,8 @@ export class SupabaseDBService implements IDBService {
         const { error } = await supabase
             .from('interested_profiles')
             .delete()
-            .eq('user_id', userId)
-            .eq('filmmaker_id', filmmakerId);
+            .eq('inquirer_id', userId)
+            .eq('target_profile_id', filmmakerId);
 
         if (error) throw error;
     }
@@ -128,14 +128,14 @@ export class SupabaseDBService implements IDBService {
         // First get the interested profile IDs
         const { data: interests, error: interestsError } = await supabase
             .from('interested_profiles')
-            .select('filmmaker_id')
-            .eq('user_id', userId)
+            .select('target_profile_id')
+            .eq('inquirer_id', userId)
             .order('created_at', { ascending: false });
 
         if (interestsError || !interests || interests.length === 0) return [];
 
         // Then fetch the actual filmmaker data
-        const filmmakerIds = interests.map(i => i.filmmaker_id);
+        const filmmakerIds = interests.map((i: any) => i.target_profile_id);
         const { data: filmmakers, error: filmmakersError } = await supabase
             .from('filmmakers')
             .select('*')
@@ -150,8 +150,8 @@ export class SupabaseDBService implements IDBService {
         const { data, error } = await supabase
             .from('interested_profiles')
             .select('id')
-            .eq('user_id', userId)
-            .eq('filmmaker_id', filmmakerId)
+            .eq('inquirer_id', userId)
+            .eq('target_profile_id', filmmakerId)
             .maybeSingle();
 
         if (error) return false;

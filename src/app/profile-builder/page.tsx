@@ -93,11 +93,43 @@ export default function ProfileBuilderPage() {
 
             const payload = {
                 user_id: user.id,
-                name: data.stageName,
+                name: data.stageName || 'Unnamed Filmmaker',
                 // Create a basic slug if not exists, or keep existing
-                profile_url: `${data.stageName.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`,
-                raw_form_data: data, // Save the new data structure directly
-                ai_generated_bio: '', // Generate this later or use a helper
+                profile_url: `${(data.stageName || 'user').toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`,
+
+                // --- NEW COLUMNS (Scalable Schema) ---
+                stage_name: data.stageName,
+                legal_name: data.legalName,
+                email: data.email,
+                pronouns: data.pronouns,
+                phone: data.phone,
+                // date_of_birth: data.dateOfBirth, // Ensure format matches if needed, likely string is fine if YYYY-MM-DD
+                nationality: data.nationality,
+                country: data.country,
+                current_city: data.currentCity,
+                current_state: data.currentState,
+                native_city: data.nativeCity,
+                native_state: data.nativeState,
+                languages: data.languages,
+                preferred_contact: data.preferredContact,
+
+                primary_roles: data.primaryRoles,
+                secondary_roles: data.secondaryRoles,
+                years_active: data.yearsActive,
+                preferred_genres: data.preferredGenres,
+                visual_style: data.visualStyle,
+                creative_influences: data.creativeInfluences,
+                creative_philosophy: data.creativePhilosophy,
+                belief_about_cinema: data.beliefAboutCinema,
+                message_intent: data.messageOrIntent,
+                creative_signature: data.creativeSignature,
+                open_to_collaborations: data.openToCollaborations,
+                availability: data.availability,
+                preferred_work_location: data.preferredWorkLocation,
+                // -------------------------------------
+
+                raw_form_data: data, // Keep flexible JSON for extra fields
+                ai_generated_bio: '',
                 status: 'published',
                 published_at: new Date().toISOString(),
                 updated_at: new Date().toISOString(),

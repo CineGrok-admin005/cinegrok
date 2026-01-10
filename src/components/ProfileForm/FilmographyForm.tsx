@@ -229,8 +229,8 @@ export default function FilmographyForm({
                             <div className="form-group">
                                 <label><Users size={18} /> Crew Size / Scale</label>
                                 <select
-                                    value={film.crew_scale || ''}
-                                    onChange={(e) => updateFilm(index, 'crew_scale', e.target.value)}
+                                    value={film.crewScale || ''}
+                                    onChange={(e) => updateFilm(index, 'crewScale', e.target.value)}
                                 >
                                     <option value="">Select Scale</option>
                                     <option value="Solo (1)">Solo (1)</option>
