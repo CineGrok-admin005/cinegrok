@@ -33,7 +33,7 @@ export default function Navigation() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/browse?search=${encodeURIComponent(searchQuery)}`);
+      router.push(`/browse?search=${encodeURIComponent(searchQuery)}#browse-results`);
       setSearchQuery('');
     }
   };

@@ -275,7 +275,7 @@ export default async function BrowsePage({
           </div>
         </div>
 
-        <div className="results-count" style={{ margin: '1rem 0', color: '#666', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div id="browse-results" className="results-count" style={{ margin: '1rem 0', color: '#666', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span>
             {displayCount < 50 ? (
               `${displayCount} Filmmakers found`
