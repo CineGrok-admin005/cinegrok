@@ -17,9 +17,9 @@ import { dbService, authService } from '@/services';
  */
 export async function GET(request: NextRequest) {
     try {
-        const { user, error: authError } = await authService.getCurrentUser();
+        const user = await authService.getCurrentUser();
 
-        if (authError || !user) {
+        if (!user) {
             return NextResponse.json(
                 { error: 'Authentication required' },
                 { status: 401 }
@@ -56,9 +56,9 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
     try {
-        const { user, error: authError } = await authService.getCurrentUser();
+        const user = await authService.getCurrentUser();
 
-        if (authError || !user) {
+        if (!user) {
             return NextResponse.json(
                 { error: 'Authentication required' },
                 { status: 401 }
@@ -98,9 +98,9 @@ export async function POST(request: NextRequest) {
  */
 export async function DELETE(request: NextRequest) {
     try {
-        const { user, error: authError } = await authService.getCurrentUser();
+        const user = await authService.getCurrentUser();
 
-        if (authError || !user) {
+        if (!user) {
             return NextResponse.json(
                 { error: 'Authentication required' },
                 { status: 401 }
