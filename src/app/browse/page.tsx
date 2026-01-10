@@ -159,11 +159,15 @@ export default async function BrowsePage({
 
     // 5. Search Filter
     if (searchFilter) {
-      const name = (f.full_name || '').toLowerCase();
+      const name = (f.full_name || f.name || '').toLowerCase();
       const bio = (f.ai_generated_bio || '').toLowerCase();
-      // Also search in raw data if needed, e.g. location
-      const location = (f.raw_form_data.current_location || '').toLowerCase();
-      const roles = (Array.isArray(f.raw_form_data.primary_roles) ? f.raw_form_data.primary_roles.join(' ') : (f.raw_form_data.primary_roles || '')).toLowerCase();
+
+      // Safe access for raw_form_data
+      const rawData = f.raw_form_data || {};
+      const location = (rawData.current_location || '').toLowerCase(); // Use optional chaining or fallback
+
+      const rolesVal = rawData.primary_roles;
+      const roles = (Array.isArray(rolesVal) ? rolesVal.join(' ') : (rolesVal || '')).toLowerCase();
 
       if (!name.includes(searchFilter) &&
         !bio.includes(searchFilter) &&

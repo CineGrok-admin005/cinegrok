@@ -6,6 +6,7 @@
 
 import Navigation from '@/components/Navigation';
 import Link from 'next/link';
+import SmartCTA from '@/components/SmartCTA';
 import './about.css';
 
 export const metadata = {
@@ -118,9 +119,7 @@ export default function AboutPage() {
         <section className="cta-section">
           <h2>Ready to Join?</h2>
           <p>Submit your profile and become part of the global filmmaker community.</p>
-          <Link href="https://forms.gle/YOUR_FORM_ID" target="_blank" className="btn btn-primary btn-large">
-            Submit Your Profile
-          </Link>
+          <SmartCTA text="Create Profile" variant="primary" className="btn-large" />
         </section>
       </div>
     </div>
