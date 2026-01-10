@@ -36,7 +36,14 @@ function LoginContent() {
             router.push(redirect);
             router.refresh();
         } catch (err: any) {
-            setError(err.message || 'Login failed');
+            console.error('Login error:', err);
+            if (err.message && err.message.includes('Invalid login credentials')) {
+                setError('Incorrect email or password. Please try again.');
+            } else if (err.message && err.message.includes('Email not confirmed')) {
+                setError('Please confirm your email address before logging in.');
+            } else {
+                setError(err.message || 'Login failed. Please try again.');
+            }
             setLoading(false);
         }
     }

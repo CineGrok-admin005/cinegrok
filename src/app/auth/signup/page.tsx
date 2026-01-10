@@ -78,7 +78,16 @@ export default function SignUpPage() {
             });
             if (data.url) window.location.href = data.url;
         } catch (err: any) {
-            setError(err.message || 'OAuth error');
+            console.error('OAuth error:', err);
+            if (err.message && (err.message.includes('already registered') || err.message.includes('already in use'))) {
+                setError(
+                    <span>
+                        This email is already associated with an account. <Link href="/auth/login" className="underline font-medium">Log in here</Link>.
+                    </span> as any
+                );
+            } else {
+                setError(err.message || 'Unable to sign in with Google. Please try again.');
+            }
             setLoading(false)
         }
     }
