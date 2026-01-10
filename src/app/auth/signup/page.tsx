@@ -48,7 +48,18 @@ export default function SignUpPage() {
             });
             setMessage('Check your email to confirm your account!');
         } catch (err: any) {
-            setError(err.message || 'Signup failed');
+            console.error('Signup error:', err);
+
+            // Handle "User already registered" specifically
+            if (err.message && err.message.includes('User already registered')) {
+                setError(
+                    <span>
+                        This email is already registered. <Link href="/auth/login" className="underline font-medium">Sign in here</Link>.
+                    </span> as any
+                );
+            } else {
+                setError(err.message || 'Signup failed. Please try again.');
+            }
         } finally {
             setLoading(false);
         }
