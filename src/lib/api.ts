@@ -15,6 +15,7 @@ export interface Filmmaker {
     id: string;
     created_at: string;
     name: string;
+    full_name: string;
     profile_url: string | null;
     raw_form_data: RawFormData;
     ai_generated_bio: string | null;
@@ -66,6 +67,7 @@ export interface RawFormData {
 
     // Professional Details
     roles?: string;
+    primary_roles?: string | string[];
     years_active?: string;
     genres?: string;
     style?: string;

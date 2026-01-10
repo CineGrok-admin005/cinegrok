@@ -193,9 +193,7 @@ export default async function BrowsePage({
   const roleFilter = params.role;
   const stateFilter = params.state;
   const collabFilter = params.collab;
-  const roleFilter = params.role;
-  const stateFilter = params.state;
-  const collabFilter = params.collab;
+
   const genreFilter = params.genre;
   const searchFilter = params.search?.toLowerCase();
 
