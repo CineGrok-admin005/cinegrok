@@ -12,10 +12,11 @@ interface PublicProfileWrapperProps {
     profile: ProfileData;
     isLoggedIn: boolean; // Passed from server or determined by client auth
     isOwner?: boolean; // If we want to allow owner to see producer view
+    filmmakerId?: string; // For interest tracking
     filmmaker?: any; // For export functionality
 }
 
-export function PublicProfileWrapper({ profile, isLoggedIn, isOwner, filmmaker }: PublicProfileWrapperProps) {
+export function PublicProfileWrapper({ profile, isLoggedIn, isOwner, filmmakerId, filmmaker }: PublicProfileWrapperProps) {
     const [viewMode, setViewMode] = useState<'audience' | 'producer'>('audience');
 
     // Demo login state override (optional, if we want to simulate for now, or rely on prop)
@@ -58,6 +59,7 @@ export function PublicProfileWrapper({ profile, isLoggedIn, isOwner, filmmaker }
                     <ProducerView
                         profile={profile}
                         isOwner={isOwner}
+                        filmmakerId={filmmakerId}
                         filmmaker={filmmaker}
                     />
                 )}

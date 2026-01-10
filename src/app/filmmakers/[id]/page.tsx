@@ -57,11 +57,20 @@ export default async function FilmmakerPage({ params }: { params: Promise<{ id: 
 
   const profileData = mapDatabaseToProfileData(filmmaker.raw_form_data);
 
+  // Check if the logged-in user owns this profile
+  const isOwner = user?.id === filmmaker.user_id;
+
   return (
     <div className="bg-white min-h-screen overflow-x-hidden">
       <Navigation />
       <main className="py-0 px-0">
-        <PublicProfileWrapper profile={profileData} isLoggedIn={!!user} />
+        <PublicProfileWrapper
+          profile={profileData}
+          isLoggedIn={!!user}
+          isOwner={isOwner}
+          filmmakerId={filmmaker.id}
+          filmmaker={filmmaker}
+        />
       </main>
     </div>
   );
