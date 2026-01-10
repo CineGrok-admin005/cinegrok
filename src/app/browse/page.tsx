@@ -167,7 +167,7 @@ export default async function BrowsePage({
 
       <div className="container">
         {/* Featured Carousel */}
-        {!roleFilter && !stateFilter && !collabFilter && !genreFilter && (
+        {!searchFilter && !roleFilter && !stateFilter && !collabFilter && !genreFilter && (
           <div className="featured-section">
             <h2>Featured Filmmakers</h2>
             <FilmmakerCarousel filmmakers={filmmakers} />
