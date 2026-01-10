@@ -5,7 +5,7 @@ import { Card } from './ui/card';
 import { Badge } from './ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { Mail, Phone, MapPin, Download, Heart, HeartOff, Trophy, Award, Film, Star, FileText, FileCode, ChevronDown } from 'lucide-react';
+import { Mail, Phone, MapPin, Download, Heart, HeartOff, Trophy, Award, Film, Star, FileText, FileCode, ChevronDown, Handshake } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
 import * as api from '@/lib/api';
@@ -198,6 +198,9 @@ export function ProducerView({ profile, isOwner = false, filmmakerId, filmmaker 
               <div>
                 <h1 className="text-2xl md:text-3xl" style={{ fontFamily: 'var(--font-serif)' }}>
                   {profile.stageName}
+                  {profile.legalName && profile.legalName !== profile.stageName && (
+                    <span className="text-lg text-muted ml-2 font-sans font-normal">({profile.legalName})</span>
+                  )}
                 </h1>
                 <div className="flex flex-wrap gap-2 mt-1">
                   {profile.primaryRoles?.map(role => (
@@ -220,13 +223,13 @@ export function ProducerView({ profile, isOwner = false, filmmakerId, filmmaker 
                 >
                   {isInterested ? (
                     <>
-                      <Heart className="w-4 h-4 mr-2 fill-current" />
+                      <Handshake className="w-4 h-4 mr-2" />
                       Interested
                     </>
                   ) : (
                     <>
-                      <Heart className="w-4 h-4 mr-2" />
-                      {isLoading ? 'Loading...' : 'Interested'}
+                      <Handshake className="w-4 h-4 mr-2" />
+                      {isLoading ? 'Loading...' : 'Collaborate'}
                     </>
                   )}
                 </Button>
@@ -296,7 +299,7 @@ export function ProducerView({ profile, isOwner = false, filmmakerId, filmmaker 
                   <span className="text-muted">Total Projects:</span> {profile.filmography?.length || 0}
                 </div>
                 <div>
-                  <span className="text-muted">Availability:</span> <Badge variant="secondary" className="text-xs">{profile.availability || 'Not specified'}</Badge>
+                  <span className="text-muted">Availability:</span> <Badge variant="secondary" className="text-xs whitespace-normal text-left h-auto py-1">{profile.availability || 'Not specified'}</Badge>
                 </div>
               </div>
             </div>

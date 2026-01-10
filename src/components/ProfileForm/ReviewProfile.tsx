@@ -129,7 +129,25 @@ export default function ReviewProfile({ data, onBack, onPublish }: ReviewProfile
                 <PublicProfileWrapper
                     profile={displayData}
                     isLoggedIn={true}
-                />
+                    isOwner={true} // Allow export in preview
+                    filmmaker={{
+                        name: displayData.stageName,
+                        raw_form_data: {
+                            ...displayData,
+                            roles: displayData.primaryRoles?.join(', '),
+                            years_active: displayData.yearsActive,
+                            genres: displayData.preferredGenres?.join(', '),
+                            films: displayData.filmography?.map(f => ({
+                                title: f.title,
+                                year: f.year,
+                                primary_role: f.primaryRole,
+                                project_format: f.format,
+                                synopsis: f.synopsis,
+                                crew_scale: f.crewScale,
+                                poster: f.posterUrl
+                            }))
+                        }
+                    }} // Mock filmmaker for export logic
             </div>
 
             <div className="form-actions" style={{

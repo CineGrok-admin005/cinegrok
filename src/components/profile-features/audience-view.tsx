@@ -86,6 +86,9 @@ export function AudienceView({ profile }: AudienceViewProps) {
             <div className="flex-1 min-w-0">
               <h1 className="text-4xl md:text-5xl mb-2" style={{ fontFamily: 'var(--font-serif)' }}>
                 {profile.stageName}
+                {profile.legalName && profile.legalName !== profile.stageName && (
+                  <span className="text-2xl text-muted ml-3 font-sans font-normal align-middle">({profile.legalName})</span>
+                )}
               </h1>
 
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-4">
@@ -348,7 +351,7 @@ export function AudienceView({ profile }: AudienceViewProps) {
                 {profile.availability && (
                   <div className="mb-3">
                     <p className="text-xs uppercase tracking-wider text-muted mb-1">Status</p>
-                    <Badge variant="default">{profile.availability}</Badge>
+                    <Badge variant="default" className="whitespace-normal text-left h-auto py-1">{profile.availability}</Badge>
                   </div>
                 )}
 
