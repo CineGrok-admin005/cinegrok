@@ -39,41 +39,34 @@ async function getFilmmakers(options: {
     .select('*', { count: 'exact' })
     .not('ai_generated_bio', 'is', null);
 
-  // 1. Search (Full Text-ish)
+  // 1. Search (Robust)
   if (search) {
     const s = search.toLowerCase();
-    // Search in name, bio, and explicitly in JSON location/roles
-    // Note: 'or' with JSON arrow operators requires proper syntax
-    query = query.or(`full_name.ilike.%${s}%,ai_generated_bio.ilike.%${s}%`);
-    // Note: Searching inside JSONB with 'or' across columns is tricky in standard Supabase JS client without RPC.
-    // For reliability in this "Search Crash" context, we focus on the main columns first.
-    // If we want to search JSON, we can chain filters, but 'OR' across JSON and Columns is hard.
-    // Workaround: We heavily rely on 'ai_generated_bio' containing the location/role info, which it usually does.
+    // Search in name, bio, and JSON location/city keys (both camelCase and snake_case)
+    query = query.or(`name.ilike.%${s}%,ai_generated_bio.ilike.%${s}%,raw_form_data->>current_city.ilike.%${s}%,raw_form_data->>currentCity.ilike.%${s}%,raw_form_data->>current_location.ilike.%${s}%`);
   }
 
   // 2. Role Filter (JSONB)
   if (role) {
-    // Check if role is in the string representation of the JSON array/string
-    // Using ilike on the casted text representation of the jsonb column
+    // textSearch on the JSON column finds the text anywhere in values or keys
     query = query.textSearch('raw_form_data', `'${role}'`);
-    // OR simpler: 
-    // query = query.ilike('raw_form_data->>primary_roles', `%${role}%`); // If it's a string
   }
 
   // 3. State Filter
   if (state) {
-    query = query.or(`raw_form_data->>current_state.ilike.%${state}%,raw_form_data->>native_state.ilike.%${state}%`);
+    // Check state keys, and also city keys just in case (e.g. searching for Delhi)
+    query = query.or(`raw_form_data->>current_state.ilike.%${state}%,raw_form_data->>currentState.ilike.%${state}%,raw_form_data->>native_state.ilike.%${state}%,raw_form_data->>current_city.ilike.%${state}%,raw_form_data->>currentCity.ilike.%${state}%`);
   }
 
   // 4. Genre Filter
   if (genre) {
-    // Naive text match in JSON
     query = query.textSearch('raw_form_data', `'${genre}'`);
   }
 
   // 5. Collab Filter
   if (collab) {
-    query = query.or('raw_form_data->>open_to_collab.eq.Yes,raw_form_data->>open_to_collab.eq.Selective');
+    // Check both snake_case and camelCase keys for Yes/Selective
+    query = query.or('raw_form_data->>open_to_collab.eq.Yes,raw_form_data->>open_to_collab.eq.Selective,raw_form_data->>openToCollaborations.eq.Yes,raw_form_data->>openToCollaborations.eq.Selective');
   }
 
   query = query
