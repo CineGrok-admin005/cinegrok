@@ -175,8 +175,15 @@ export default function AboutSection() {
         }
 
         .mission-icon {
-          font-size: 3rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 64px;
           margin-bottom: 1rem;
+        }
+
+        .mission-icon svg {
+          display: block;
         }
 
         .mission-item h3 {
