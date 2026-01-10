@@ -1,0 +1,80 @@
+import { ProfileData } from '@/components/profile-features/types';
+
+export const SAMPLE_PROFILE: ProfileData = {
+    stageName: "Arun Mehta",
+    name: "Arun Mehta",
+    email: "arun.mehta@example.com",
+    phone: "+91 98765 43210",
+    country: "India",
+    currentState: "Maharashtra",
+    currentCity: "Mumbai",
+    primaryRoles: ["Director", "Screenwriter"],
+    secondaryRoles: ["Producer"],
+    creativePhilosophy: "Cinema is not just about telling stories, it's about capturing the time that flows through them.",
+    visualStyle: "Slow cinema, long takes, natural lighting, and emphasis on environmental soundscapes.",
+    preferredGenres: ["Social Realism", "Drama", "Docu-fiction"],
+    yearsActive: "2012",
+    aiBio: "Arun Mehta is an award-winning filmmaker based in Mumbai, known for his distinct voice in contemporary Indian parallel cinema. With a career spanning over a decade, his work explores the silent struggles of the urban marginalized. His debut feature 'Shadows of the City' premiered at Cannes, establishing his signature style of long takes and naturalistic storytelling.\n\nHe is deeply influenced by the works of Satyajit Ray and Abbas Kiarostami, believing that cinema should reflect reality rather than manipulate it. Currently, he is developing his third feature film 'The Long Wait', set against the backdrop of Mumbai's disappearing mills.",
+    openToCollaborations: "Yes, currently looking for sound designers for my next feature.",
+    availability: "Available for projects starting mid-2026",
+    languages: "Hindi, English, Marathi",
+    filmography: [
+        {
+            id: "1",
+            title: "Shadows of the City",
+            year: "2018",
+            primaryRole: "Director & Writer",
+            format: "Feature Film",
+            status: "Released",
+            genres: ["Drama"],
+            genre: "Drama",
+            crewScale: "Large (20+)",
+            link: "#",
+            synopsis: "A haunting exploration of Mumbai's disappearing heritage through the eyes of a single building's residents."
+        },
+        {
+            id: "2",
+            title: "The Silent Weaver",
+            year: "2021",
+            primaryRole: "Director",
+            format: "Documentary",
+            status: "Released",
+            genres: ["Documentary"],
+            genre: "Documentary",
+            crewScale: "Small (2-5)",
+            link: "#",
+            synopsis: "A documentary following the life of a master weaver in Benaras who refuses to switch to power looms."
+        },
+        {
+            id: "3",
+            title: "Midnight Local",
+            year: "2015",
+            primaryRole: "Writer",
+            format: "Short Film",
+            status: "Released",
+            genres: ["Thriller"],
+            genre: "Thriller",
+            crewScale: "Medium (6-20)",
+            link: "#",
+            synopsis: "Three strangers find their lives intertwined after a suspicious package is left on a late-night Mumbai local train."
+        },
+        {
+            id: "4",
+            title: "The Long Wait",
+            year: "2025",
+            primaryRole: "Director",
+            format: "Feature Film",
+            status: "Pre-Production",
+            genres: ["Drama"],
+            genre: "Drama",
+            crewScale: "Large (20+)",
+            link: "#",
+            synopsis: "Set against the backdrop of Mumbai's disappearing mills, a retired worker waits for a promise made thirty years ago."
+        }
+    ],
+    instagram: "https://instagram.com/arunmehta",
+    website: "https://arunmehta.film",
+    linkedin: "https://linkedin.com/in/arunmehta",
+    isComplete: true,
+    lastUpdated: new Date()
+};

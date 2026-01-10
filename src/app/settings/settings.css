@@ -1,0 +1,134 @@
+/* Help and Settings Common Styles */
+
+.help-page,
+.settings-page {
+    min-height: 100vh;
+    background: var(--bg-accent);
+    padding-bottom: 4rem;
+}
+
+.help-container,
+.settings-container {
+    padding-top: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    margin-bottom: 3rem;
+    font-size: 1.1rem;
+}
+
+.support-card,
+.settings-section {
+    background: var(--bg-primary);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 2rem;
+}
+
+h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--border-light);
+    padding-bottom: 0.5rem;
+}
+
+/* Contact Method */
+.contact-method {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    background: var(--bg-secondary);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+}
+
+.contact-method .icon {
+    font-size: 2.5rem;
+}
+
+.contact-method h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.email-link {
+    display: inline-block;
+    font-size: 1.25rem;
+    color: var(--accent-blue);
+    font-weight: 600;
+    text-decoration: none;
+    margin-bottom: 0.5rem;
+}
+
+.email-link:hover {
+    text-decoration: underline;
+}
+
+.sub-text {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+/* FAQ */
+.faq-item {
+    margin-bottom: 1.5rem;
+}
+
+.faq-item h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.faq-item p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* Settings Specific */
+.setting-item {
+    margin-bottom: 1.5rem;
+}
+
+.setting-item label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.setting-item .value {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    padding: 0.75rem;
+    background: var(--bg-secondary);
+    border-radius: 4px;
+}
+
+.value.code {
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+
+.description {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+}
+
+.back-btn {
+    display: inline-block;
+    margin-top: 1rem;
+    text-decoration: none;
+}

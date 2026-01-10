@@ -1,0 +1,84 @@
+.filmmaker-carousel-container {
+    width: 100%;
+    overflow: hidden;
+    padding: 2rem 0;
+    position: relative;
+    /* Use a safer fade mask, effectively clear in middle, white/page-bg on edges */
+    background: linear-gradient(to right, var(--bg-primary, #ffffff) 0%, rgba(255, 255, 255, 0) 10%, rgba(255, 255, 255, 0) 90%, var(--bg-primary, #ffffff) 100%);
+    z-index: 1;
+}
+
+.carousel-track {
+    display: flex;
+    gap: 2rem;
+    width: max-content;
+    animation: scroll 40s linear infinite;
+    padding: 0 1rem;
+}
+
+.carousel-track:hover {
+    animation-play-state: paused;
+}
+
+@keyframes scroll {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.carousel-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s;
+    width: 120px;
+    flex-shrink: 0;
+}
+
+.carousel-card:hover {
+    transform: translateY(-5px);
+}
+
+.carousel-image-wrapper {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.carousel-info {
+    text-align: center;
+}
+
+.carousel-name {
+    display: block;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #1a1a1a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+}
+
+.carousel-role {
+    display: block;
+    font-size: 0.75rem;
+    color: #666;
+    margin-top: 0.2rem;
+}

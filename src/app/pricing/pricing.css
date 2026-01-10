@@ -1,0 +1,245 @@
+/* Pricing Page Styles - Editorial Redesign */
+
+.pricing-page {
+    /* min-height handled by content flow */
+    background: var(--bg-primary);
+    padding: 4rem 1rem;
+    /* Reduced top padding */
+}
+
+.pricing-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Header */
+.pricing-header {
+    text-align: center;
+    color: var(--text-primary);
+    margin-bottom: 5rem;
+}
+
+.pricing-header h1 {
+    font-family: var(--font-heading);
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.02em;
+}
+
+.pricing-header p {
+    font-family: var(--font-body);
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto 1rem;
+    line-height: 1.6;
+}
+
+/* Pricing Grid */
+/* Pricing Grid */
+.pricing-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin-bottom: 6rem;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media (min-width: 768px) {
+    .pricing-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 3rem;
+    }
+}
+
+.pricing-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius-md);
+    padding: 3rem 2rem;
+    transition: all 0.2s ease;
+    position: relative;
+    /* Clean, no default shadow */
+}
+
+.pricing-card:hover {
+    border-color: var(--text-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.pricing-card.featured {
+    border: 2px solid var(--text-primary);
+    background: var(--bg-primary);
+    /* slightly darker maybe? Keep it clean */
+}
+
+.featured-badge {
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--text-primary);
+    color: #fff;
+    padding: 0.4rem 1.2rem;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.plan-header {
+    text-align: center;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border-light);
+    margin-bottom: 2rem;
+}
+
+.plan-header h3 {
+    font-family: var(--font-heading);
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.plan-price {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.original-price {
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    text-decoration: line-through;
+}
+
+.current-price {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.free-badge {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+}
+
+.beta-text {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+}
+
+.savings {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    background: var(--bg-accent);
+    padding: 0.25rem 0.75rem;
+    margin-top: 1rem;
+    display: inline-block;
+}
+
+.plan-description {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+.plan-features h4 {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+}
+
+.plan-features ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2.5rem 0;
+}
+
+.plan-features li {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    font-size: 1rem;
+}
+
+.check-icon {
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+.btn-full {
+    width: 100%;
+}
+
+/* FAQ Section */
+.pricing-faq {
+    margin-top: 6rem;
+    border-top: 1px solid var(--border-light);
+    padding-top: 4rem;
+}
+
+.pricing-faq h2 {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.faq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 4rem;
+}
+
+.faq-item h4 {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.faq-item p {
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+    .pricing-header h1 {
+        font-size: 2.5rem;
+    }
+
+    .pricing-grid {
+        gap: 2rem;
+    }
+
+    .pricing-card {
+        padding: 2rem 1.5rem;
+    }
+}
