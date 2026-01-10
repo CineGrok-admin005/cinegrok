@@ -62,7 +62,9 @@ interface ExportProfile {
  * Includes both Audience and Producer view information for comprehensive shortlisting
  */
 export function extractExportData(filmmaker: Filmmaker): ExportProfile {
-    const raw = filmmaker.raw_form_data || {};
+    // Cast to 'any' since raw_form_data contains dynamic form fields
+    // that may not all be defined in the RawFormData type
+    const raw: any = filmmaker.raw_form_data || {};
 
     // Count achievements
     let totalAwards = 0;

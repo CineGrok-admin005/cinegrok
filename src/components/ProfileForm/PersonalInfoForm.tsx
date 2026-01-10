@@ -62,6 +62,11 @@ export default function PersonalInfoForm({ data, updateData, onNext }: PersonalI
     const validate = () => {
         const newErrors: any = {}
 
+        // Profile photo is essential for a professional filmmaker profile
+        if (!data.profilePhoto?.trim()) {
+            newErrors.profilePhoto = 'Profile photo is required for your public profile'
+        }
+
         if (!data.stageName?.trim()) {
             newErrors.name = 'Stage Name is required'
         }
@@ -96,7 +101,7 @@ export default function PersonalInfoForm({ data, updateData, onNext }: PersonalI
             <div className="form-grid">
                 {/* Profile Photo */}
                 <div className="form-group full-width">
-                    <label>Profile Photo</label>
+                    <label>Profile Photo *</label>
                     <div className="image-upload">
                         {data.profilePhoto ? (
                             <div className="image-preview">
