@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { createSupabaseBrowserClient } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import { ProfileWizard } from '@/components/profile-features/profile-wizard';
+import { ProfileData } from '@/components/profile-features/types';
 import { mapDatabaseToProfileData } from '@/lib/mappers';
 import { toast } from 'sonner';
 
