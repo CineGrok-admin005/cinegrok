@@ -148,6 +148,7 @@ export default function ReviewProfile({ data, onBack, onPublish }: ReviewProfile
                             }))
                         }
                     }} // Mock filmmaker for export logic
+                />
             </div>
 
             <div className="form-actions" style={{
