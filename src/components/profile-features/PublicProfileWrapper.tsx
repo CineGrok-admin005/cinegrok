@@ -6,7 +6,9 @@ import { AudienceView } from './audience-view';
 import { ProducerView } from './producer-view';
 import { ViewToggle } from './view-toggle';
 import { Button } from './ui/button';
-import { LogIn, LogOut } from 'lucide-react';
+import { Download, ChevronDown } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
+import { downloadAsHTML, printAsPDF } from '@/domain/profile-export.logic';
 
 interface PublicProfileWrapperProps {
     profile: ProfileData;
@@ -19,21 +21,26 @@ interface PublicProfileWrapperProps {
 export function PublicProfileWrapper({ profile, isLoggedIn, isOwner, filmmakerId, filmmaker }: PublicProfileWrapperProps) {
     const [viewMode, setViewMode] = useState<'audience' | 'producer'>('audience');
 
-    // Demo login state override (optional, if we want to simulate for now, or rely on prop)
-    // For now let's rely on the prop passed from the page/layout
-    // But wait, the original App.tsx had a toggle login button. 
-    // In the real app, login is global. 
-    // We will assume isLoggedIn is passed correctly. 
-    // However, ViewToggle requires onToggle and checking isLoggedIn.
-
     const handleViewToggle = (view: 'audience' | 'producer') => {
         if (view === 'producer' && !isLoggedIn) return;
         setViewMode(view);
     };
 
+    const handleExportPDF = () => {
+        if (filmmaker) {
+            printAsPDF(filmmaker);
+        }
+    };
+
+    const handleExportHTML = () => {
+        if (filmmaker) {
+            downloadAsHTML(filmmaker);
+        }
+    };
+
     return (
         <div className="bg-white" style={{ fontFamily: 'var(--font-sans)' }}>
-            {/* View Toggle Bar - Changed from sticky to relative to prevent overlap in preview */}
+            {/* View Toggle Bar */}
             <div className="relative z-40 bg-white border-b border-border shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between h-14">
@@ -47,6 +54,27 @@ export function PublicProfileWrapper({ profile, isLoggedIn, isOwner, filmmakerId
                                 onToggle={handleViewToggle}
                                 isLoggedIn={isLoggedIn}
                             />
+
+                            {/* Export Button - Always visible for owners */}
+                            {isOwner && filmmaker && (
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="default" size="sm">
+                                            <Download className="w-4 h-4 mr-2" />
+                                            Export
+                                            <ChevronDown className="w-4 h-4 ml-1" />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                        <DropdownMenuItem onClick={handleExportPDF}>
+                                            Download as PDF
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={handleExportHTML}>
+                                            Download as HTML
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -60,7 +88,6 @@ export function PublicProfileWrapper({ profile, isLoggedIn, isOwner, filmmakerId
                         profile={profile}
                         isOwner={isOwner}
                         filmmakerId={filmmakerId}
-                        filmmaker={filmmaker}
                     />
                 )}
             </div>

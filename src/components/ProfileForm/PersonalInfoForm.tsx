@@ -96,7 +96,7 @@ export default function PersonalInfoForm({ data, updateData, onNext }: PersonalI
             <div className="form-grid">
                 {/* Profile Photo */}
                 <div className="form-group full-width">
-                    <label>Profile Photo *</label>
+                    <label>Profile Photo</label>
                     <div className="image-upload">
                         {data.profilePhoto ? (
                             <div className="image-preview">
@@ -239,7 +239,7 @@ export default function PersonalInfoForm({ data, updateData, onNext }: PersonalI
                 {/* Country */}
                 <div className="form-group">
                     <label htmlFor="country">
-                        <MapPin size={18} /> Country
+                        <MapPin size={18} /> Country *
                     </label>
                     <input
                         id="country"

@@ -340,10 +340,6 @@ export default function FilmographyForm({
                                             >
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
                                                     <span style={{ fontSize: '0.85rem', fontWeight: '600', color: '#71717a' }}>
-                                                        {achievement.type === 'award' && '🏆'}
-                                                        {achievement.type === 'nomination' && '🎖️'}
-                                                        {achievement.type === 'official_selection' && '🎬'}
-                                                        {achievement.type === 'screening' && '📽️'}
                                                         Achievement #{achIndex + 1}
                                                     </span>
                                                     <button
@@ -370,10 +366,10 @@ export default function FilmographyForm({
                                                             onChange={(e) => updateAchievement(index, achIndex, 'type', e.target.value)}
                                                             style={{ fontSize: '0.9rem' }}
                                                         >
-                                                            <option value="award">🏆 Award</option>
-                                                            <option value="nomination">🎖️ Nomination</option>
-                                                            <option value="official_selection">🎬 Official Selection</option>
-                                                            <option value="screening">📽️ Screening</option>
+                                                            <option value="award">Award</option>
+                                                            <option value="nomination">Nomination</option>
+                                                            <option value="official_selection">Official Selection</option>
+                                                            <option value="screening">Screening</option>
                                                         </select>
                                                     </div>
 
@@ -457,10 +453,10 @@ export default function FilmographyForm({
                                                             onChange={(e) => updateAchievement(index, achIndex, 'result', e.target.value)}
                                                             style={{ fontSize: '0.9rem' }}
                                                         >
-                                                            <option value="won">🏆 Won</option>
-                                                            <option value="nominated">🎖️ Nominated</option>
-                                                            <option value="selected">✓ Selected</option>
-                                                            <option value="screened">📽️ Screened</option>
+                                                            <option value="won">Won</option>
+                                                            <option value="nominated">Nominated</option>
+                                                            <option value="selected">Selected</option>
+                                                            <option value="screened">Screened</option>
                                                         </select>
                                                     </div>
                                                 </div>
