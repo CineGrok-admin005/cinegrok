@@ -118,7 +118,7 @@ export default function AboutPage() {
         {/* CTA */}
         <section className="cta-section">
           <h2>Ready to Join?</h2>
-          <p>Submit your profile and become part of the global filmmaker community.</p>
+          <p>Create your profile and become part of the global filmmaker community.</p>
           <SmartCTA text="Create Profile" variant="primary" className="btn-large" />
         </section>
       </div>

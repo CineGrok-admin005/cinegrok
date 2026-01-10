@@ -159,20 +159,32 @@ export default async function BrowsePage({
 
     // 5. Search Filter
     if (searchFilter) {
-      const name = (f.full_name || f.name || '').toLowerCase();
-      const bio = (f.ai_generated_bio || '').toLowerCase();
+      try {
+        const name = String(f.full_name || f.name || '').toLowerCase();
+        const bio = String(f.ai_generated_bio || '').toLowerCase();
 
-      // Safe access for raw_form_data
-      const rawData = f.raw_form_data || {};
-      const location = (rawData.current_location || '').toLowerCase(); // Use optional chaining or fallback
+        // Safe access for raw_form_data using String() casting
+        const rawData = f.raw_form_data || {};
+        const location = String(rawData.current_location || '').toLowerCase();
 
-      const rolesVal = rawData.primary_roles;
-      const roles = (Array.isArray(rolesVal) ? rolesVal.join(' ') : (rolesVal || '')).toLowerCase();
+        const rolesVal = rawData.primary_roles;
+        let rolesStr = '';
+        if (Array.isArray(rolesVal)) {
+          rolesStr = rolesVal.join(' ');
+        } else if (rolesVal) {
+          rolesStr = String(rolesVal);
+        }
+        const roles = rolesStr.toLowerCase();
 
-      if (!name.includes(searchFilter) &&
-        !bio.includes(searchFilter) &&
-        !location.includes(searchFilter) &&
-        !roles.includes(searchFilter)) {
+        if (!name.includes(searchFilter) &&
+          !bio.includes(searchFilter) &&
+          !location.includes(searchFilter) &&
+          !roles.includes(searchFilter)) {
+          return false;
+        }
+      } catch (e) {
+        // Log error but don't crash the page
+        console.error('Error filtering filmmaker:', f.id, e);
         return false;
       }
     }
