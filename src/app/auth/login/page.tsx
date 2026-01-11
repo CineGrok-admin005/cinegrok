@@ -15,7 +15,7 @@ import './auth.css'
 
 function LoginContent() {
     const [email, setEmail] = useState('')
-    const [email, setEmail] = useState('')
+
     const [password, setPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
     const [loading, setLoading] = useState(false)
