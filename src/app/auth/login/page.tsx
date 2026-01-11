@@ -14,6 +14,7 @@ import { Eye, EyeOff } from 'lucide-react'
 import './auth.css'
 
 function LoginContent() {
+
     const [email, setEmail] = useState('')
 
     const [password, setPassword] = useState('')
