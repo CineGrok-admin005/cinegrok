@@ -420,20 +420,7 @@ export default function PersonalInfoForm({ data, updateData, onNext }: PersonalI
                     <small className="form-hint">How do you prefer collaborators to reach you?</small>
                 </div>
 
-                {/* Social Handle / Link (New Field) */}
-                <div className="form-group">
-                    <label htmlFor="socialHandle">
-                        <User size={18} /> Social Handle / Link
-                    </label>
-                    <input
-                        id="socialHandle"
-                        type="text"
-                        placeholder="@username or https://..."
-                        value={data.socialHandle || ''}
-                        onChange={(e) => handleChange('socialHandle', e.target.value)}
-                    />
-                    <small className="form-hint">Link to your preferred contact platform</small>
-                </div>
+
 
                 {/* Education & Training */}
                 <div className="form-group full-width">
