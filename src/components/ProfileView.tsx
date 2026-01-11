@@ -67,7 +67,7 @@ export default function ProfileView({
     };
 
     const getSortedSocials = (d: any) => {
-        const order = ['website', 'instagram', 'youtube', 'imdb', 'letterboxd', 'linkedin', 'twitter'];
+        const order = ['website', 'instagram', 'youtube', 'imdb', 'letterboxd', 'twitter', 'facebook', 'linkedin'];
         const links: { type: string, url: string }[] = [];
         order.forEach(type => {
             if (d[type]) links.push({ type, url: d[type] });

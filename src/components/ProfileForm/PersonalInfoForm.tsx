@@ -371,30 +371,57 @@ export default function PersonalInfoForm({ data, updateData, onNext }: PersonalI
                     <label htmlFor="languages">
                         <Globe size={18} /> Languages Spoken
                     </label>
+                    <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                        <select
+                            id="languageSelect"
+                            style={{ flex: 1 }}
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                if (!val) return;
+                                const current = data.languages ? data.languages.split(',').map((s: string) => s.trim()) : [];
+                                if (!current.includes(val)) {
+                                    handleChange('languages', [...current, val].join(', '));
+                                }
+                                e.target.value = ''; // Reset select
+                            }}
+                        >
+                            <option value="">Select Language to Add...</option>
+                            {LANGUAGES.map((lang) => (
+                                <option key={lang} value={lang}>{lang}</option>
+                            ))}
+                        </select>
+                    </div>
 
-                    {/* For multiple languages, ideally we used a multi-select, but for now simple select with "Other" or just one is safer than breaking layout. 
-                        User asked for dropdown. I will stick to single primary or comma separated text input if I can't do multi-select easily without UI library.
-                        Actually, existing was text input. 
-                        "give the drop down to all the languages".
-                        I'll use a `datalist` style or just a Select. 
-                        Since the DB expects a string (maybe comma separated), a single Select replaces the whole string which is bad if they speak multiple.
-                        However, building a multi-select tag input from scratch is risky. 
-                        I will provide a `<select>` that appends to the text input? No that's weird.
-                        I'll just change it to a Select for "Primary Language" or allow free text with a datalist.
-                         */}
-                    <input
-                        list="language-options"
-                        id="languages"
-                        placeholder="Type to search languages..."
-                        value={data.languages || ''}
-                        onChange={(e) => handleChange('languages', e.target.value)}
-                    />
-                    <datalist id="language-options">
-                        {LANGUAGES.map((lang) => (
-                            <option key={lang} value={lang} />
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                        {data.languages && data.languages.split(',').filter((s: string) => s.trim()).map((lang: string, index: number) => (
+                            <span key={index} style={{
+                                background: '#f4f4f5',
+                                padding: '4px 12px',
+                                borderRadius: '100px',
+                                fontSize: '0.9rem',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                border: '1px solid #e4e4e7'
+                            }}>
+                                {lang.trim()}
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const current = data.languages.split(',').map((s: string) => s.trim());
+                                        const newVal = current.filter((l: string) => l !== lang.trim()).join(', ');
+                                        handleChange('languages', newVal);
+                                    }}
+                                    style={{ border: 'none', background: 'transparent', cursor: 'pointer', padding: 0, color: '#71717a' }}
+                                >
+                                    ✕
+                                </button>
+                            </span>
                         ))}
-                    </datalist>
-                    <small className="form-hint">Select or type multiple (e.g. English, French)</small>
+                    </div>
+                    {(!data.languages || data.languages.length === 0) && (
+                        <small className="form-hint">Select languages from the dropdown</small>
+                    )}
                 </div>
 
                 {/* Preferred Way of Contact */}
