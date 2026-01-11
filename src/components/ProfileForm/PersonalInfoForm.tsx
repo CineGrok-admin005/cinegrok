@@ -312,21 +312,7 @@ export default function PersonalInfoForm({ data, updateData, onNext }: PersonalI
                     />
                 </div>
 
-                {/* Native Location (City) */}
-                <div className="form-group">
-                    <label htmlFor="nativeCity">
-                        <MapPin size={18} /> Native City / Home Town
-                    </label>
-                    <input
-                        id="nativeCity"
-                        type="text"
-                        placeholder="e.g., Chennai"
-                        value={data.nativeCity || ''}
-                        onChange={(e) => handleChange('nativeCity', e.target.value)}
-                    />
-                </div>
-
-                {/* Native Country (New Logic) */}
+                {/* Native Country */}
                 <div className="form-group">
                     <label htmlFor="nativeCountry">
                         <MapPin size={18} /> Native / Home Country
@@ -364,6 +350,20 @@ export default function PersonalInfoForm({ data, updateData, onNext }: PersonalI
                             </option>
                         ))}
                     </select>
+                </div>
+
+                {/* Native Location (City) */}
+                <div className="form-group">
+                    <label htmlFor="nativeCity">
+                        <MapPin size={18} /> Native City / Home Town
+                    </label>
+                    <input
+                        id="nativeCity"
+                        type="text"
+                        placeholder="e.g., Chennai"
+                        value={data.nativeCity || ''}
+                        onChange={(e) => handleChange('nativeCity', e.target.value)}
+                    />
                 </div>
 
                 {/* Languages */}
@@ -414,8 +414,25 @@ export default function PersonalInfoForm({ data, updateData, onNext }: PersonalI
                         <option value="Facebook">Facebook</option>
                         <option value="YouTube">YouTube</option>
                         <option value="Website">Personal Website</option>
+                        <option value="Email">Email</option>
+                        <option value="Phone">Phone</option>
                     </select>
                     <small className="form-hint">How do you prefer collaborators to reach you?</small>
+                </div>
+
+                {/* Social Handle / Link (New Field) */}
+                <div className="form-group">
+                    <label htmlFor="socialHandle">
+                        <User size={18} /> Social Handle / Link
+                    </label>
+                    <input
+                        id="socialHandle"
+                        type="text"
+                        placeholder="@username or https://..."
+                        value={data.socialHandle || ''}
+                        onChange={(e) => handleChange('socialHandle', e.target.value)}
+                    />
+                    <small className="form-hint">Link to your preferred contact platform</small>
                 </div>
 
                 {/* Education & Training */}
