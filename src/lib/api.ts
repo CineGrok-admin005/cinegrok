@@ -151,11 +151,23 @@ async function apiFetch<T>(
         });
 
         if (!response.ok) {
-            const error = await response.json().catch(() => ({}));
+            let errorData;
+            let errorMessage = 'API request failed';
+
+            try {
+                errorData = await response.json();
+                errorMessage = errorData.message || errorMessage;
+            } catch (e) {
+                // If JSON parse fails, try to get text
+                const text = await response.text().catch(() => '');
+                errorMessage = text || response.statusText || errorMessage;
+                errorData = { raw: text };
+            }
+
             throw new APIError(
-                error.message || 'API request failed',
+                errorMessage,
                 response.status,
-                error
+                errorData
             );
         }
 
