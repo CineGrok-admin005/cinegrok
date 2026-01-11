@@ -143,7 +143,23 @@ export default async function BrowsePage({
     'Sound Designer',
     'Production Designer',
     'Music Director',
-    'VFX Artist'
+    'VFX Artist',
+    'Assistant Director',
+    'Colorist',
+    'Costume Designer',
+    'Makeup Artist',
+    'Hair Stylist',
+    'Gaffer',
+    'Key Grip',
+    'Boom Operator',
+    'Script Supervisor',
+    'Location Manager',
+    'Stunt Coordinator',
+    'Choreographer',
+    'Casting Director',
+    'Set Decorator',
+    'Prop Master',
+    'DIT'
   ];
 
   const GENRES = [
@@ -184,7 +200,8 @@ export default async function BrowsePage({
                 <Link href={`/browse?${new URLSearchParams({ ...(stateFilter ? { state: stateFilter } : {}), ...(collabFilter ? { collab: collabFilter } : {}), ...(genreFilter ? { genre: genreFilter } : {}) }).toString()}`} className={`filter-pill ${!roleFilter ? 'active' : ''}`}>
                   All
                 </Link>
-                {ALL_ROLES.map(role => (
+                {/* Primary Roles */}
+                {ALL_ROLES.slice(0, 10).map(role => (
                   <Link
                     key={role}
                     href={`/browse?${new URLSearchParams({ role: role.toLowerCase(), ...(stateFilter ? { state: stateFilter } : {}), ...(collabFilter ? { collab: collabFilter } : {}), ...(genreFilter ? { genre: genreFilter } : {}) }).toString()}`}
@@ -194,6 +211,22 @@ export default async function BrowsePage({
                   </Link>
                 ))}
               </div>
+
+              {/* Extended Roles Toggle */}
+              <details className="more-states-details" style={{ marginTop: '1rem' }}>
+                <summary>Show More Roles</summary>
+                <div className="role-filters expanded-states">
+                  {ALL_ROLES.slice(10).map(role => (
+                    <Link
+                      key={role}
+                      href={`/browse?${new URLSearchParams({ role: role.toLowerCase(), ...(stateFilter ? { state: stateFilter } : {}), ...(collabFilter ? { collab: collabFilter } : {}), ...(genreFilter ? { genre: genreFilter } : {}) }).toString()}`}
+                      className={`filter-pill ${roleFilter === role.toLowerCase() ? 'active' : ''}`}
+                    >
+                      {role}s
+                    </Link>
+                  ))}
+                </div>
+              </details>
             </div>
 
             {/* Row 2: Location (Full Width) */}

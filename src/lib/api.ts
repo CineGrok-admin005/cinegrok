@@ -156,7 +156,14 @@ async function apiFetch<T>(
 
             try {
                 errorData = await response.json();
-                errorMessage = errorData.message || errorMessage;
+                // Supabase and other APIs might use different error formats
+                errorMessage =
+                    errorData.message ||
+                    errorData.error_description ||
+                    errorData.error?.message ||
+                    errorData.error ||
+                    errorData.msg ||
+                    errorMessage;
             } catch (e) {
                 // If JSON parse fails, try to get text
                 const text = await response.text().catch(() => '');

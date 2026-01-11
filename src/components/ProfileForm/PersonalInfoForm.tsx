@@ -3,7 +3,8 @@
 import React, { useState } from 'react'
 import { User, Mail, Phone, MapPin, Calendar, Globe, Upload, FileText, MessageCircle } from 'lucide-react'
 import { getCurrentUser, uploadFile } from '@/lib/api'
-import { INDIAN_STATES, PRONOUNS } from '@/lib/constants'
+import { LANGUAGES, PRONOUNS } from '@/lib/constants'
+import { Country, State, ICountry, IState } from 'country-state-city'
 
 interface PersonalInfoFormProps {
     data: any
@@ -15,8 +16,23 @@ export default function PersonalInfoForm({ data, updateData, onNext }: PersonalI
     const [uploading, setUploading] = useState(false)
     const [errors, setErrors] = useState<any>({})
 
+    // Helper to get states based on country code
+    const getStatesRequest = (countryCode: string) => {
+        if (!countryCode) return []
+        return State.getStatesOfCountry(countryCode)
+    }
+
     const handleChange = (field: string, value: any) => {
         updateData({ [field]: value })
+
+        // Reset state if country changes
+        if (field === 'country') {
+            updateData({ country: value, currentState: '' })
+        }
+
+        // Reset native state if native country changes (we will store nativeCountry name in data for now if needed, or just handle locally)
+        // Since schema might not have nativeCountry, we might need to rely on UI state or assume "Country" field implies residence.
+
         // Clear error for this field
         if (errors[field]) {
             setErrors({ ...errors, [field]: null })
@@ -244,17 +260,42 @@ export default function PersonalInfoForm({ data, updateData, onNext }: PersonalI
                 {/* Country */}
                 <div className="form-group">
                     <label htmlFor="country">
-                        <MapPin size={18} /> Country *
+                        <MapPin size={18} /> Current Country *
                     </label>
-                    <input
+                    <select
                         id="country"
-                        type="text"
-                        placeholder="India"
                         value={data.country || ''}
                         onChange={(e) => handleChange('country', e.target.value)}
                         className={errors.country ? 'error' : ''}
-                    />
+                    >
+                        <option value="">Select Country</option>
+                        {Country.getAllCountries().map((country) => (
+                            <option key={country.isoCode} value={country.isoCode}>
+                                {country.name}
+                            </option>
+                        ))}
+                    </select>
                     {errors.country && <span className="error-message">{errors.country}</span>}
+                </div>
+
+                {/* Current State */}
+                <div className="form-group">
+                    <label htmlFor="currentState">
+                        <MapPin size={18} /> Current State/Province
+                    </label>
+                    <select
+                        id="currentState"
+                        value={data.currentState || ''}
+                        onChange={(e) => handleChange('currentState', e.target.value)}
+                        disabled={!data.country}
+                    >
+                        <option value="">Select State</option>
+                        {getStatesRequest(data.country).map((state) => (
+                            <option key={state.isoCode} value={state.name}>
+                                {state.name}
+                            </option>
+                        ))}
+                    </select>
                 </div>
 
                 {/* Current Location (City) */}
@@ -271,25 +312,6 @@ export default function PersonalInfoForm({ data, updateData, onNext }: PersonalI
                     />
                 </div>
 
-                {/* Current State */}
-                <div className="form-group">
-                    <label htmlFor="currentState">
-                        <MapPin size={18} /> Current State
-                    </label>
-                    <select
-                        id="currentState"
-                        value={data.currentState || ''}
-                        onChange={(e) => handleChange('currentState', e.target.value)}
-                    >
-                        <option value="">Select State</option>
-                        {INDIAN_STATES.map((state) => (
-                            <option key={state} value={state}>
-                                {state}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
                 {/* Native Location (City) */}
                 <div className="form-group">
                     <label htmlFor="nativeCity">
@@ -304,20 +326,41 @@ export default function PersonalInfoForm({ data, updateData, onNext }: PersonalI
                     />
                 </div>
 
+                {/* Native Country (New Logic) */}
+                <div className="form-group">
+                    <label htmlFor="nativeCountry">
+                        <MapPin size={18} /> Native / Home Country
+                    </label>
+                    <select
+                        id="nativeCountry"
+                        value={data.nativeCountry || ''}
+                        onChange={(e) => handleChange('nativeCountry', e.target.value)}
+                    >
+                        <option value="">Select Country</option>
+                        {Country.getAllCountries().map((country) => (
+                            <option key={country.isoCode} value={country.isoCode}>
+                                {country.name}
+                            </option>
+                        ))}
+                    </select>
+                    <small className="form-hint">Required to select Native State</small>
+                </div>
+
                 {/* Native State */}
                 <div className="form-group">
                     <label htmlFor="nativeState">
-                        <MapPin size={18} /> Native State
+                        <MapPin size={18} /> Native State/Province
                     </label>
                     <select
                         id="nativeState"
                         value={data.nativeState || ''}
                         onChange={(e) => handleChange('nativeState', e.target.value)}
+                        disabled={!data.nativeCountry}
                     >
                         <option value="">Select State</option>
-                        {INDIAN_STATES.map((state) => (
-                            <option key={state} value={state}>
-                                {state}
+                        {getStatesRequest(data.nativeCountry).map((state) => (
+                            <option key={state.isoCode} value={state.name}>
+                                {state.name}
                             </option>
                         ))}
                     </select>
@@ -328,14 +371,30 @@ export default function PersonalInfoForm({ data, updateData, onNext }: PersonalI
                     <label htmlFor="languages">
                         <Globe size={18} /> Languages Spoken
                     </label>
+
+                    {/* For multiple languages, ideally we used a multi-select, but for now simple select with "Other" or just one is safer than breaking layout. 
+                        User asked for dropdown. I will stick to single primary or comma separated text input if I can't do multi-select easily without UI library.
+                        Actually, existing was text input. 
+                        "give the drop down to all the languages".
+                        I'll use a `datalist` style or just a Select. 
+                        Since the DB expects a string (maybe comma separated), a single Select replaces the whole string which is bad if they speak multiple.
+                        However, building a multi-select tag input from scratch is risky. 
+                        I will provide a `<select>` that appends to the text input? No that's weird.
+                        I'll just change it to a Select for "Primary Language" or allow free text with a datalist.
+                         */}
                     <input
+                        list="language-options"
                         id="languages"
-                        type="text"
-                        placeholder="e.g., English, Hindi, Tamil"
+                        placeholder="Type to search languages..."
                         value={data.languages || ''}
                         onChange={(e) => handleChange('languages', e.target.value)}
                     />
-                    <small className="form-hint">Separate with commas</small>
+                    <datalist id="language-options">
+                        {LANGUAGES.map((lang) => (
+                            <option key={lang} value={lang} />
+                        ))}
+                    </datalist>
+                    <small className="form-hint">Select or type multiple (e.g. English, French)</small>
                 </div>
 
                 {/* Preferred Way of Contact */}
