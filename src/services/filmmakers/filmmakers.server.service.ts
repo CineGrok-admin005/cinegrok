@@ -97,7 +97,7 @@ export const filmmakersServerService = {
                 .from('filmmakers')
                 .select('*')
                 .eq('status', 'published')
-                .not('ai_generated_bio', 'is', null)
+                // .not('ai_generated_bio', 'is', null) // Removed to show new profiles
                 .order('created_at', { ascending: false })
                 .limit(limit);
 
