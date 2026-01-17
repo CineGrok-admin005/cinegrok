@@ -96,6 +96,72 @@ export class SupabaseDBService implements IDBService {
         return data as Filmmaker[];
     }
 
+    /**
+     * Gets filmmakers with advanced filtering options.
+     * Supports pagination, search, role, state, genre, and collaboration filters.
+     * 
+     * @param options - Filter options
+     * @returns Paginated filmmakers and total count
+     * @throws {Error} ERR_DB_002 if query fails
+     */
+    async getFilmmakersWithFilters(options: {
+        page?: number;
+        limit?: number;
+        search?: string;
+        role?: string;
+        state?: string;
+        genre?: string;
+        collab?: boolean;
+    }): Promise<{ data: Filmmaker[], count: number }> {
+        const supabase = await createSupabaseServerClient();
+        const { page = 1, limit = 12, search, role, state, genre, collab } = options;
+        const from = (page - 1) * limit;
+        const to = from + limit - 1;
+
+        let query = supabase
+            .from('filmmakers')
+            .select('*', { count: 'exact' })
+            .eq('status', 'published');
+
+        if (search) {
+            const s = search.toLowerCase();
+            query = query.or(
+                `name.ilike.%${s}%,ai_generated_bio.ilike.%${s}%,raw_form_data->>current_city.ilike.%${s}%`
+            );
+        }
+
+        if (role) {
+            query = query.textSearch('raw_form_data', `'${role}'`);
+        }
+
+        if (state) {
+            query = query.or(
+                `raw_form_data->>current_state.ilike.%${state}%,raw_form_data->>currentState.ilike.%${state}%`
+            );
+        }
+
+        if (genre) {
+            query = query.textSearch('raw_form_data', `'${genre}'`);
+        }
+
+        if (collab) {
+            query = query.or(
+                `raw_form_data->>open_to_collab.eq.Yes,raw_form_data->>openToCollaborations.eq.Yes`
+            );
+        }
+
+        query = query.order('created_at', { ascending: false }).range(from, to);
+
+        const { data, error, count } = await query;
+
+        if (error) {
+            console.error('[SupabaseDBService] getFilmmakersWithFilters error:', error);
+            return { data: [], count: 0 };
+        }
+
+        return { data: (data || []) as Filmmaker[], count: count || 0 };
+    }
+
     // ========================================================================
     // Interested Profiles (Collaboration Interest)
     // ========================================================================
@@ -157,5 +223,135 @@ export class SupabaseDBService implements IDBService {
         if (error) return false;
         return data !== null;
     }
-}
 
+    // ========================================================================
+    // Advanced Collaboration Interest Methods
+    // ========================================================================
+
+    /**
+     * Get all collaboration interests with full filmmaker data and filtering.
+     * Includes "Currently Unavailable" status for unpublished profiles.
+     */
+    async getCollaborationInterests(
+        userId: string,
+        filters?: { status?: string; role?: string; location?: string }
+    ): Promise<Array<{
+        id: string;
+        filmmakerId: string;
+        filmmaker: Filmmaker | null;
+        status: 'interested' | 'shortlisted' | 'contacted' | 'archived';
+        privateNotes: string | null;
+        addedAt: string;
+        updatedAt: string;
+        isAvailable: boolean;
+    }>> {
+        const supabase = await createSupabaseServerClient();
+
+        // Build query for interests
+        let query = supabase
+            .from('interested_profiles')
+            .select(`
+                id,
+                target_profile_id,
+                status,
+                private_notes,
+                created_at,
+                updated_at,
+                filmmakers!inner (
+                    id,
+                    name,
+                    status,
+                    ai_generated_bio,
+                    raw_form_data,
+                    profile_url,
+                    is_published
+                )
+            `)
+            .eq('inquirer_id', userId)
+            .order('created_at', { ascending: false });
+
+        // Apply status filter
+        if (filters?.status && filters.status !== 'all') {
+            query = query.eq('status', filters.status);
+        }
+
+        const { data, error } = await query;
+
+        if (error || !data) {
+            console.error('[SupabaseDBService] getCollaborationInterests error:', error);
+            return [];
+        }
+
+        // Transform and filter by role/location if specified
+        return (data as any[])
+            .map((item) => {
+                const filmmaker = item.filmmakers as Filmmaker;
+                const formData = filmmaker?.raw_form_data as any;
+
+                return {
+                    id: item.id,
+                    filmmakerId: item.target_profile_id,
+                    filmmaker: filmmaker || null,
+                    status: item.status || 'interested',
+                    privateNotes: item.private_notes,
+                    addedAt: item.created_at,
+                    updatedAt: item.updated_at || item.created_at,
+                    isAvailable: (filmmaker as any)?.is_published !== false && (filmmaker as any)?.status === 'published',
+                    _formData: formData, // For filtering
+                };
+            })
+            .filter((item) => {
+                // Apply role filter
+                if (filters?.role) {
+                    const roles = item._formData?.roles || item._formData?.primaryRole || [];
+                    const roleStr = Array.isArray(roles) ? roles.join(',') : roles;
+                    if (!roleStr.toLowerCase().includes(filters.role.toLowerCase())) {
+                        return false;
+                    }
+                }
+                // Apply location filter
+                if (filters?.location) {
+                    const location = item._formData?.currentState || item._formData?.current_state || '';
+                    if (!location.toLowerCase().includes(filters.location.toLowerCase())) {
+                        return false;
+                    }
+                }
+                return true;
+            })
+            .map(({ _formData, ...rest }) => rest); // Remove _formData from result
+    }
+
+    /**
+     * Update the status of a collaboration interest.
+     */
+    async updateInterestStatus(userId: string, filmmakerId: string, status: string): Promise<void> {
+        const supabase = await createSupabaseServerClient() as any;
+        const { error } = await supabase
+            .from('interested_profiles')
+            .update({
+                status,
+                updated_at: new Date().toISOString()
+            })
+            .eq('inquirer_id', userId)
+            .eq('target_profile_id', filmmakerId);
+
+        if (error) throw error;
+    }
+
+    /**
+     * Update private notes for a collaboration interest.
+     */
+    async updateInterestNotes(userId: string, filmmakerId: string, notes: string): Promise<void> {
+        const supabase = await createSupabaseServerClient() as any;
+        const { error } = await supabase
+            .from('interested_profiles')
+            .update({
+                private_notes: notes,
+                updated_at: new Date().toISOString()
+            })
+            .eq('inquirer_id', userId)
+            .eq('target_profile_id', filmmakerId);
+
+        if (error) throw error;
+    }
+}

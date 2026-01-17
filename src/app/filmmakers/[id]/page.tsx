@@ -6,28 +6,17 @@
 
 import { notFound } from 'next/navigation';
 import Navigation from '@/components/Navigation';
-import { supabase } from '@/lib/supabase';
 import { getUser } from '@/lib/supabase-server';
 import { PublicProfileWrapper } from '@/components/profile-features/PublicProfileWrapper';
 import { mapDatabaseToProfileData } from '@/lib/mappers';
+import { filmmakersServerService } from '@/services/filmmakers/filmmakers.server.service';
 import Link from 'next/link';
 
 // Revalidate every hour
 export const revalidate = 3600;
 
 async function getFilmmaker(id: string) {
-  const { data, error } = await supabase
-    .from('filmmakers')
-    .select('*')
-    .eq('id', id)
-    .single();
-
-  if (error) {
-    console.error('Error fetching filmmaker:', error);
-    return null;
-  }
-
-  return data;
+  return filmmakersServerService.getById(id);
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {

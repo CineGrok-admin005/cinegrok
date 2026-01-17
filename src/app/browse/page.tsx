@@ -1,13 +1,16 @@
 /**
  * Browse Page
  * 
- * Browse all filmmakers with filtering and sorting
+ * Browse all filmmakers with filtering and sorting.
+ * Uses SupabaseDBService for data fetching (Three Box Rule compliant).
+ * 
+ * @module app/browse
  */
 
 import Navigation from '@/components/Navigation';
 import FilmmakerCard from '@/components/FilmmakerCard';
 import FilmmakerCarousel from '@/components/FilmmakerCarousel';
-import { supabase } from '@/lib/supabase';
+import { dbService } from '@/services';
 import { Filmmaker } from '@/lib/api';
 import { INDIAN_STATES } from '@/lib/constants';
 import Link from 'next/link';
@@ -21,68 +24,6 @@ export const metadata = {
 // Revalidate every 5 minutes
 export const revalidate = 300;
 
-async function getFilmmakers(options: {
-  page?: number;
-  limit?: number;
-  search?: string;
-  role?: string;
-  state?: string;
-  genre?: string;
-  collab?: boolean;
-}): Promise<{ data: Filmmaker[], count: number }> {
-  const { page = 1, limit = 12, search, role, state, genre, collab } = options;
-  const from = (page - 1) * limit;
-  const to = from + limit - 1;
-
-  let query = supabase
-    .from('filmmakers')
-    .select('*', { count: 'exact' })
-    .not('ai_generated_bio', 'is', null);
-
-  // 1. Search (Robust)
-  if (search) {
-    const s = search.toLowerCase();
-    // Search in name, bio, JSON location/city keys, and films arrays
-    query = query.or(`name.ilike.%${s}%,ai_generated_bio.ilike.%${s}%,raw_form_data->>current_city.ilike.%${s}%,raw_form_data->>currentCity.ilike.%${s}%,raw_form_data->>current_location.ilike.%${s}%,raw_form_data->>films.ilike.%${s}%,raw_form_data->>filmography.ilike.%${s}%`);
-  }
-
-  // 2. Role Filter (JSONB)
-  if (role) {
-    // textSearch on the JSON column finds the text anywhere in values or keys
-    query = query.textSearch('raw_form_data', `'${role}'`);
-  }
-
-  // 3. State Filter
-  if (state) {
-    // Check state keys, and also city keys just in case (e.g. searching for Delhi)
-    query = query.or(`raw_form_data->>current_state.ilike.%${state}%,raw_form_data->>currentState.ilike.%${state}%,raw_form_data->>native_state.ilike.%${state}%,raw_form_data->>current_city.ilike.%${state}%,raw_form_data->>currentCity.ilike.%${state}%`);
-  }
-
-  // 4. Genre Filter
-  if (genre) {
-    query = query.textSearch('raw_form_data', `'${genre}'`);
-  }
-
-  // 5. Collab Filter
-  if (collab) {
-    // Check both snake_case and camelCase keys for Yes/Selective
-    query = query.or('raw_form_data->>open_to_collab.eq.Yes,raw_form_data->>open_to_collab.eq.Selective,raw_form_data->>openToCollaborations.eq.Yes,raw_form_data->>openToCollaborations.eq.Selective');
-  }
-
-  query = query
-    .order('created_at', { ascending: false })
-    .range(from, to);
-
-  const { data, error, count } = await query;
-
-  if (error) {
-    console.error('Error fetching filmmakers:', error);
-    return { data: [], count: 0 };
-  }
-
-  return { data: data || [], count: count || 0 };
-}
-
 export default async function BrowsePage({
   searchParams,
 }: {
@@ -92,29 +33,15 @@ export default async function BrowsePage({
   const page = parseInt(params.page || '1');
   const limit = 12;
 
-  // Note: For filtering to work correctly with pagination, we ideally need to filter on the database side.
-  // However, the current prompt requires complex JSONB filtering which is harder to do safely without more complex queries.
-  // For now, if filters are active, we might need to fetch more or move filtering to the client/DB.
-  // GIVEN the user context of "best practice", DB filtering is better.
-  // But our filters are on `raw_form_data` JSONB column. 
-  // Let's implement Client-side logic for now OR accept that pagination works on the 'base' set 
-  // and filtering happens afterwards (which breaks pagination count).
-
-  // REVISIT: To do this properly with Supabase JSONB:
-  // We should query *with* filters.
-  // But let's stick to the prompt's simplicity first.
-  // If we paginate FIRST, we might miss filtered items.
-  // CORRECT APPROACH: We should ideally fetch all (or a large limit) if filters are on, OR implement JSONB filtering in Supabase.
-
-  // Parse filters
+  // Parse filters from URL params
   const roleFilter = params.role;
   const stateFilter = params.state;
   const collabFilter = params.collab;
   const genreFilter = params.genre;
   const searchFilter = params.search;
 
-  // Fetch data from DB with filters
-  const { data: filmmakers, count: totalCount } = await getFilmmakers({
+  // Fetch data from DB via service layer (Three Box Rule)
+  const { data: filmmakers, count: totalCount } = await dbService.getFilmmakersWithFilters({
     page,
     limit,
     search: searchFilter,

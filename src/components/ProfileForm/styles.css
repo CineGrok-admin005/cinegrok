@@ -76,7 +76,7 @@ h6 {
 }
 
 .step.active .step-number {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #18181b;
     color: white;
     transform: scale(1.1);
 }
@@ -94,7 +94,7 @@ h6 {
 }
 
 .step.active .step-title {
-    color: #667eea;
+    color: #18181b;
     font-weight: 600;
 }
 
@@ -170,8 +170,8 @@ h6 {
 .form-group select:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-color: #18181b;
+    box-shadow: 0 0 0 3px rgba(24, 24, 27, 0.1);
 }
 
 .form-group input.error,
@@ -246,8 +246,8 @@ h6 {
 }
 
 .upload-placeholder:hover {
-    border-color: #667eea;
-    background: #f8f9ff;
+    border-color: #18181b;
+    background: #fafafa;
 }
 
 .upload-placeholder input {
@@ -291,8 +291,8 @@ h6 {
 }
 
 .checkbox-label:hover {
-    border-color: #667eea;
-    background: #f8f9ff;
+    border-color: #18181b;
+    background: #fafafa;
 }
 
 .checkbox-label input[type="checkbox"] {
@@ -303,7 +303,7 @@ h6 {
 
 .checkbox-label input[type="checkbox"]:checked+span {
     font-weight: 600;
-    color: #667eea;
+    color: #18181b;
 }
 
 /* Films List */
@@ -376,24 +376,24 @@ h6 {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #18181b;
     color: white;
     flex: 1;
 }
 
 .btn-primary:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 8px 20px rgba(24, 24, 27, 0.3);
 }
 
 .btn-secondary {
     background: white;
-    color: #667eea;
-    border: 2px solid #667eea;
+    color: #18181b;
+    border: 2px solid #18181b;
 }
 
 .btn-secondary:hover:not(:disabled) {
-    background: #f8f9ff;
+    background: #fafafa;
 }
 
 .btn:disabled {
@@ -478,7 +478,7 @@ h6 {
 }
 
 .preview-roles {
-    color: #667eea;
+    color: #18181b;
     font-weight: 600;
     margin-bottom: 0.5rem;
 }
@@ -545,7 +545,7 @@ h6 {
 }
 
 .film-role {
-    color: #667eea;
+    color: #18181b;
     font-weight: 600;
     margin-bottom: 0.5rem;
 }
@@ -572,7 +572,7 @@ h6 {
 }
 
 .preview-social-links a:hover {
-    background: #667eea;
+    background: #18181b;
     color: white;
     transform: translateY(-2px);
 }

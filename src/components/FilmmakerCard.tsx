@@ -40,6 +40,7 @@ export default function FilmmakerCard({ filmmaker, variant = 'grid' }: Filmmaker
     <Link
       href={`/filmmakers/${id}`}
       className="filmmaker-card"
+      data-testid="filmmaker-card"
     >
       {/* Profile Photo */}
       <div className="filmmaker-photo">

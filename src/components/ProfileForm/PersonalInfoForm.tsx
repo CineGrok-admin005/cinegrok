@@ -1,10 +1,12 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { User, Mail, Phone, MapPin, Calendar, Globe, Upload, FileText, MessageCircle } from 'lucide-react'
 import { getCurrentUser, uploadFile } from '@/lib/api'
-import { LANGUAGES, PRONOUNS } from '@/lib/constants'
-import { Country, State, ICountry, IState } from 'country-state-city'
+import { PRONOUNS } from '@/lib/constants'
+import { Country, State } from 'country-state-city'
+import { LanguageCombobox } from '@/components/ui/LanguageCombobox'
+import { Checkbox } from '@/components/ui/checkbox'
 
 interface PersonalInfoFormProps {
     data: any
@@ -15,6 +17,38 @@ interface PersonalInfoFormProps {
 export default function PersonalInfoForm({ data, updateData, onNext }: PersonalInfoFormProps) {
     const [uploading, setUploading] = useState(false)
     const [errors, setErrors] = useState<any>({})
+    const [nativeSameAsCurrent, setNativeSameAsCurrent] = useState(false)
+
+    // Sync native location when checkbox is checked
+    useEffect(() => {
+        if (nativeSameAsCurrent) {
+            updateData({
+                nativeCountry: data.country || '',
+                nativeState: data.currentState || '',
+                nativeCity: data.currentCity || '',
+            });
+        }
+    }, [nativeSameAsCurrent, data.country, data.currentState, data.currentCity]);
+
+    // Handle location sync toggle
+    const handleNativeSyncChange = (checked: boolean) => {
+        setNativeSameAsCurrent(checked);
+        if (checked) {
+            // Sync: copy current location to native
+            updateData({
+                nativeCountry: data.country || '',
+                nativeState: data.currentState || '',
+                nativeCity: data.currentCity || '',
+            });
+        } else {
+            // Unsync: clear native fields
+            updateData({
+                nativeCountry: '',
+                nativeState: '',
+                nativeCity: '',
+            });
+        }
+    };
 
     // Helper to get states based on country code
     const getStatesRequest = (countryCode: string) => {
@@ -312,6 +346,18 @@ export default function PersonalInfoForm({ data, updateData, onNext }: PersonalI
                     />
                 </div>
 
+                {/* Native Location Sync Checkbox */}
+                <div className="form-group full-width" style={{ marginTop: '0.5rem', marginBottom: '0.5rem' }}>
+                    <label className="flex items-center gap-2 cursor-pointer" style={{ fontWeight: 'normal' }}>
+                        <Checkbox
+                            id="nativeSameAsCurrent"
+                            checked={nativeSameAsCurrent}
+                            onCheckedChange={handleNativeSyncChange}
+                        />
+                        <span>Native location is same as current location</span>
+                    </label>
+                </div>
+
                 {/* Native Country */}
                 <div className="form-group">
                     <label htmlFor="nativeCountry">
@@ -321,6 +367,7 @@ export default function PersonalInfoForm({ data, updateData, onNext }: PersonalI
                         id="nativeCountry"
                         value={data.nativeCountry || ''}
                         onChange={(e) => handleChange('nativeCountry', e.target.value)}
+                        disabled={nativeSameAsCurrent}
                     >
                         <option value="">Select Country</option>
                         {Country.getAllCountries().map((country) => (
@@ -329,7 +376,7 @@ export default function PersonalInfoForm({ data, updateData, onNext }: PersonalI
                             </option>
                         ))}
                     </select>
-                    <small className="form-hint">Required to select Native State</small>
+                    <small className="form-hint">{nativeSameAsCurrent ? 'Synced with current location' : 'Required to select Native State'}</small>
                 </div>
 
                 {/* Native State */}
@@ -341,7 +388,7 @@ export default function PersonalInfoForm({ data, updateData, onNext }: PersonalI
                         id="nativeState"
                         value={data.nativeState || ''}
                         onChange={(e) => handleChange('nativeState', e.target.value)}
-                        disabled={!data.nativeCountry}
+                        disabled={nativeSameAsCurrent || !data.nativeCountry}
                     >
                         <option value="">Select State</option>
                         {getStatesRequest(data.nativeCountry).map((state) => (
@@ -363,68 +410,11 @@ export default function PersonalInfoForm({ data, updateData, onNext }: PersonalI
                         placeholder="e.g., Chennai"
                         value={data.nativeCity || ''}
                         onChange={(e) => handleChange('nativeCity', e.target.value)}
+                        disabled={nativeSameAsCurrent}
                     />
                 </div>
 
-                {/* Languages */}
-                <div className="form-group">
-                    <label htmlFor="languages">
-                        <Globe size={18} /> Languages Spoken
-                    </label>
-                    <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                        <select
-                            id="languageSelect"
-                            style={{ flex: 1 }}
-                            onChange={(e) => {
-                                const val = e.target.value;
-                                if (!val) return;
-                                const current = data.languages ? data.languages.split(',').map((s: string) => s.trim()) : [];
-                                if (!current.includes(val)) {
-                                    handleChange('languages', [...current, val].join(', '));
-                                }
-                                e.target.value = ''; // Reset select
-                            }}
-                        >
-                            <option value="">Select Language to Add...</option>
-                            {LANGUAGES.map((lang) => (
-                                <option key={lang} value={lang}>{lang}</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                        {data.languages && data.languages.split(',').filter((s: string) => s.trim()).map((lang: string, index: number) => (
-                            <span key={index} style={{
-                                background: '#f4f4f5',
-                                padding: '4px 12px',
-                                borderRadius: '100px',
-                                fontSize: '0.9rem',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '6px',
-                                border: '1px solid #e4e4e7'
-                            }}>
-                                {lang.trim()}
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        const current = data.languages.split(',').map((s: string) => s.trim());
-                                        const newVal = current.filter((l: string) => l !== lang.trim()).join(', ');
-                                        handleChange('languages', newVal);
-                                    }}
-                                    style={{ border: 'none', background: 'transparent', cursor: 'pointer', padding: 0, color: '#71717a' }}
-                                >
-                                    ✕
-                                </button>
-                            </span>
-                        ))}
-                    </div>
-                    {(!data.languages || data.languages.length === 0) && (
-                        <small className="form-hint">Select languages from the dropdown</small>
-                    )}
-                </div>
-
-                {/* Preferred Way of Contact */}
+                {/* Preferred Way of Contact - Next to Native City */}
                 <div className="form-group">
                     <label htmlFor="preferredContact">
                         <MessageCircle size={18} /> Preferred Way to Contact
@@ -445,6 +435,20 @@ export default function PersonalInfoForm({ data, updateData, onNext }: PersonalI
                         <option value="Phone">Phone</option>
                     </select>
                     <small className="form-hint">How do you prefer collaborators to reach you?</small>
+                </div>
+
+                {/* Languages - Searchable Multi-Select */}
+                <div className="form-group full-width">
+                    <label htmlFor="languages">
+                        <Globe size={18} /> Languages Spoken
+                    </label>
+                    <LanguageCombobox
+                        value={data.languages ? data.languages.split(',').map((s: string) => s.trim()).filter(Boolean) : []}
+                        onChange={(languages) => handleChange('languages', languages.join(', '))}
+                        placeholder="Search and select languages..."
+                        maxItems={10}
+                    />
+                    <small className="form-hint">Type to search from 100+ languages</small>
                 </div>
 
 

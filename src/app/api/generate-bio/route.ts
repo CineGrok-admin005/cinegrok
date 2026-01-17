@@ -1,166 +1,121 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { GoogleGenerativeAI } from '@google/generative-ai'
+/**
+ * Bio Generation API Route
+ * 
+ * Generates filmmaker bios using deterministic templates.
+ * Includes rate limiting and structured logging.
+ * 
+ * No external AI dependencies - instant, reliable generation.
+ * 
+ * @module api/generate-bio
+ */
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY || '')
-const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+import { NextRequest, NextResponse } from 'next/server';
+import { generateBioFromTemplate, getNextVariant, BioVariant, BioFormData } from '@/lib/bio-templates';
+import { createRateLimitMiddleware, RateLimits } from '@/lib/rate-limit';
+import { logger } from '@/lib/logger';
+import { cookies } from 'next/headers';
+import { createServerClient } from '@supabase/ssr';
 
 export async function POST(request: NextRequest) {
+    const startTime = Date.now();
+    let userId: string | undefined;
+
     try {
-        const apiKey = process.env.GOOGLE_AI_API_KEY;
-        if (!apiKey) {
-            throw new Error('AI Service not configured. Please add GOOGLE_AI_API_KEY to your environment.')
+        // Get user for rate limiting and logging
+        const cookieStore = await cookies();
+        const supabase = createServerClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+            {
+                cookies: {
+                    getAll() {
+                        return cookieStore.getAll();
+                    },
+                },
+            }
+        );
+        const { data: { user } } = await supabase.auth.getUser();
+        userId = user?.id;
+
+        // Rate limiting
+        const identifier = userId || request.headers.get('x-forwarded-for') || 'anonymous';
+        const rateLimit = createRateLimitMiddleware('BIO_GENERATION', identifier);
+
+        if (!rateLimit.allowed) {
+            logger.rateLimit('BIO_GENERATION', identifier, RateLimits.BIO_GENERATION.limit, RateLimits.BIO_GENERATION.windowMs);
+
+            return NextResponse.json(
+                {
+                    error: 'Rate limit exceeded. Please wait before generating another bio.',
+                    code: 'ERR_API_001',
+                    retryAfter: rateLimit.headers['Retry-After']
+                },
+                {
+                    status: 429,
+                    headers: rateLimit.headers
+                }
+            );
         }
 
-        const body = await request.json()
-        const { formData } = body
+        // Parse request body
+        const body = await request.json();
+        const { formData, variant = 1 } = body as { formData: BioFormData; variant?: BioVariant };
 
-        if (!formData || !formData.name) {
-            throw new Error('Missing necessary filmmaker data for bio generation.')
+        if (!formData) {
+            logger.error('ERR_API_002', 'Missing formData in request', userId);
+            return NextResponse.json(
+                { error: 'Missing form data for bio generation', code: 'ERR_API_002' },
+                { status: 400 }
+            );
         }
 
-        // Generate bio using actual AI
-        const bio = await generateProfessionalBio(formData)
+        // Validate we have minimum required data
+        const name = formData.stageName || formData.name;
+        if (!name) {
+            logger.error('ERR_BIO_002', 'Insufficient profile data for bio generation', userId);
+            return NextResponse.json(
+                { error: 'Name is required for bio generation', code: 'ERR_BIO_002' },
+                { status: 400 }
+            );
+        }
 
-        return NextResponse.json({ bio })
-    } catch (error: any) {
-        console.error('Bio Generation Error:', error)
+        // Generate bio using deterministic templates
+        const bio = generateBioFromTemplate(formData, variant);
+        const nextVariant = getNextVariant(variant);
+
+        logger.info('Bio generated successfully', userId, {
+            variant,
+            nextVariant,
+            bioLength: bio.length,
+            durationMs: Date.now() - startTime
+        });
+
+        return NextResponse.json({
+            bio,
+            variant,
+            nextVariant,
+            meta: {
+                generated: new Date().toISOString(),
+                method: 'template',
+            }
+        }, {
+            headers: rateLimit.headers
+        });
+
+    } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+        logger.error('ERR_BIO_001', `Bio generation failed: ${errorMessage}`, userId, {
+            error: errorMessage,
+            durationMs: Date.now() - startTime
+        });
+
         return NextResponse.json(
-            { error: error.message || 'Failed to generate bio' },
+            {
+                error: 'Failed to generate bio. Please try again.',
+                code: 'ERR_BIO_001'
+            },
             { status: 500 }
-        )
+        );
     }
-}
-
-async function generateProfessionalBio(data: any): Promise<string> {
-    const prompt = `
-        You are a professional film industry editorial writer for a platform like IMDb or Variety.
-        Your task is to write a sophisticated, cinematic biography for a filmmaker in the THIRD PERSON (e.g., "Shivaji Raja is...", never "I am...").
-        
-        The bio should feel official, respectful, and insightful. Avoid marketing fluff and focus on their craft.
-        
-        Filmmaker Data:
-        - Name: ${data.name}
-        - Roles: ${data.roles?.join(', ') || 'Filmmaker'}
-        - Location: ${data.current_location || data.country || 'Not specified'}
-        - Years Active: ${data.years_active || 'Not specified'}
-        - Genres: ${Array.isArray(data.genres) ? data.genres.join(', ') : data.genres || 'Various'}
-        - Artistic Style: ${data.style || 'Not specified'}
-        - Creative Philosophy: ${data.philosophy || 'Not specified'}
-        - Key Influences: ${data.influences || 'Not specified'}
-        - Notable Films: ${data.films?.map((f: any) => `"${f.title}" (${f.year})`).join(', ') || 'None listed'}
-        - Awards/Press: ${data.awards || 'None'}
-        
-        Requirements:
-        1. PERSPECTIVE: Strictly 3rd Person.
-        2. TONE: Serious, cinematic, and professional.
-        3. STRUCTURE: 
-           - Paragraph 1: Introduction (Name, role, location, and years active).
-           - Paragraph 2: Artistic style and philosophy (narrative themes, visual language).
-           - Paragraph 3: Notable works and achievements.
-        4. Word count: 100-150 words.
-    `;
-
-    try {
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text().trim();
-
-        // Basic cleanup in case Gemini adds markdown or markers
-        return text.replace(/^"|"$/g, '').replace(/```[a-z]*\n|```/g, '');
-    } catch (err) {
-        console.error("Gemini Error:", err);
-        throw new Error("The AI service encountered an issue. Please try again in a moment.");
-    }
-}
-
-function generateBioFromData(data: any): string {
-    const {
-        name,
-        roles = [],
-        genres = [],
-        years_active,
-        style,
-        influences,
-        philosophy,
-        belief,
-        message,
-        films = [],
-        awards,
-        country,
-        current_location,
-    } = data
-
-    // Build a professional bio
-    let bio = `${name} is a `
-
-    // Add roles
-    if (roles.length > 0) {
-        if (roles.length === 1) {
-            bio += `${roles[0]}`
-        } else if (roles.length === 2) {
-            bio += `${roles[0]} and ${roles[1]}`
-        } else {
-            bio += `${roles.slice(0, -1).join(', ')}, and ${roles[roles.length - 1]}`
-        }
-    } else {
-        bio += 'filmmaker'
-    }
-
-    // Add location
-    if (current_location || country) {
-        bio += ` based in ${current_location || country}`
-    }
-
-    bio += '. '
-
-    // Add genres
-    if (genres.length > 0) {
-        bio += `Known for their work in ${genres.slice(0, 2).join(' and ')}, `
-    }
-
-    // Add years active
-    if (years_active) {
-        bio += `they have been active in the industry since ${years_active}. `
-    } else {
-        bio += `they bring a unique perspective to their craft. `
-    }
-
-    // Add style/philosophy
-    if (style) {
-        bio += `Their visual and narrative style is characterized by ${style.toLowerCase()}. `
-    }
-
-    if (philosophy) {
-        bio += `${philosophy} `
-    }
-
-    // Add influences
-    if (influences) {
-        bio += `Drawing inspiration from ${influences}, `
-    }
-
-    // Add belief
-    if (belief) {
-        bio += `${belief} `
-    }
-
-    // Add notable films
-    if (films.length > 0) {
-        const notableFilms = films.slice(0, 3)
-        bio += `Notable works include `
-        bio += notableFilms.map((f: any) => `"${f.title}" (${f.year})`).join(', ')
-        bio += '. '
-    }
-
-    // Add awards
-    if (awards) {
-        bio += `Their work has been recognized with ${awards.toLowerCase()}. `
-    }
-
-    // Add message/intent
-    if (message) {
-        bio += `${message}`
-    }
-
-    return bio.trim()
 }

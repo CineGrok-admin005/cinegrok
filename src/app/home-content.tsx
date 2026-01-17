@@ -127,7 +127,7 @@ export default function HomePageContent({ filmmakers }: HomePageContentProps) {
         }
 
         .hero {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: #18181b;
           color: white;
           padding: 4rem 0;
           text-align: center;

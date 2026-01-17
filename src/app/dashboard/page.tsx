@@ -1,16 +1,19 @@
 /**
  * User Dashboard
  * 
- * Main dashboard for authenticated users
+ * Main dashboard for authenticated users with profile overview and quick actions.
+ * Uses consistent Lucide icons matching the app's design system.
  */
 
-import { createSupabaseServerClient, getUser, getUserProfile } from '@/lib/supabase-server'
+import { getUser, getUserProfile } from '@/lib/supabase-server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import SignOutButton from '@/components/SignOutButton'
+import { Users, Handshake, Settings, HelpCircle } from 'lucide-react'
 import './dashboard.css'
 
 import { Database } from '@/lib/supabase'
+import { filmmakersServerService } from '@/services/filmmakers/filmmakers.server.service';
 
 export default async function DashboardPage() {
     const user = await getUser()
@@ -20,24 +23,14 @@ export default async function DashboardPage() {
     }
 
     const profile = await getUserProfile(user.id)
-    const supabase = await createSupabaseServerClient()
 
-    // Get user's filmmaker profile if exists
-    const { data: filmmakerData } = await supabase
-        .from('filmmakers')
-        .select('*')
-        .eq('user_id', user.id)
-        .single()
+    // Get user's filmmaker profile using server service
+    const filmmakerData = await filmmakersServerService.getByUserId(user.id)
 
     const filmmaker = filmmakerData as Database['public']['Tables']['filmmakers']['Row'] | null
 
-    // Get subscription info
-    const { data: subscription } = await supabase
-        .from('subscriptions')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('status', 'active')
-        .single()
+    // Get subscription info using server service
+    const subscription = await filmmakersServerService.getUserSubscription(user.id)
 
     // BETA LAUNCH: Free access for all users
     const hasActiveSubscription = true
@@ -49,7 +42,7 @@ export default async function DashboardPage() {
                 <div className="dashboard-header">
                     <div>
                         <h1>Welcome back, {(profile as any)?.full_name || user.email}!</h1>
-                        <p className="subtitle">Manage your filmmaker profile</p>
+                        <p className="subtitle">Manage your filmmaker profile and connections</p>
                     </div>
                     <SignOutButton />
                 </div>
@@ -66,7 +59,7 @@ export default async function DashboardPage() {
                     </div>
                 </div>
 
-                {/* Profile Status */}
+                {/* Profile Card */}
                 <div className="card">
                     <div className="card-header">
                         <h3>Your Profile</h3>
@@ -128,29 +121,32 @@ export default async function DashboardPage() {
                 </div>
             </div>
 
-            {/* Quick Actions - Simplified */}
+            {/* Quick Actions - Using consistent Lucide icons */}
             <div className="quick-actions">
                 <h3>Quick Actions</h3>
                 <div className="action-grid">
                     <Link href="/browse" className="action-card">
-                        <span className="action-icon">❖</span>
-                        {/* Using text icon until I import RoleIcon properly, or I should stick to text */}
+                        <Users className="action-icon-svg" size={32} strokeWidth={1.5} />
                         <h4>Browse Filmmakers</h4>
                         <p>Discover other talented filmmakers</p>
                     </Link>
+                    <Link href="/collaboration-interests" className="action-card">
+                        <Handshake className="action-icon-svg" size={32} strokeWidth={1.5} />
+                        <h4>Collaboration Interests</h4>
+                        <p>Manage your saved connections</p>
+                    </Link>
                     <Link href="/settings" className="action-card">
-                        <span className="action-icon">⚙</span>
+                        <Settings className="action-icon-svg" size={32} strokeWidth={1.5} />
                         <h4>Settings</h4>
                         <p>Update your account settings</p>
                     </Link>
                     <Link href="/help" className="action-card">
-                        <span className="action-icon">?</span>
+                        <HelpCircle className="action-icon-svg" size={32} strokeWidth={1.5} />
                         <h4>Help & Support</h4>
                         <p>Get help with your account</p>
                     </Link>
                 </div>
             </div>
         </div>
-
     )
 }
