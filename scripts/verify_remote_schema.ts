@@ -26,33 +26,34 @@ async function verifySchema() {
     if (error) {
         console.error('Error selecting from filmmakers:', error);
     } else {
-        if (data.length === 0) {
-            console.log('No rows in filmmakers table. Trying to insert dummy to check columns? No, safer to just check error.');
-            // If table exists but empty, we can't see keys from data[0].
-            // We can try to select 'generated_bio' specifically.
-        } else {
+        // Check columns
+        if (data && data.length > 0) {
             const keys = Object.keys(data[0]);
             console.log('Columns found:', keys.join(', '));
-
-            const hasGeneratedBio = keys.includes('generated_bio');
-            const hasAiGeneratedBio = keys.includes('ai_generated_bio');
-
-            console.log(`Has 'generated_bio': ${hasGeneratedBio}`);
-            console.log(`Has 'ai_generated_bio': ${hasAiGeneratedBio}`);
-
-            if (hasGeneratedBio && !hasAiGeneratedBio) {
-                console.log('SUCCESS: Migration appears applied (new column exists, old gone).');
-            } else if (hasGeneratedBio && hasAiGeneratedBio) {
-                console.log('WARNING: Both columns exist?');
-            } else if (!hasGeneratedBio && hasAiGeneratedBio) {
-                console.log('FAILURE: Migration NOT applied. Old column still present.');
-            }
+            console.log(`Has 'generated_bio': ${keys.includes('generated_bio')}`);
+            console.log(`Has 'ai_generated_bio': ${keys.includes('ai_generated_bio')}`);
+        } else {
+            console.log('Filmmakers table empty, cannot check columns easily via select.');
+            // Attempt to inspect via explicit select of new column
+            const { error: colError } = await supabase.from('filmmakers').select('generated_bio').limit(1);
+            if (colError) console.log('Wait, selecting generated_bio failed:', colError.message);
+            else console.log('Selecting generated_bio succeeded (column exists).');
         }
     }
 
-    // 2. Check RPC Function Definition (Indirectly)
-    // We'll try to call the rpc with invalid UUIDs to see if it complains about parameters or logic? 
-    // Or better, assume if schema is wrong, RPC is likely not updated or mismatched.
+    // 2. Check Subscription Plans
+    console.log('\n--- Checking Subscription Plans ---');
+    const { data: plans, error: plansError } = await supabase.from('subscription_plans').select('*');
+    if (plansError) {
+        console.error('Error fetching plans:', plansError.message);
+    } else {
+        console.log('Plans found:', plans ? plans.length : 0);
+        if (plans) {
+            plans.forEach(p => console.log(`- ID: ${p.id}, Name: ${p.name}`));
+            const hasBeta = plans.some(p => p.id === 'beta_pro');
+            console.log(`Has 'beta_pro': ${hasBeta}`);
+        }
+    }
 }
 
 verifySchema().catch(console.error);
