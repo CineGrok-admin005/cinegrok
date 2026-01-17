@@ -348,7 +348,7 @@ export class FilmmakersService {
 
             // Raw data for flexible fields
             raw_form_data: data,
-            ai_generated_bio: '',
+            generated_bio: '',
             status: 'published',
             published_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),

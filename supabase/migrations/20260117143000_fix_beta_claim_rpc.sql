@@ -3,8 +3,9 @@
 -- 1. Explicitly sets status = 'published' for visibility
 -- 2. Links the filmmaker_id to the profiles table
 -- 3. Sets is_published = true
+-- 4. NEW: Populates ai_generated_bio from p_draft_data->>'bio' (Template Bio)
 
-CREATE OR REPLACE FUNCTION claim_beta_and_publish(
+CREATE OR REPLACE FUNCTION public.claim_beta_and_publish(
     p_user_id UUID,
     p_plan_id UUID,
     p_draft_data JSONB
@@ -19,7 +20,11 @@ DECLARE
     v_end_date TIMESTAMPTZ;
     v_filmmaker_id UUID;
     v_subscription_id UUID;
+    v_bio TEXT;
 BEGIN
+    -- Extract bio from draft data (injected by client)
+    v_bio := p_draft_data->>'bio';
+
     -- Get plan details
     SELECT * INTO v_plan FROM subscription_plans WHERE id = p_plan_id;
     IF NOT FOUND THEN
@@ -70,6 +75,7 @@ BEGIN
         is_published,
         status,
         subscription_status,
+        ai_generated_bio, -- Added field
         version,
         created_at,
         updated_at
@@ -80,6 +86,7 @@ BEGIN
         true,
         'published',
         'beta',
+        v_bio, -- Added value
         1,
         now(),
         now()
@@ -90,6 +97,7 @@ BEGIN
         is_published = true,
         status = 'published',
         subscription_status = 'beta',
+        ai_generated_bio = COALESCE(v_bio, filmmakers.ai_generated_bio), -- Update if present
         version = filmmakers.version + 1,
         updated_at = now()
     RETURNING id INTO v_filmmaker_id;

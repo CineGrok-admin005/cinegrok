@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
         const data = await filmmakerDomain.listFilmmakers(limit);
 
         // Filter for processed profiles in domain or here for now to maintain behavior
-        const processedData = data.filter(f => f.ai_generated_bio !== null);
+        const processedData = data.filter(f => f.generated_bio !== null);
 
         // Set caching headers for performance
         // Cache for 5 minutes, revalidate in background

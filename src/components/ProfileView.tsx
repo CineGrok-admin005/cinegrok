@@ -201,7 +201,7 @@ export default function ProfileView({
                                 <section className="bio-section">
                                     <h2>About</h2>
                                     <div className="bio-text">
-                                        {(data.ai_generated_bio || generateTemplateBio(data)).split('\n\n').map((p: string, i: number) => (
+                                        {(data.generated_bio || generateTemplateBio(data)).split('\n\n').map((p: string, i: number) => (
                                             <p key={i}>{p}</p>
                                         ))}
                                     </div>

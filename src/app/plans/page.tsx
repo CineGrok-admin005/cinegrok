@@ -15,6 +15,7 @@ import { Check, Sparkles, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { subscriptionService, SubscriptionPlan } from '@/services/publishing';
 import { filmmakersService } from '@/services/filmmakers';
+import { generateBioFromTemplate, BioFormData } from '@/lib/bio-templates';
 import Link from 'next/link';
 import './plans.css';
 
@@ -96,10 +97,17 @@ function PlansContent() {
                 draftKeys: Object.keys(draftData)
             });
 
+            // Generate deterministic bio on client
+            const generatedBio = generateBioFromTemplate(draftData as unknown as BioFormData);
+            const enrichedDraftData = {
+                ...draftData,
+                bio: generatedBio
+            };
+
             const result = await subscriptionService.claimBetaSubscription(
                 user.id,
                 selectedPlan,
-                draftData as any
+                enrichedDraftData as any
             );
 
             console.log('[PlansPage] Result:', result);

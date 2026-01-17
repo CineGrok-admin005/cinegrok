@@ -28,7 +28,7 @@ export default function HomePage() {
           .from('filmmakers')
           .select('*')
           .eq('status', 'published')
-          // .not('ai_generated_bio', 'is', null) // Removed to show new profiles immediately
+          // .not('generated_bio', 'is', null) // Removed to show new profiles immediately
           .order('created_at', { ascending: false })
           .limit(8);
 

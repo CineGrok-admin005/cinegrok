@@ -18,7 +18,7 @@ export interface Filmmaker {
     full_name: string;
     profile_url: string | null;
     raw_form_data: RawFormData;
-    ai_generated_bio: string | null;
+    generated_bio: string | null;
     style_vector: number[] | null;
 }
 

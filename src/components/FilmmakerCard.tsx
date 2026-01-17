@@ -25,15 +25,15 @@ interface FilmmakerCardProps {
 }
 
 export default function FilmmakerCard({ filmmaker, variant = 'grid' }: FilmmakerCardProps) {
-  const { raw_form_data, ai_generated_bio, name, id } = filmmaker;
+  const { raw_form_data, generated_bio, name, id } = filmmaker;
   const tier = calculateTier(raw_form_data);
   const tierStyle = getTierStyle(tier);
   const roleColors = getRoleColors(raw_form_data.roles);
   const location = formatLocation(raw_form_data);
   const photoUrl = raw_form_data.profile_photo_url;
 
-  const bioSnippet = ai_generated_bio
-    ? truncate(ai_generated_bio, 120)
+  const bioSnippet = generated_bio
+    ? truncate(generated_bio, 120)
     : 'Building their portfolio...';
 
   return (

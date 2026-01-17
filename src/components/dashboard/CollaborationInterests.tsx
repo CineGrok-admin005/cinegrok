@@ -53,7 +53,7 @@ interface CollaborationInterest {
         id: string;
         name: string;
         status: string;
-        ai_generated_bio: string | null;
+        generated_bio: string | null;
         raw_form_data: any;
         profile_url: string | null;
     } | null;

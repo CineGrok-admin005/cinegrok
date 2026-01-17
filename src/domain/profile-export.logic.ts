@@ -94,7 +94,7 @@ export function extractExportData(filmmaker: Filmmaker): ExportProfile {
         name: filmmaker.name,
         stageName: raw.stageName || raw.stage_name || filmmaker.name,
         legalName: raw.legalName || raw.legal_name,
-        bio: filmmaker.ai_generated_bio || undefined,
+        bio: filmmaker.generated_bio || undefined,
         location: [raw.current_location || raw.currentCity, raw.current_state || raw.currentState, raw.country]
             .filter(Boolean)
             .join(', ') || undefined,

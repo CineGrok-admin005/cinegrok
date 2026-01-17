@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
         const { error: updateError } = await supabase
             .from('filmmakers')
             .update({
-                ai_generated_bio: bio,
+                generated_bio: bio,
                 style_vector: embedding,
             })
             .eq('id', id);

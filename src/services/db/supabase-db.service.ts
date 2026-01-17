@@ -126,7 +126,7 @@ export class SupabaseDBService implements IDBService {
         if (search) {
             const s = search.toLowerCase();
             query = query.or(
-                `name.ilike.%${s}%,ai_generated_bio.ilike.%${s}%,raw_form_data->>current_city.ilike.%${s}%`
+                `name.ilike.%${s}%,generated_bio.ilike.%${s}%,raw_form_data->>current_city.ilike.%${s}%`
             );
         }
 
@@ -261,7 +261,7 @@ export class SupabaseDBService implements IDBService {
                     id,
                     name,
                     status,
-                    ai_generated_bio,
+                    generated_bio,
                     raw_form_data,
                     profile_url,
                     is_published

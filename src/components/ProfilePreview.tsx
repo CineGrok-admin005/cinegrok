@@ -48,7 +48,7 @@ export default function ProfilePreview({
 
                 if (data.philosophy) bio += ` \n\n"${data.philosophy}"`;
 
-                updateData({ ai_generated_bio: bio })
+                updateData({ generated_bio: bio })
             } catch (err: any) {
                 console.error('Bio Generation Error:', err)
                 setBioError('Failed to generate template bio.')
@@ -81,7 +81,7 @@ export default function ProfilePreview({
                 <div>
                     <strong>Professional Bio</strong>
                     <p style={{ margin: 0, fontSize: '0.9rem', color: '#666' }}>
-                        {data.ai_generated_bio ? 'Regenerate if you made changes.' : 'Generate a professional bio based on your details.'}
+                        {data.generated_bio ? 'Regenerate if you made changes.' : 'Generate a professional bio based on your details.'}
                     </p>
                 </div>
                 <div className="bio-actions" style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
@@ -93,7 +93,7 @@ export default function ProfilePreview({
 
                     <button
                         type="button"
-                        className={`btn ${data.ai_generated_bio ? 'btn-secondary' : 'btn-primary'}`}
+                        className={`btn ${data.generated_bio ? 'btn-secondary' : 'btn-primary'}`}
                         onClick={generateTemplateBio}
                         disabled={generatingBio}
                         style={{
@@ -111,12 +111,12 @@ export default function ProfilePreview({
                             </>
                         ) : (
                             <>
-                                {data.ai_generated_bio ? 'Regenerate from Template' : 'Generate Bio from Profile'}
+                                {data.generated_bio ? 'Regenerate from Template' : 'Generate Bio from Profile'}
                             </>
                         )}
                     </button>
 
-                    {data.ai_generated_bio && !generatingBio && (
+                    {data.generated_bio && !generatingBio && (
                         <p style={{ fontSize: '0.85rem', color: '#666', fontStyle: 'italic' }}>
                             Bio generated from your profile details.
                         </p>

@@ -44,7 +44,7 @@ export default function FilmmakerProfileContent({
   films,
   shouldShowSection,
 }: FilmmakerProfileContentProps) {
-  const { raw_form_data, ai_generated_bio, name } = filmmaker;
+  const { raw_form_data, generated_bio, name } = filmmaker;
   const photoUrl = raw_form_data.profile_photo_url;
 
   return (
@@ -165,11 +165,11 @@ export default function FilmmakerProfileContent({
         <div className="profile-content">
           {/* Left Column - Bio and Films */}
           <div className="content-main">
-            {/* AI-Generated Bio */}
+            {/* Template Bio */}
             <section className="bio-section">
               <h2>About</h2>
               <div className="bio-text">
-                {ai_generated_bio && ai_generated_bio.split('\n\n').map((paragraph, index) => (
+                {generated_bio && generated_bio.split('\n\n').map((paragraph, index) => (
                   <p key={index}>{paragraph}</p>
                 ))}
               </div>

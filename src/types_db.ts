@@ -81,7 +81,7 @@ export type Database = {
             }
             filmmakers: {
                 Row: {
-                    ai_generated_bio: string | null
+                    generated_bio: string | null
                     availability: string | null
                     belief_about_cinema: string | null
                     country: string | null
@@ -127,7 +127,7 @@ export type Database = {
                     years_active: string | null
                 }
                 Insert: {
-                    ai_generated_bio?: string | null
+                    generated_bio?: string | null
                     availability?: string | null
                     belief_about_cinema?: string | null
                     country?: string | null
@@ -173,7 +173,7 @@ export type Database = {
                     years_active?: string | null
                 }
                 Update: {
-                    ai_generated_bio?: string | null
+                    generated_bio?: string | null
                     availability?: string | null
                     belief_about_cinema?: string | null
                     country?: string | null
