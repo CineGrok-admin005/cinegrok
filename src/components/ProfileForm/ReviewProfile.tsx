@@ -77,7 +77,7 @@ export default function ReviewProfile({ data, onBack, onPublish }: ReviewProfile
     return (
         <div className="review-profile-step">
             <div className="review-header" style={{ textAlign: 'center', marginBottom: '3rem' }}>
-                <h2 style={{ fontSize: '2.5rem', marginBottom: '0.75rem', fontFamily: 'var(--font-serif, Georgia, serif)', fontWeight: 400 }}>Review & Publish</h2>
+                <h2 style={{ fontSize: '2.5rem', marginBottom: '0.75rem', fontFamily: 'var(--font-serif, Georgia, serif)', fontWeight: 400 }}>Preview & Publish</h2>
                 <p style={{ color: '#666', fontSize: '1.1rem' }}>This is exactly how your profile will look to the community.</p>
 
                 <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'center', gap: '1.5rem', alignItems: 'center' }}>

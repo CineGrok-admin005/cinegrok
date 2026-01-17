@@ -24,4 +24,7 @@ export {
     type SubscriptionErrorCode,
     type SubscriptionStatus,
     type SubscriptionCheckResult,
+    type SubscriptionPlan,
+    type ClaimBetaResult,
 } from './subscription.service';
+

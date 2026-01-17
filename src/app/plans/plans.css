@@ -1,0 +1,284 @@
+/**
+ * Plans Page Styles
+ * 
+ * Editorial theme with beta pricing display.
+ */
+
+.plans-page {
+    min-height: 100vh;
+    background: linear-gradient(to bottom, #fafafa, #f5f5f5);
+    padding: 2rem 1rem;
+}
+
+.plans-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.plans-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #666;
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+    transition: color 0.2s;
+}
+
+.plans-back-link:hover {
+    color: #18181b;
+}
+
+.plans-loading {
+    text-align: center;
+    padding: 4rem;
+    color: #666;
+}
+
+/* Header */
+.plans-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.beta-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #c17f24, #d4a349);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    margin-bottom: 1.5rem;
+}
+
+.plans-header h1 {
+    font-size: 2.5rem;
+    font-weight: 400;
+    font-family: var(--font-serif, Georgia, serif);
+    color: #18181b;
+    margin-bottom: 0.5rem;
+}
+
+.plans-header p {
+    color: #666;
+    font-size: 1.1rem;
+}
+
+/* Plan Cards Grid */
+.plans-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 640px) {
+    .plans-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.plan-card {
+    position: relative;
+    background: white;
+    border: 2px solid #e5e5e5;
+    border-radius: 16px;
+    padding: 2rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.plan-card:hover {
+    border-color: #c17f24;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.plan-card.selected {
+    border-color: #18181b;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.plan-check {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 24px;
+    height: 24px;
+    border: 2px solid #e5e5e5;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.plan-card.selected .plan-check {
+    background: #18181b;
+    border-color: #18181b;
+    color: white;
+}
+
+.plan-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #18181b;
+    margin-bottom: 1rem;
+}
+
+/* Pricing */
+.plan-pricing {
+    margin-bottom: 1.5rem;
+}
+
+.original-price {
+    font-size: 1.5rem;
+    color: #999;
+    text-decoration: line-through;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.price-period {
+    font-size: 0.9rem;
+    font-weight: 400;
+}
+
+.beta-price {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #18181b;
+    display: block;
+}
+
+/* Features */
+.plan-features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.plan-features li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #555;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.plan-features li svg {
+    color: #22c55e;
+    flex-shrink: 0;
+}
+
+/* Payment Summary */
+.payment-summary {
+    background: white;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.payment-summary h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #18181b;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    font-size: 0.95rem;
+    color: #555;
+}
+
+.summary-row .strike {
+    text-decoration: line-through;
+    color: #999;
+}
+
+.summary-row.discount {
+    color: #22c55e;
+}
+
+.summary-row.total {
+    font-weight: 600;
+    color: #18181b;
+    font-size: 1.1rem;
+    padding-top: 0.75rem;
+    margin-top: 0.5rem;
+    border-top: 1px solid #e5e5e5;
+}
+
+.free-label {
+    color: #22c55e;
+    font-weight: 700;
+}
+
+/* CTA Button */
+.claim-button {
+    width: 100%;
+    background: #18181b;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.claim-button:hover:not(:disabled) {
+    background: #27272a;
+    transform: translateY(-1px);
+}
+
+.claim-button:disabled {
+    background: #a1a1aa;
+    cursor: not-allowed;
+}
+
+/* Warnings and Terms */
+.no-draft-warning {
+    text-align: center;
+    color: #dc2626;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+}
+
+.no-draft-warning a {
+    color: #18181b;
+    font-weight: 600;
+}
+
+.plans-terms {
+    text-align: center;
+    color: #999;
+    font-size: 0.85rem;
+    margin-top: 1.5rem;
+    line-height: 1.6;
+}
+
+.plans-terms a {
+    color: #666;
+    text-decoration: underline;
+}
+
+.beta-note {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: #c17f24;
+}

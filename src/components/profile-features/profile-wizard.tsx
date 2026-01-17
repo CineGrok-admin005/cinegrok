@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { ProfileData } from './types';
-import '../ProfileForm/styles.css'; // Import legacy styles
+import '../ProfileForm/styles.css';
 
-// Modular Components (Legacy Style)
+// Modular Components
 import PersonalInfoForm from '@/components/ProfileForm/PersonalInfoForm';
 import ProfessionalDetailsForm from '@/components/ProfileForm/ProfessionalDetailsForm';
 import FilmographyForm from '@/components/ProfileForm/FilmographyForm';
@@ -17,8 +18,25 @@ interface ProfileWizardProps {
   onComplete: (data: ProfileData) => void;
 }
 
+const TOTAL_STEPS = 6;
+const STEP_LABELS = ['Personal', 'Professional', 'Films', 'Social', 'Education', 'Preview'];
+
+/**
+ * Profile Wizard Component
+ * 
+ * Uses URL query params (?step=x) for step management.
+ * This allows browser back/forward buttons to work naturally.
+ */
 export function ProfileWizard({ initialData, onComplete }: ProfileWizardProps) {
-  const [step, setStep] = useState(1);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Get step from URL, default to 1
+  const urlStep = parseInt(searchParams.get('step') || '1', 10);
+  const [step, setStepState] = useState(
+    Math.min(Math.max(1, urlStep), TOTAL_STEPS)
+  );
+
   const [formData, setFormData] = useState<Partial<ProfileData>>({
     filmography: [],
     primaryRoles: [],
@@ -27,56 +45,111 @@ export function ProfileWizard({ initialData, onComplete }: ProfileWizardProps) {
     ...initialData
   });
 
-  const totalSteps = 6;
-  // const progress = (step / totalSteps) * 100; // Not used in legacy design
+  // Sync step with URL on mount and URL changes
+  useEffect(() => {
+    const newStep = parseInt(searchParams.get('step') || '1', 10);
+    const clampedStep = Math.min(Math.max(1, newStep), TOTAL_STEPS);
+    if (clampedStep !== step) {
+      setStepState(clampedStep);
+    }
+  }, [searchParams]);
+
+  // Update URL when step changes
+  const setStep = useCallback((newStep: number) => {
+    const clampedStep = Math.min(Math.max(1, newStep), TOTAL_STEPS);
+    setStepState(clampedStep);
+
+    // Update URL without full navigation
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('step', clampedStep.toString());
+    router.push(`/profile-builder?${params.toString()}`, { scroll: false });
+  }, [router, searchParams]);
+
+  // Handle popstate (browser back/forward)
+  useEffect(() => {
+    const handlePopState = () => {
+      const params = new URLSearchParams(window.location.search);
+      const newStep = parseInt(params.get('step') || '1', 10);
+      setStepState(Math.min(Math.max(1, newStep), TOTAL_STEPS));
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  // Warn before leaving with unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (Object.keys(formData).length > 5) { // Has significant data
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [formData]);
 
   const updateFormData = (newData: Partial<ProfileData>) => {
     setFormData(prev => ({ ...prev, ...newData }));
   };
 
   const handleNext = () => {
-    if (step < totalSteps) setStep(step + 1);
+    if (step < TOTAL_STEPS) {
+      setStep(step + 1);
+    }
   };
 
   const handleBack = () => {
-    if (step > 1) setStep(step - 1);
+    if (step > 1) {
+      setStep(step - 1);
+    }
   };
 
   const handleSubmit = () => {
     if (formData.stageName && formData.email && formData.country && formData.primaryRoles && formData.primaryRoles.length > 0) {
-      onComplete(formData as ProfileData);
+      // Redirect to plans page for beta claim
+      router.push('/plans?from=profile-builder');
     } else {
       alert('Please fill in all required fields: Stage Name, Email, Country, and at least one Primary Role');
+    }
+  };
+
+  const handleStepClick = (targetStep: number) => {
+    // Only allow going back to completed steps
+    if (targetStep < step) {
+      setStep(targetStep);
     }
   };
 
   return (
     <div className="profile-builder-page">
       <div className="profile-builder-container">
-
-        {/* Legacy Header */}
+        {/* Header with Step Indicator */}
         <div className="steps-header">
           <h1>Create Your Profile</h1>
           <div className="steps-indicator">
-            {[1, 2, 3, 4, 5, 6].map(s => (
-              <div key={s} className={`step ${step === s ? 'active' : ''} ${step > s ? 'completed' : ''}`} onClick={() => { if (step > s) setStep(s) }}>
-                <div className="step-number">{step > s ? '✓' : s}</div>
-                <div className="step-title">
-                  {s === 1 && 'Personal'}
-                  {s === 2 && 'Professional'}
-                  {s === 3 && 'Films'}
-                  {s === 4 && 'Social'}
-                  {s === 5 && 'Education'}
-                  {s === 6 && 'Review'}
+            {STEP_LABELS.map((label, index) => {
+              const stepNum = index + 1;
+              return (
+                <div
+                  key={stepNum}
+                  className={`step ${step === stepNum ? 'active' : ''} ${step > stepNum ? 'completed' : ''}`}
+                  onClick={() => handleStepClick(stepNum)}
+                  style={{ cursor: step > stepNum ? 'pointer' : 'default' }}
+                >
+                  <div className="step-number">
+                    {step > stepNum ? '✓' : stepNum}
+                  </div>
+                  <div className="step-title">{label}</div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
-        {/* Form Content Wrapper */}
+        {/* Form Content */}
         <div className="form-content">
-
           {step === 1 && (
             <PersonalInfoForm
               data={formData}
@@ -128,7 +201,6 @@ export function ProfileWizard({ initialData, onComplete }: ProfileWizardProps) {
               onPublish={handleSubmit}
             />
           )}
-
         </div>
       </div>
     </div>

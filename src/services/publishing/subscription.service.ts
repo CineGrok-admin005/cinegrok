@@ -1,27 +1,29 @@
 /**
  * Subscription Service
  * 
- * Handles subscription validation and status checks for CLIENT-SIDE use.
- * Server-side payment handling is done directly in webhook handlers.
+ * Handles subscription validation, status checks, and beta claiming.
+ * Uses Three-Box Sync pattern with PublishingService integration.
  * 
  * @module services/publishing/subscription.service
  */
 
 import { createSupabaseBrowserClient } from '@/lib/supabase';
 import { logger } from '@/lib/logger';
+import { ProfileData } from '@/components/profile-features/types';
 
 // ============================================================================
 // ERROR CODES
 // ============================================================================
 
-/**
- * Error codes for subscription operations.
- */
 export const SubscriptionErrorCodes = {
     ERR_SUBS_001: 'Subscription cancelled after payment failures',
     ERR_SUBS_002: 'Failed to check subscription status',
     ERR_SUBS_003: 'Failed to update subscription',
+    ERR_SUBS_004: 'Failed to claim beta subscription',
+    ERR_SUBS_005: 'Plan not found',
     WARN_SUBS_FAIL: 'Payment failed, grace period started',
+    INF_SUBS_001: 'Beta subscription claim started',
+    INF_SUBS_002: 'Beta subscription claimed successfully',
 } as const;
 
 export type SubscriptionErrorCode = keyof typeof SubscriptionErrorCodes;
@@ -30,9 +32,6 @@ export type SubscriptionErrorCode = keyof typeof SubscriptionErrorCodes;
 // TYPES
 // ============================================================================
 
-/**
- * Subscription status types.
- */
 export type SubscriptionStatus =
     | 'none'
     | 'active'
@@ -40,160 +39,221 @@ export type SubscriptionStatus =
     | 'cancelled'
     | 'beta';
 
-/**
- * Result of subscription validation.
- */
 export interface SubscriptionCheckResult {
-    /** Whether user can publish */
     canPublish: boolean;
-    /** Current subscription status */
     status: SubscriptionStatus;
-    /** Is user on beta (bypasses payment) */
     isBetaUser: boolean;
-    /** If past_due, when grace period ends */
     gracePeriodEnd?: Date;
-    /** Reason if cannot publish */
     reason?: string;
 }
 
+export interface SubscriptionPlan {
+    id: string;
+    name: string;
+    display_name: string;
+    amount: number;          // In subunits (paise)
+    original_amount: number; // For strike-through display
+    currency: string;
+    interval: 'monthly' | 'yearly';
+}
+
+export interface ClaimBetaResult {
+    success: boolean;
+    filmmakerId?: string;
+    subscriptionId?: string;
+    error?: string;
+}
+
 // ============================================================================
-// SERVICE (Client-side only)
+// SERVICE
 // ============================================================================
 
-/**
- * Subscription service for checking payment status.
- * NOTE: This service is for CLIENT-SIDE use only.
- * Server-side payment failure handling is in the webhook handler.
- */
 export const subscriptionService = {
     /**
      * Check if user can publish based on subscription status.
      * 
      * BETA LAUNCH: All users can publish for FREE.
      * Payment validation is disabled during beta period.
-     * 
-     * @param userId - User UUID
-     * @returns Subscription check result
      */
     async canUserPublish(userId: string): Promise<SubscriptionCheckResult> {
-        // ============================================================
-        // BETA LAUNCH: Free publishing for all users
-        // Remove this block and uncomment below when enabling payments
-        // ============================================================
+        // BETA LAUNCH: Redirect to plans page for subscription claiming
+        // This allows users to go through the beta claim flow
         logger.info('Beta launch: Free publishing enabled for all users', userId);
         return {
             canPublish: true,
             status: 'beta',
             isBetaUser: true,
         };
+    },
 
-        /* === PAYMENT VALIDATION CODE (DISABLED FOR BETA) ===
+    /**
+     * Fetch all active subscription plans.
+     * Used to display pricing on the /plans page.
+     */
+    async getPlans(): Promise<SubscriptionPlan[]> {
         try {
             const supabase = createSupabaseBrowserClient();
 
-            // Check if user is a beta user
-            const { data: profile, error: profileError } = await supabase
-                .from('profiles')
-                .select('is_beta_user')
-                .eq('id', userId)
-                .single();
+            const { data: plans, error } = await supabase
+                .from('subscription_plans')
+                .select('*')
+                .eq('is_active', true)
+                .order('amount', { ascending: true });
 
-            if (profileError) {
-                logger.error('ERR_SUBS_002', 'Failed to check profile', userId, {
-                    error: profileError.message
+            if (error) {
+                logger.error('ERR_SUBS_005', 'Failed to fetch plans', undefined, {
+                    error: error.message,
                 });
-                return {
-                    canPublish: false,
-                    status: 'none',
-                    isBetaUser: false,
-                    reason: 'Could not verify account status',
-                };
+                return [];
             }
 
-            // Beta users can always publish
-            if (profile?.is_beta_user) {
-                logger.info('Subscription check bypassed for beta user', userId);
-                return {
-                    canPublish: true,
-                    status: 'beta',
-                    isBetaUser: true,
-                };
-            }
+            return (plans || []).map(p => ({
+                id: p.id,
+                name: p.name,
+                display_name: p.display_name,
+                amount: p.amount,
+                original_amount: p.original_amount || p.amount,
+                currency: p.currency,
+                interval: p.interval as 'monthly' | 'yearly',
+            }));
+        } catch (error) {
+            logger.error('ERR_SUBS_005', 'Plans fetch failed', undefined, {
+                error: String(error),
+            });
+            return [];
+        }
+    },
 
-            // Check subscription status
-            const { data: subscription, error: subError } = await supabase
-                .from('subscriptions')
-                .select('status, current_end, grace_period_end')
-                .eq('user_id', userId)
-                .eq('status', 'active')
-                .order('created_at', { ascending: false })
-                .limit(1)
-                .maybeSingle();
+    /**
+     * Claim a free beta subscription and publish the user's profile.
+     * 
+     * Uses atomic Postgres transaction via claim_beta_and_publish function.
+     * This ensures both subscription creation and profile publishing happen together.
+     * 
+     * @param userId - User UUID
+     * @param planId - Plan UUID (from subscription_plans)
+     * @param draftData - Profile data to publish
+     * @returns Result with filmmaker ID on success
+     */
+    async claimBetaSubscription(
+        userId: string,
+        planId: string,
+        draftData: ProfileData
+    ): Promise<ClaimBetaResult> {
+        logger.info('INF_SUBS_001', userId, {
+            message: 'Beta subscription claim started',
+            planId,
+        });
 
-            if (subError) {
-                logger.error('ERR_SUBS_002', 'Failed to check subscription', userId, {
-                    error: subError.message
-                });
-                return {
-                    canPublish: false,
-                    status: 'none',
-                    isBetaUser: false,
-                    reason: 'Could not verify subscription status',
-                };
-            }
+        try {
+            const supabase = createSupabaseBrowserClient();
 
-            // No subscription found
-            if (!subscription) {
-                return {
-                    canPublish: false,
-                    status: 'none',
-                    isBetaUser: false,
-                    reason: 'No active subscription. Subscribe to publish your profile.',
-                };
-            }
-
-            // Active subscription
-            if (subscription.status === 'active') {
-                return {
-                    canPublish: true,
-                    status: 'active',
-                    isBetaUser: false,
-                };
-            }
-
-            // Check grace period
-            if (subscription.grace_period_end) {
-                const graceEnd = new Date(subscription.grace_period_end);
-                if (graceEnd > new Date()) {
-                    return {
-                        canPublish: true,
-                        status: 'past_due',
-                        isBetaUser: false,
-                        gracePeriodEnd: graceEnd,
-                    };
+            // Call atomic Postgres function
+            const { data: filmmakerId, error } = await supabase.rpc(
+                'claim_beta_and_publish',
+                {
+                    p_user_id: userId,
+                    p_plan_id: planId,
+                    p_draft_data: draftData,
                 }
+            );
+
+            if (error) {
+                logger.error('ERR_SUBS_004', 'Beta claim failed', userId, {
+                    error: error.message,
+                    planId,
+                });
+                return {
+                    success: false,
+                    error: error.message || 'Failed to claim subscription',
+                };
             }
 
-            // Subscription expired
+            logger.info('INF_SUBS_002', userId, {
+                message: 'Beta subscription claimed successfully',
+                filmmakerId,
+                planId,
+            });
+
+            // Log the auto-publish success
+            logger.info('INF_PUB_001', userId, {
+                message: 'Profile auto-published after beta claim',
+                filmmakerId,
+            });
+
             return {
-                canPublish: false,
-                status: 'cancelled',
-                isBetaUser: false,
-                reason: 'Your subscription has expired. Renew to publish.',
+                success: true,
+                filmmakerId: filmmakerId as string,
             };
 
         } catch (error) {
-            logger.error('ERR_SUBS_002', 'Subscription check failed', userId, {
-                error: String(error)
+            logger.error('ERR_SUBS_004', 'Beta claim exception', userId, {
+                error: String(error),
             });
             return {
-                canPublish: false,
-                status: 'none',
-                isBetaUser: false,
-                reason: 'Error checking subscription status',
+                success: false,
+                error: 'An unexpected error occurred',
             };
         }
-        === END PAYMENT VALIDATION CODE === */
+    },
+
+    /**
+     * Get user's current subscription status.
+     */
+    async getUserSubscription(userId: string): Promise<{
+        hasSubscription: boolean;
+        status: SubscriptionStatus;
+        planName?: string;
+        currentEnd?: Date;
+    }> {
+        try {
+            const supabase = createSupabaseBrowserClient();
+
+            const { data: subscription, error } = await supabase
+                .from('subscriptions')
+                .select(`
+                    status,
+                    current_end,
+                    subscription_plans (
+                        name,
+                        display_name
+                    )
+                `)
+                .eq('user_id', userId)
+                .maybeSingle();
+
+            if (error || !subscription) {
+                return {
+                    hasSubscription: false,
+                    status: 'none',
+                };
+            }
+
+            // Handle the joined relation (can be array or object depending on query)
+            const subData = subscription as {
+                status: string;
+                current_end: string | null;
+                subscription_plans: { name: string; display_name: string } | { name: string; display_name: string }[] | null;
+            };
+
+            const planData = Array.isArray(subData.subscription_plans)
+                ? subData.subscription_plans[0]
+                : subData.subscription_plans;
+
+            return {
+                hasSubscription: true,
+                status: subData.status as SubscriptionStatus,
+                planName: planData?.display_name || planData?.name,
+                currentEnd: subData.current_end ? new Date(subData.current_end) : undefined,
+            };
+        } catch (error) {
+            logger.error('ERR_SUBS_002', 'Subscription fetch failed', userId, {
+                error: String(error),
+            });
+            return {
+                hasSubscription: false,
+                status: 'none',
+            };
+        }
     },
 };
-
