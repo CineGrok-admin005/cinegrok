@@ -70,7 +70,9 @@ function PlansContent() {
     }
 
     async function handleClaimAndPublish() {
+        console.log('[PlansPage] Claim process started');
         if (!selectedPlan || !draftData) {
+            console.warn('[PlansPage] Missing plan or draft', { selectedPlan, draftData });
             toast.error('Please select a plan and complete your profile first');
             return;
         }
@@ -81,11 +83,18 @@ function PlansContent() {
         try {
             const user = await filmmakersService.getCurrentUser();
             if (!user) {
+                console.warn('[PlansPage] No user found');
                 toast.dismiss();
                 toast.error('You must be logged in');
                 router.push('/auth/login');
                 return;
             }
+
+            console.log('[PlansPage] Calling claimBetaSubscription', {
+                userId: user.id,
+                planId: selectedPlan,
+                draftKeys: Object.keys(draftData)
+            });
 
             const result = await subscriptionService.claimBetaSubscription(
                 user.id,
@@ -93,17 +102,21 @@ function PlansContent() {
                 draftData as any
             );
 
+            console.log('[PlansPage] Result:', result);
+
             toast.dismiss();
 
             if (result.success && result.filmmakerId) {
+                console.log('[PlansPage] Success! Redirecting to:', `/filmmakers/${result.filmmakerId}`);
                 toast.success('🎉 Profile published! Welcome to CineGrok.');
                 router.push(`/filmmakers/${result.filmmakerId}`);
             } else {
+                console.error('[PlansPage] Claim failed with result:', result);
                 toast.error(result.error || 'Failed to publish profile');
             }
         } catch (error) {
             toast.dismiss();
-            console.error('Claim failed:', error);
+            console.error('[PlansPage] Claim exception:', error);
             toast.error('Something went wrong. Please try again.');
         } finally {
             setClaiming(false);
