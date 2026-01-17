@@ -12,8 +12,8 @@ import { mapDatabaseToProfileData } from '@/lib/mappers';
 import { filmmakersServerService } from '@/services/filmmakers/filmmakers.server.service';
 import Link from 'next/link';
 
-// Revalidate every hour
-export const revalidate = 3600;
+// Revalidate immediately to avoid caching issues during beta/edit
+export const revalidate = 0;
 
 async function getFilmmaker(id: string) {
   return filmmakersServerService.getById(id);
