@@ -7,6 +7,8 @@ INSERT INTO subscription_plans (
     amount, 
     currency, 
     interval, 
+    interval_count,
+    trial_period_days,
     is_active, 
     features,
     razorpay_plan_id,
@@ -21,6 +23,8 @@ VALUES (
   0,
   'inr',
   'monthly',
+  1, -- interval_count
+  0, -- trial_period_days
   true,
   '["Early access", "Profile publishing", "Community access"]'::jsonb,
   'plan_beta_free_001', -- Dummy Razorpay ID for free plan

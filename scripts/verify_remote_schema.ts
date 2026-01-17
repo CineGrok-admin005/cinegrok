@@ -42,16 +42,19 @@ async function verifySchema() {
     }
 
     // 2. Check Subscription Plans
-    console.log('\n--- Checking Subscription Plans ---');
+    // 2. Check Subscription Plans Structure
+    console.log('\n--- Checking Subscription Plans Structure ---');
     const { data: plans, error: plansError } = await supabase.from('subscription_plans').select('*');
     if (plansError) {
         console.error('Error fetching plans:', plansError.message);
     } else {
         console.log('Plans found:', plans ? plans.length : 0);
-        if (plans) {
-            plans.forEach(p => console.log(`- ID: ${p.id}, Name: ${p.name}`));
-            const hasBeta = plans.some(p => p.id === 'beta_pro');
-            console.log(`Has 'beta_pro': ${hasBeta}`);
+        if (plans && plans.length > 0) {
+            console.log('Sample Plan Keys:', Object.keys(plans[0]).join(', '));
+            // Log sample values for critical fields
+            console.log('Sample Row:', JSON.stringify(plans[0], null, 2));
+        } else {
+            console.log('No plans found. Cannot infer structure from data. Relying on migration error feedback.');
         }
     }
 }
