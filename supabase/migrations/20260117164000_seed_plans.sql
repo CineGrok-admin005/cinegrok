@@ -9,12 +9,13 @@ INSERT INTO subscription_plans (
     interval, 
     is_active, 
     features,
+    razorpay_plan_id,
     created_at,
     updated_at
 )
 VALUES (
+  '907a362a-0466-4148-8df0-7a0410651759', -- Valid UUID
   'beta_pro',
-  'Beta Pro',
   'CineGrok Beta',
   'Exclusive early access plan',
   0,
@@ -22,6 +23,7 @@ VALUES (
   'monthly',
   true,
   '["Early access", "Profile publishing", "Community access"]'::jsonb,
+  'plan_beta_free_001', -- Dummy Razorpay ID for free plan
   NOW(),
   NOW()
 )
