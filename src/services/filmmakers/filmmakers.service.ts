@@ -271,6 +271,81 @@ export class FilmmakersService {
     }
 
     /**
+     * Saves profile data as a draft for later publishing.
+     * Creates or updates the user's draft in profile_drafts table.
+     * 
+     * @param userId - The authenticated user's UUID
+     * @param data - The profile data to save as draft
+     * @returns The draft ID
+     * @throws {FilmmakerServiceError} ERR_PROFILE_003 if save fails
+     */
+    async saveDraft(userId: string, data: Partial<ProfileData>): Promise<string> {
+        console.log('[FilmmakersService] saveDraft called for user:', userId);
+        try {
+            // Check if draft already exists for this user
+            console.log('[FilmmakersService] Checking for existing draft...');
+            const { data: existingDraft, error: selectError } = await this.supabase
+                .from('profile_drafts')
+                .select('id')
+                .eq('user_id', userId)
+                .single();
+
+            console.log('[FilmmakersService] Existing draft check result:', { existingDraft, selectError });
+
+            if (existingDraft) {
+                // Update existing draft
+                console.log('[FilmmakersService] Updating existing draft:', existingDraft.id);
+                const { error: updateError } = await this.supabase
+                    .from('profile_drafts')
+                    .update({
+                        draft_data: data,
+                        updated_at: new Date().toISOString(),
+                    })
+                    .eq('id', existingDraft.id);
+
+                if (updateError) {
+                    console.error('[FilmmakersService] Update error:', updateError);
+                    throw new FilmmakerServiceError('ERR_PROFILE_003', updateError.message, updateError);
+                }
+
+                console.log('[FilmmakersService] Draft updated successfully');
+                return existingDraft.id;
+            } else {
+                // Create new draft
+                console.log('[FilmmakersService] Creating new draft...');
+                const { data: newDraft, error } = await this.supabase
+                    .from('profile_drafts')
+                    .insert({
+                        user_id: userId,
+                        draft_data: data,
+                        step: 6, // Default to final step for publish flow
+                        created_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString(),
+                    })
+                    .select('id')
+                    .single();
+
+                console.log('[FilmmakersService] Insert result:', { newDraft, error });
+
+                if (error) {
+                    console.error('[FilmmakersService] Insert error:', error);
+                    throw new FilmmakerServiceError('ERR_PROFILE_003', error.message, error);
+                }
+
+                console.log('[FilmmakersService] New draft created with ID:', newDraft.id);
+                return newDraft.id;
+            }
+        } catch (error) {
+            console.error('[FilmmakersService] saveDraft exception:', error);
+            if (error instanceof FilmmakerServiceError) {
+                throw error;
+            }
+            logger.error('ERR_PROFILE_003', 'Failed to save draft', userId, { error: String(error) });
+            throw new FilmmakerServiceError('ERR_PROFILE_003', 'Failed to save draft', error);
+        }
+    }
+
+    /**
      * Gets the current authenticated user.
      * 
      * @returns The user object or null if not authenticated

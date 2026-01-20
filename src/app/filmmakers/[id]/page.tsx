@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   return {
     title: `${filmmaker.name} - CineGrok`,
-    description: filmmaker.ai_generated_bio?.slice(0, 160) || `Profile of ${filmmaker.name}`,
+    description: filmmaker.generated_bio?.slice(0, 160) || `Profile of ${filmmaker.name}`,
   };
 }
 

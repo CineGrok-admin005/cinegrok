@@ -72,7 +72,7 @@ export type Database = {
                     name: string
                     profile_url: string | null
                     raw_form_data: any
-                    ai_generated_bio: string | null
+                    generated_bio: string | null
                     style_vector: number[] | null
                     status: string
                     user_id: string | null
@@ -91,7 +91,7 @@ export type Database = {
                     name: string
                     profile_url?: string | null
                     raw_form_data?: any
-                    ai_generated_bio?: string | null
+                    generated_bio?: string | null
                     style_vector?: number[] | null
                     status?: string
                     user_id?: string | null
@@ -107,7 +107,7 @@ export type Database = {
                     name?: string
                     profile_url?: string | null
                     raw_form_data?: any
-                    ai_generated_bio?: string | null
+                    generated_bio?: string | null
                     style_vector?: number[] | null
                     status?: string
                     user_id?: string | null
@@ -123,25 +123,28 @@ export type Database = {
             subscriptions: {
                 Row: {
                     id: string
-                    created_at: string
-                    updated_at: string
-                    user_id: string
+                    created_at: string | null
+                    updated_at: string | null
+                    user_id: string | null
                     razorpay_subscription_id: string
                     razorpay_plan_id: string
                     plan_name: string
-                    status: string
+                    status: string | null
                     current_start: string | null
                     current_end: string | null
                     ended_at: string | null
                     amount: number
-                    currency: string
-                    billing_cycle_count: number
+                    currency: string | null
+                    billing_cycle_count: number | null
                     trial_start: string | null
                     trial_end: string | null
-                    cancel_at_period_end: boolean
+                    cancel_at_period_end: boolean | null
                     cancelled_at: string | null
                     cancellation_reason: string | null
                     metadata: any | null
+                    grace_period_end: string | null
+                    payment_failure_count: number | null
+                    last_payment_failure_at: string | null
                 }
             }
             subscription_plans: {

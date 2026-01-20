@@ -46,9 +46,11 @@ function PlansContent() {
     }, []);
 
     async function loadPlansAndDraft() {
+        console.log('[PlansPage] === LOADING STARTED ===');
         try {
             // Load plans
             const fetchedPlans = await subscriptionService.getPlans();
+            console.log('[PlansPage] Fetched plans:', fetchedPlans.length);
             setPlans(fetchedPlans);
 
             // Default to monthly
@@ -56,14 +58,32 @@ function PlansContent() {
                 setSelectedPlan(fetchedPlans[0].id);
             }
 
-            // Load user's draft data
+            // FIRST: Try to load from localStorage (set by profile-builder)
+            const localDraft = localStorage.getItem('cinegrok_profile_draft');
+            console.log('[PlansPage] localStorage draft exists:', !!localDraft);
+
+            if (localDraft) {
+                const parsed = JSON.parse(localDraft);
+                console.log('[PlansPage] Parsed localStorage draft:', Object.keys(parsed));
+                setDraftData(parsed);
+                setLoading(false);
+                return;
+            }
+
+            // FALLBACK: Load from database if no localStorage data
+            console.log('[PlansPage] No localStorage, trying database...');
             const user = await filmmakersService.getCurrentUser();
+            console.log('[PlansPage] Current user:', user?.id || 'NOT LOGGED IN');
+
             if (user) {
                 const { data } = await filmmakersService.loadProfile(user.id);
-                setDraftData(data as Record<string, unknown>);
+                console.log('[PlansPage] Database profile data:', data ? Object.keys(data) : 'NONE');
+                if (data && Object.keys(data).length > 0) {
+                    setDraftData(data as Record<string, unknown>);
+                }
             }
         } catch (error) {
-            console.error('Failed to load plans:', error);
+            console.error('[PlansPage] LOAD ERROR:', error);
             toast.error('Failed to load plans');
         } finally {
             setLoading(false);
@@ -71,9 +91,14 @@ function PlansContent() {
     }
 
     async function handleClaimAndPublish() {
-        console.log('[PlansPage] Claim process started');
+        console.log('[PlansPage] === CLAIM BUTTON CLICKED ===');
+        console.log('[PlansPage] selectedPlan:', selectedPlan);
+        console.log('[PlansPage] draftData exists:', !!draftData);
+        console.log('[PlansPage] draftData keys:', draftData ? Object.keys(draftData) : 'N/A');
+
         if (!selectedPlan || !draftData) {
-            console.warn('[PlansPage] Missing plan or draft', { selectedPlan, draftData });
+            console.error('[PlansPage] BLOCKED: Missing plan or draft');
+            alert('DEBUG: Cannot publish - selectedPlan=' + !!selectedPlan + ', draftData=' + !!draftData);
             toast.error('Please select a plan and complete your profile first');
             return;
         }
@@ -83,9 +108,13 @@ function PlansContent() {
 
         try {
             const user = await filmmakersService.getCurrentUser();
+            console.log('[PlansPage] User for claim:', user?.id);
+
             if (!user) {
-                console.warn('[PlansPage] No user found');
+                console.error('[PlansPage] BLOCKED: No user logged in');
+                alert('DEBUG: Not logged in!');
                 toast.dismiss();
+
                 toast.error('You must be logged in');
                 router.push('/auth/login');
                 return;
@@ -104,27 +133,33 @@ function PlansContent() {
                 bio: generatedBio
             };
 
+            console.log('[PlansPage] === CALLING RPC ===');
             const result = await subscriptionService.claimBetaSubscription(
                 user.id,
                 selectedPlan,
                 enrichedDraftData as any
             );
 
-            console.log('[PlansPage] Result:', result);
+            console.log('[PlansPage] RPC Result:', result);
 
             toast.dismiss();
 
             if (result.success && result.filmmakerId) {
-                console.log('[PlansPage] Success! Redirecting to:', `/filmmakers/${result.filmmakerId}`);
+                console.log('[PlansPage] SUCCESS! Redirecting to:', `/filmmakers/${result.filmmakerId}`);
+                alert('DEBUG: SUCCESS! Filmmaker ID: ' + result.filmmakerId);
+                // Clear localStorage draft after successful publish
+                localStorage.removeItem('cinegrok_profile_draft');
                 toast.success('🎉 Profile published! Welcome to CineGrok.');
                 router.push(`/filmmakers/${result.filmmakerId}`);
             } else {
-                console.error('[PlansPage] Claim failed with result:', result);
+                console.error('[PlansPage] RPC FAILED:', result);
+                alert('DEBUG: RPC FAILED - ' + (result.error || 'Unknown error'));
                 toast.error(result.error || 'Failed to publish profile');
             }
         } catch (error) {
             toast.dismiss();
-            console.error('[PlansPage] Claim exception:', error);
+            console.error('[PlansPage] EXCEPTION:', error);
+            alert('DEBUG: EXCEPTION - ' + String(error));
             toast.error('Something went wrong. Please try again.');
         } finally {
             setClaiming(false);
