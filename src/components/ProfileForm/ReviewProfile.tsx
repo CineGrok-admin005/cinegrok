@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { createSupabaseBrowserClient } from '@/lib/supabase'
+import { filmmakersService } from '@/services/filmmakers/filmmakers.service'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { SAMPLE_PROFILE } from '@/data/sample-profile'
@@ -52,7 +52,6 @@ export default function ReviewProfile({ data, onBack, onPublish }: ReviewProfile
     const [isPublishing, setIsPublishing] = useState(false)
     const [showSample, setShowSample] = useState(false)
     const router = useRouter()
-    const supabase = createSupabaseBrowserClient()
 
     const displayData = showSample ? SAMPLE_PROFILE : mapWizardToPublic(data)
     const isDataEmpty = !data.name && !data.stageName && (!data.films || data.films?.length === 0) && (!data.filmography || data.filmography?.length === 0);
@@ -60,7 +59,7 @@ export default function ReviewProfile({ data, onBack, onPublish }: ReviewProfile
     const handlePublishClick = async () => {
         setIsPublishing(true)
         try {
-            const { data: { user } } = await supabase.auth.getUser()
+            const user = await filmmakersService.getCurrentUser()
             if (!user) {
                 toast.error("You must be logged in to publish.")
             }

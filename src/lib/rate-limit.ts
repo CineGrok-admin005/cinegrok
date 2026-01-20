@@ -59,6 +59,9 @@ export const RateLimits = {
 
     /** General API: 100 requests per minute */
     GENERAL_API: { limit: 100, windowMs: 60 * 1000 },
+
+    /** Razorpay Webhooks: 60 requests per minute (higher threshold for legitimate signals) */
+    RAZORPAY_WEBHOOK: { limit: 60, windowMs: 60 * 1000 },
 } as const;
 
 export type RateLimitType = keyof typeof RateLimits;

@@ -10,6 +10,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { logger } from '@/lib/logger';
+import { checkRateLimit } from '@/lib/rate-limit';
 import crypto from 'crypto';
 
 // ============================================================================
@@ -303,6 +304,19 @@ async function handlePaymentFailed(payment: { subscription_id?: string; notes?: 
  */
 export async function POST(request: NextRequest): Promise<NextResponse> {
     try {
+        // Rate Limit Check (DDoS Protection)
+        // Use IP or fallback to a shared identifier if IP is missing
+        const ip = request.headers.get('x-forwarded-for') || 'unknown';
+        const rateLimit = checkRateLimit('RAZORPAY_WEBHOOK', ip);
+
+        if (!rateLimit.success) {
+            logger.warn('Webhook rate limit exceeded', undefined, { code: 'WARN_SEC_002', ip });
+            return NextResponse.json(
+                { error: 'Too Many Requests' },
+                { status: 429 }
+            );
+        }
+
         const body = await request.text();
         const signature = request.headers.get('x-razorpay-signature');
 
