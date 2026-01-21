@@ -12,52 +12,52 @@ import { RawFormData, Film } from './api';
  */
 export const ROLE_COLORS = {
     director: {
-        primary: '#8B5CF6', // Purple
-        light: '#EDE9FE',
-        dark: '#6D28D9',
-        gradient: 'linear-gradient(135deg, #8B5CF6, #A78BFA)',
+        primary: '#18181b', // Zinc 900
+        light: '#f4f4f5',
+        dark: '#000000',
+        gradient: 'linear-gradient(135deg, #18181b, #27272a)',
     },
     cinematographer: {
-        primary: '#3B82F6', // Blue
-        light: '#DBEAFE',
-        dark: '#1E40AF',
-        gradient: 'linear-gradient(135deg, #3B82F6, #60A5FA)',
+        primary: '#27272a', // Zinc 800
+        light: '#f4f4f5',
+        dark: '#18181b',
+        gradient: 'linear-gradient(135deg, #27272a, #3f3f46)',
     },
     editor: {
-        primary: '#10B981', // Green
-        light: '#D1FAE5',
-        dark: '#047857',
-        gradient: 'linear-gradient(135deg, #10B981, #34D399)',
+        primary: '#3f3f46', // Zinc 700
+        light: '#f4f4f5',
+        dark: '#27272a',
+        gradient: 'linear-gradient(135deg, #3f3f46, #52525b)',
     },
     writer: {
-        primary: '#F59E0B', // Amber
-        light: '#FEF3C7',
-        dark: '#D97706',
-        gradient: 'linear-gradient(135deg, #F59E0B, #FBBF24)',
+        primary: '#52525b', // Zinc 600
+        light: '#f4f4f5',
+        dark: '#3f3f46',
+        gradient: 'linear-gradient(135deg, #52525b, #71717a)',
     },
     producer: {
-        primary: '#EF4444', // Red
-        light: '#FEE2E2',
-        dark: '#B91C1C',
-        gradient: 'linear-gradient(135deg, #EF4444, #F87171)',
+        primary: '#18181b', // Zinc 900
+        light: '#f4f4f5',
+        dark: '#000000',
+        gradient: 'linear-gradient(135deg, #18181b, #27272a)',
     },
     actor: {
-        primary: '#EC4899', // Pink
-        light: '#FCE7F3',
-        dark: '#BE185D',
-        gradient: 'linear-gradient(135deg, #EC4899, #F472B6)',
+        primary: '#27272a', // Zinc 800
+        light: '#f4f4f5',
+        dark: '#000000',
+        gradient: 'linear-gradient(135deg, #27272a, #3f3f46)',
     },
     composer: {
-        primary: '#8B5CF6', // Purple (music)
-        light: '#F3E8FF',
-        dark: '#7C3AED',
-        gradient: 'linear-gradient(135deg, #8B5CF6, #A78BFA)',
+        primary: '#3f3f46', // Zinc 700
+        light: '#f4f4f5',
+        dark: '#27272a',
+        gradient: 'linear-gradient(135deg, #3f3f46, #52525b)',
     },
     default: {
-        primary: '#6B7280', // Gray
-        light: '#F3F4F6',
+        primary: '#52525b', // Zinc 600
+        light: '#f4f4f5',
         dark: '#374151',
-        gradient: 'linear-gradient(135deg, #6B7280, #9CA3AF)',
+        gradient: 'linear-gradient(135deg, #52525b, #71717a)',
     },
 } as const;
 
@@ -79,37 +79,37 @@ export enum ExperienceTier {
 export const TIER_STYLES = {
     [ExperienceTier.EMERGING]: {
         badge: 'Emerging',
-        color: '#10B981',
-        bgColor: '#D1FAE5',
-        borderColor: '#6EE7B7',
-        icon: 'sprout', // Lucide icon name
+        color: '#52525b', // Zinc 600
+        bgColor: '#f4f4f5', // Zinc 100
+        borderColor: '#e4e4e7', // Zinc 200
+        icon: 'sprout',
     },
     [ExperienceTier.RISING]: {
         badge: 'Rising',
-        color: '#3B82F6',
-        bgColor: '#DBEAFE',
-        borderColor: '#93C5FD',
+        color: '#27272a', // Zinc 800
+        bgColor: '#f4f4f5', // Zinc 100
+        borderColor: '#d4d4d8', // Zinc 300
         icon: 'star',
     },
     [ExperienceTier.ESTABLISHED]: {
         badge: 'Established',
-        color: '#8B5CF6',
-        bgColor: '#EDE9FE',
-        borderColor: '#C4B5FD',
+        color: '#18181b', // Zinc 900
+        bgColor: '#f4f4f5', // Zinc 100
+        borderColor: '#a1a1aa', // Zinc 400
         icon: 'clapperboard',
     },
     [ExperienceTier.VETERAN]: {
         badge: 'Veteran',
-        color: '#D97706',
-        bgColor: '#FEF3C7',
-        borderColor: '#FCD34D',
+        color: '#000000', // Black
+        bgColor: '#f4f4f5',
+        borderColor: '#71717a', // Zinc 500
         icon: 'trophy',
     },
     [ExperienceTier.ACCLAIMED]: {
         badge: 'Acclaimed',
-        color: '#DC2626',
-        bgColor: '#FEE2E2',
-        borderColor: '#FCA5A5',
+        color: '#000000',
+        bgColor: '#f4f4f5',
+        borderColor: '#d4af37', // Gold 
         icon: 'crown',
     },
 } as const;

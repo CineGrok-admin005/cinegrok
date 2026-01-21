@@ -98,7 +98,7 @@ function PlansContent() {
 
         if (!selectedPlan || !draftData) {
             console.error('[PlansPage] BLOCKED: Missing plan or draft');
-            alert('DEBUG: Cannot publish - selectedPlan=' + !!selectedPlan + ', draftData=' + !!draftData);
+
             toast.error('Please select a plan and complete your profile first');
             return;
         }
@@ -112,7 +112,7 @@ function PlansContent() {
 
             if (!user) {
                 console.error('[PlansPage] BLOCKED: No user logged in');
-                alert('DEBUG: Not logged in!');
+
                 toast.dismiss();
 
                 toast.error('You must be logged in');
@@ -146,20 +146,20 @@ function PlansContent() {
 
             if (result.success && result.filmmakerId) {
                 console.log('[PlansPage] SUCCESS! Redirecting to:', `/filmmakers/${result.filmmakerId}`);
-                alert('DEBUG: SUCCESS! Filmmaker ID: ' + result.filmmakerId);
+
                 // Clear localStorage draft after successful publish
                 localStorage.removeItem('cinegrok_profile_draft');
                 toast.success('🎉 Profile published! Welcome to CineGrok.');
                 router.push(`/filmmakers/${result.filmmakerId}`);
             } else {
                 console.error('[PlansPage] RPC FAILED:', result);
-                alert('DEBUG: RPC FAILED - ' + (result.error || 'Unknown error'));
+
                 toast.error(result.error || 'Failed to publish profile');
             }
         } catch (error) {
             toast.dismiss();
             console.error('[PlansPage] EXCEPTION:', error);
-            alert('DEBUG: EXCEPTION - ' + String(error));
+
             toast.error('Something went wrong. Please try again.');
         } finally {
             setClaiming(false);

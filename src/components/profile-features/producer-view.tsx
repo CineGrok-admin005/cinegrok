@@ -9,6 +9,7 @@ import { Mail, Phone, MapPin, Download, Heart, HeartOff, Trophy, Award, Film, St
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
 import * as api from '@/lib/api';
+import { toast } from 'sonner';
 import { downloadAsHTML, printAsPDF } from '@/domain/profile-export.logic';
 
 interface ProducerViewProps {
@@ -59,7 +60,7 @@ export function ProducerView({ profile, isOwner = false, filmmakerId, filmmaker 
     } catch (error: any) {
       // If 401, user needs to log in
       if (error?.status === 401) {
-        alert('Please log in to express interest in profiles.');
+        toast.error('Please log in to express interest in profiles.');
         // Could redirect to login here
       } else {
         console.error('Interest toggle failed:', error);
@@ -465,7 +466,7 @@ export function ProducerView({ profile, isOwner = false, filmmakerId, filmmaker 
                 <div className="text-xs uppercase tracking-wider text-muted mt-1">Awards Won</div>
               </div>
               <div className="p-4 text-center border border-border rounded-lg">
-                <div className="flex items-center justify-center gap-2 text-2xl font-bold" style={{ color: '#71717a' }}>
+                <div className="flex items-center justify-center gap-2 text-2xl font-bold text-zinc-500">
                   <Award className="w-6 h-6" />
                   <span>{achievementStats.totalNominations}</span>
                 </div>

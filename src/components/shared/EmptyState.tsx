@@ -50,20 +50,21 @@ export function EmptyState({
             style={{
                 textAlign: 'center',
                 padding: '4rem 2rem',
-                background: '#f9f9f9',
-                borderRadius: '8px',
-                margin: '2rem 0'
+                background: 'var(--bg-secondary)',
+                borderRadius: 'var(--radius)',
+                margin: '2rem 0',
+                border: '1px solid var(--border)'
             }}
         >
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }} aria-hidden="true">
                 {icon}
             </div>
-            <h3 style={{ marginBottom: '0.5rem', color: 'var(--text-primary, #1a1a1a)' }}>
+            <h3 style={{ marginBottom: '0.5rem', color: 'var(--foreground)' }}>
                 {title}
             </h3>
             {description && (
                 <p style={{
-                    color: 'var(--text-secondary, #666)',
+                    color: 'var(--muted-foreground)',
                     marginBottom: '1.5rem',
                     maxWidth: '400px',
                     margin: '0 auto 1.5rem'

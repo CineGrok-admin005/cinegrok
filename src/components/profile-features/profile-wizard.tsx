@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ProfileData } from './types';
 import '../ProfileForm/styles.css';
+import { toast } from 'sonner';
 
 // Modular Components
 import PersonalInfoForm from '@/components/ProfileForm/PersonalInfoForm';
@@ -109,23 +110,23 @@ export function ProfileWizard({ initialData, onComplete }: ProfileWizardProps) {
   const handleSubmit = async () => {
     console.log('[ProfileWizard] handleSubmit called');
     console.log('[ProfileWizard] formData:', formData);
-    
+
     if (formData.stageName && formData.email && formData.country && formData.primaryRoles && formData.primaryRoles.length > 0) {
       // Save form data to localStorage - SIMPLE AND RELIABLE
       const dataToSave = JSON.stringify(formData);
       localStorage.setItem('cinegrok_profile_draft', dataToSave);
       console.log('[ProfileWizard] Saved to localStorage, keys:', Object.keys(formData));
-      
+
       // Redirect to plans page
       router.push('/plans?from=profile-builder');
     } else {
-      console.log('[ProfileWizard] Missing required fields:', { 
-        stageName: formData.stageName, 
-        email: formData.email, 
-        country: formData.country, 
-        primaryRoles: formData.primaryRoles 
+      console.log('[ProfileWizard] Missing required fields:', {
+        stageName: formData.stageName,
+        email: formData.email,
+        country: formData.country,
+        primaryRoles: formData.primaryRoles
       });
-      alert('Please fill in all required fields: Stage Name, Email, Country, and at least one Primary Role');
+      toast.error('Please fill in all required fields: Stage Name, Email, Country, and at least one Primary Role');
     }
   };
 

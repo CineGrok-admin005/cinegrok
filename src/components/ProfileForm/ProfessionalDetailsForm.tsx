@@ -5,6 +5,7 @@ import {
     Briefcase, Clock, Palette, Lightbulb, PenTool, MapPin, Star,
     Film, BookOpen, MessageSquare, Feather, Users, Calendar, AlertCircle
 } from 'lucide-react'
+import { toast } from 'sonner'
 
 // Constants
 const ROLES = [
@@ -102,15 +103,15 @@ export default function ProfessionalDetailsForm({
 
         if (!isSelected) {
             if (totalRolesCount >= 4) {
-                alert("Total roles limit reached (max 4).")
+                toast.warning("Total roles limit reached (max 4).")
                 return
             }
             if (type === 'primary' && prim.length >= 2) {
-                alert("You can select a maximum of 2 Primary Roles.")
+                toast.warning("You can select a maximum of 2 Primary Roles.")
                 return
             }
             if (type === 'secondary' && sec.length >= 2) {
-                alert("You can select a maximum of 2 Secondary Roles.")
+                toast.warning("You can select a maximum of 2 Secondary Roles.")
                 return
             }
         }
@@ -146,15 +147,15 @@ export default function ProfessionalDetailsForm({
 
         // Validate limits before adding
         if (customRoleType === 'primary' && prim.length >= 2) {
-            alert("You can select a maximum of 2 Primary Roles. Unselect one to add a new custom role.")
+            toast.warning("You can select a maximum of 2 Primary Roles. Unselect one to add a new custom role.")
             return
         }
         if (customRoleType === 'secondary' && sec.length >= 2) {
-            alert("You can select a maximum of 2 Secondary Roles. Unselect one to add a new custom role.")
+            toast.warning("You can select a maximum of 2 Secondary Roles. Unselect one to add a new custom role.")
             return
         }
         if (totalRolesCount >= 4) {
-            alert("Total roles limit reached (max 4). Unselect one to add a new custom role.")
+            toast.warning("Total roles limit reached (max 4). Unselect one to add a new custom role.")
             return
         }
 

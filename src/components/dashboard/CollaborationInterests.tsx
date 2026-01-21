@@ -65,9 +65,9 @@ interface CollaborationInterest {
 }
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-    interested: { label: 'Interested', color: 'bg-blue-100 text-blue-800' },
-    shortlisted: { label: 'Shortlisted', color: 'bg-yellow-100 text-yellow-800' },
-    contacted: { label: 'Contacted', color: 'bg-green-100 text-green-800' },
+    interested: { label: 'Interested', color: 'bg-zinc-100 text-zinc-900 border-zinc-200' },
+    shortlisted: { label: 'Shortlisted', color: 'bg-zinc-800 text-white border-zinc-900' },
+    contacted: { label: 'Contacted', color: 'bg-zinc-200 text-zinc-900' },
     archived: { label: 'Archived', color: 'bg-gray-100 text-gray-600' },
 };
 
@@ -241,8 +241,8 @@ export default function CollaborationInterests() {
     if (interests.length === 0 && statusFilter === 'all' && roleFilter === 'all' && !locationFilter) {
         return (
             <div className="text-center py-16 px-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <Handshake className="w-8 h-8 text-blue-600" />
+                <div className="w-16 h-16 bg-zinc-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Handshake className="w-8 h-8 text-zinc-900" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">No Collaboration Interests Yet</h3>
                 <p className="text-gray-600 mb-6 max-w-md mx-auto">
@@ -250,7 +250,7 @@ export default function CollaborationInterests() {
                     Your saved interests will appear here.
                 </p>
                 <Link href="/browse">
-                    <Button className="bg-gradient-to-r from-blue-600 to-indigo-600">
+                    <Button className="bg-primary text-primary-foreground hover:bg-zinc-800">
                         <Search className="w-4 h-4 mr-2" />
                         Browse Filmmakers
                     </Button>
@@ -298,7 +298,7 @@ export default function CollaborationInterests() {
                     placeholder="Filter by location..."
                     value={locationFilter}
                     onChange={(e) => setLocationFilter(e.target.value)}
-                    className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-zinc-500 bg-white"
                 />
 
                 {(statusFilter !== 'all' || roleFilter !== 'all' || locationFilter) && (
