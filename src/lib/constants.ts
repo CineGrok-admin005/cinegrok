@@ -3,6 +3,36 @@ export const LANGUAGES = [
     "English", "Spanish", "French", "German", "Chinese (Mandarin)", "Hindi", "Arabic", "Portuguese", "Bengali", "Russian", "Japanese", "Punjabi", "German", "Javanese", "Wu (Shanghainese)", "Malay/Indonesian", "Telugu", "Vietnamese", "Korean", "Marathi", "Tamil", "Urdu", "Turkish", "Italian", "Yue (Cantonese)", "Thai", "Gujarati", "Jin", "Southern Min", "Persian", "Polish", "Pashto", "Kannada", "Xiang", "Malayalam", "Sundanese", "Hausa", "Odia (Oriya)", "Burmese", "Hakka", "Ukrainian", "Bhojpuri", "Tagalog", "Yoruba", "Maithili", "Uzbek", "Sindhi", "Amharic", "Fula", "Romanian", "Oromo", "Igbo", "Azerbaijani", "Awadhi", "Gan Chinese", "Cebuano (Visayan)", "Dutch", "Kurdish", "Serbo-Croatian", "Malagasy", "Saraiki", "Nepali", "Sinhalese", "Chittagonian", "Zhuang", "Khmer", "Turkmen", "Assamese", "Madurese", "Somali", "Marwari", "Magahi", "Haryanvi", "Hungarian", "Chhattisgarhi", "Greek", "Chewa", "Deccan", "Akan", "Kazakh", "Sylheti", "Zulu", "Czech", "Kinyarwanda", "Dhundhari", "Haitian Creole", "Eastern Min", "Ilocano", "Quechua", "Kirundi", "Swedish", "Hmong", "Shona", "Uyghur", "Hiligaynon", "Mossi", "Xhosa", "Belarusian", "Balochi", "Konkani"
 ].sort();
 
+// Basic constants to replace heavy libraries
+export const COUNTRIES = [
+    { name: "India", isoCode: "IN" },
+    { name: "United States", isoCode: "US" },
+    { name: "United Kingdom", isoCode: "GB" },
+    { name: "Canada", isoCode: "CA" },
+    { name: "Australia", isoCode: "AU" },
+    { name: "Germany", isoCode: "DE" },
+    { name: "France", isoCode: "FR" },
+    { name: "Japan", isoCode: "JP" },
+];
+
+export const STATES: Record<string, Array<{ name: string; isoCode: string }>> = {
+    "IN": [
+        { name: "Maharashtra", isoCode: "MH" },
+        { name: "Delhi", isoCode: "DL" },
+        { name: "Karnataka", isoCode: "KA" },
+        { name: "Tamil Nadu", isoCode: "TN" },
+        { name: "Kerala", isoCode: "KL" },
+        { name: "Telangana", isoCode: "TG" },
+        { name: "West Bengal", isoCode: "WB" },
+    ],
+    "US": [
+        { name: "California", isoCode: "CA" },
+        { name: "New York", isoCode: "NY" },
+        { name: "Texas", isoCode: "TX" },
+        { name: "Florida", isoCode: "FL" },
+    ]
+};
+
 export const PRONOUNS = [
     "he/him",
     "she/her",

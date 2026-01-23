@@ -115,6 +115,13 @@ body {
 }
 
 /* Typography Hierarchy */
+/* Global Selection Color */
+::selection {
+  background: var(--text-primary);
+  color: var(--bg-primary);
+}
+
+/* Typography Hierarchy - Fluid Scales */
 h1,
 h2,
 h3,
@@ -123,32 +130,36 @@ h5,
 h6 {
   font-family: var(--font-heading);
   font-weight: 700;
-  /* Bold Serif */
-  line-height: 1.2;
+  line-height: 1.1;
   color: var(--text-primary);
   margin-bottom: var(--spacing-sm);
   letter-spacing: -0.02em;
 }
 
 h1 {
-  font-size: 3rem;
+  /* Mobile: 2.5rem | Desktop: 4rem */
+  font-size: clamp(2.5rem, 5vw + 1rem, 4rem);
   font-weight: 700;
   letter-spacing: -0.03em;
+  line-height: 1.1;
 }
 
 h2 {
-  font-size: 2.25rem;
+  /* Mobile: 2rem | Desktop: 3rem */
+  font-size: clamp(2rem, 4vw + 1rem, 3rem);
   font-weight: 600;
 }
 
 h3 {
-  font-size: 1.5rem;
+  /* Mobile: 1.5rem | Desktop: 2rem */
+  font-size: clamp(1.5rem, 3vw + 1rem, 2rem);
   font-weight: 600;
   color: var(--text-primary);
 }
 
 h4 {
-  font-size: 1.125rem;
+  /* Mobile: 1rem | Desktop: 1.25rem */
+  font-size: clamp(1rem, 2vw + 0.5rem, 1.25rem);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -158,7 +169,7 @@ h4 {
 p {
   margin-bottom: var(--spacing-sm);
   color: var(--text-secondary);
-  font-size: 1.05rem;
+  font-size: clamp(1rem, 1vw + 0.8rem, 1.125rem);
   /* Slightly larger for readability */
 }
 
@@ -173,7 +184,14 @@ a:hover {
   border-bottom-color: var(--text-primary);
 }
 
-/* Layout Utilities */
+/* Glass Utility */
+.glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
 .container {
   width: 100%;
   max-width: var(--max-width);

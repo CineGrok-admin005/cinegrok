@@ -23,11 +23,11 @@ export async function GET(req: NextRequest) {
         const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100);
         // Note: Offset/pagination logic should ideally move to domain/db service for complex queries
 
-        // Fetch filmmakers using domain logic
-        const data = await filmmakerDomain.listFilmmakers(limit);
+        // Fetch filmmakers using domain logic (DB-level filtering)
+        const processedData = await filmmakerDomain.listFilmmakers(limit);
 
-        // Filter for processed profiles in domain or here for now to maintain behavior
-        const processedData = data.filter(f => f.generated_bio !== null);
+        // In-memory filtering removed in favor of DB optimization
+        // const processedData = data.filter(f => f.generated_bio !== null);
 
         // Set caching headers for performance
         // Cache for 5 minutes, revalidate in background

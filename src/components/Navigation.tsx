@@ -166,22 +166,27 @@ export default function Navigation() {
 
       <style jsx>{`
         .navigation {
-          background: var(--bg-primary);
-          border-bottom: 1px solid var(--border-light);
+          background: rgba(252, 252, 250, 0.85); /* Semi-transparent */
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border-bottom: 1px solid rgba(0, 0, 0, 0.05);
           position: sticky;
           top: 0;
           z-index: 100;
-          /* Minimal shadow for editorial feel */
-          box-shadow: 0 1px 0 rgba(0,0,0,0.02);
+          transition: all 0.3s ease;
         }
 
         .nav-content {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 1.25rem 2rem; /* Added horizontal padding for relaxed spacing */
+          padding: 1rem 2rem;
           gap: 2rem;
+          max-width: 1400px;
+          margin: 0 auto;
         }
+
+        /* ... (rest of search/logo styles remain similar, focusing on mobile menu) ... */
 
         .logo {
           display: flex;
@@ -214,9 +219,9 @@ export default function Navigation() {
           flex: 1;
           padding: 0.6rem 1rem 0.6rem 2.5rem;
           border: 1px solid var(--border);
-          border-radius: 4px; /* Sharper */
+          border-radius: 99px; /* Rounded pill for modern feel */
           font-size: 0.9rem;
-          background: transparent;
+          background: rgba(255, 255, 255, 0.5);
           transition: all 0.2s;
           font-family: var(--font-body);
         }
@@ -225,6 +230,7 @@ export default function Navigation() {
           outline: none;
           border-color: var(--text-primary);
           background: #fff;
+          box-shadow: 0 0 0 2px rgba(0,0,0,0.05);
         }
 
         .search-input::placeholder {
@@ -245,20 +251,23 @@ export default function Navigation() {
           color: var(--text-secondary);
           background: transparent;
           font-family: var(--font-body);
-          padding: 0;
+          padding: 0.5rem 0.75rem;
+          border-radius: 8px;
           border: none;
           cursor: pointer;
         }
 
         .nav-btn:hover {
           color: var(--text-primary);
+          background: rgba(0,0,0,0.03);
         }
 
-        /* "Primary" CTA is now just a text link, perhaps bold or underlined */
+        /* "Primary" CTA */
         .nav-btn-primary {
           color: var(--text-primary);
           font-weight: 600;
-          border-bottom: 1px solid var(--text-primary);
+          border-bottom: 2px solid var(--text-primary);
+          border-radius: 0;
           background: transparent;
           padding-bottom: 2px;
         }
@@ -273,11 +282,17 @@ export default function Navigation() {
           background: none;
           border: none;
           cursor: pointer;
-          padding: 0.5rem;
+          padding: 0.75rem; /* Larger touch target */
           color: var(--text-primary);
           display: flex;
           align-items: center;
           justify-content: center;
+          border-radius: 50%;
+          transition: background 0.2s;
+        }
+        
+        .menu-button:active {
+            background: rgba(0,0,0,0.05);
         }
 
         .mobile-menu {
@@ -285,19 +300,32 @@ export default function Navigation() {
           flex-direction: column;
           gap: 0;
           padding: 1rem 1.5rem;
-          background: var(--bg-primary);
+          padding-bottom: env(safe-area-inset-bottom, 20px); /* Safe Area */
+          background: rgba(252, 252, 250, 0.98);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
           border-top: 1px solid var(--border-light);
+          position: absolute;
+          width: 100%;
+          height: 100vh; /* Full screen menu feel */
+          left: 0;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+          animation: slideDown 0.3s ease-out forwards;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .mobile-link {
-          padding: 1rem 0;
-          min-height: 48px;
+          padding: 1.25rem 0; /* Taller touch targets (approx 60px) */
           display: flex;
           align-items: center;
           color: var(--text-primary);
           text-decoration: none;
           font-weight: 500;
-          font-size: 1rem;
+          font-size: 1.1rem; /* Larger text for mobile */
           border-bottom: 1px solid var(--border-light);
           font-family: var(--font-body);
         }
@@ -321,6 +349,10 @@ export default function Navigation() {
 
           .mobile-only {
             display: none;
+          }
+          
+          .mobile-menu {
+            display: none; /* Ensure no leak on resize */
           }
         }
       `}</style>

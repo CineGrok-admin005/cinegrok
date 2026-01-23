@@ -97,6 +97,7 @@ export interface RawFormData {
 }
 
 export interface Film {
+    id?: string;
     title: string;
     year?: string;
     genre?: string | string[]; // Updated to support array
@@ -345,4 +346,93 @@ export async function getInterestedProfiles(): Promise<{ profiles: Filmmaker[] }
 export async function isInterested(filmmakerId: string): Promise<{ isInterested: boolean }> {
     return apiFetch(`/api/interested-profiles?filmmakerId=${filmmakerId}`);
 }
+
+// ============================================================================
+// Analytics
+// ============================================================================
+
+export type ClickType = 'film' | 'watch' | 'trailer' | 'social';
+
+export interface AnalyticsStats {
+    totalViews: number;
+    totalClicks: number;
+    ctr: number;
+    interestsReceived: number;
+    trend7d: { views: number; clicks: number; change: number };
+    trend30d: { views: number; clicks: number; change: number };
+    referrerBreakdown: {
+        direct: number;
+        instagram: number;
+        youtube: number;
+        twitter: number;
+        other: number;
+    };
+    deviceBreakdown: {
+        mobile: number;
+        desktop: number;
+        tablet: number;
+    };
+}
+
+export interface DailyTrendData {
+    date: string;
+    views: number;
+    clicks: number;
+}
+
+export interface AnalyticsResponse {
+    stats: AnalyticsStats;
+    dailyTrend: DailyTrendData[] | null;
+    clickBreakdown: Record<string, { targetId: string; count: number }[]> | null;
+    profileCompleteness: number;
+    improvementTips: string[];
+    profile: {
+        id: string;
+        name: string;
+        status: string;
+    };
+}
+
+/**
+ * Track a profile view
+ * Should be called once per session via sessionStorage debounce
+ */
+export async function trackProfileView(filmmakerId: string): Promise<{ tracked: boolean }> {
+    return apiFetch('/api/v1/analytics/track', {
+        method: 'POST',
+        body: JSON.stringify({ type: 'view', filmmakerId }),
+    });
+}
+
+/**
+ * Track a click event on a profile
+ */
+export async function trackClick(
+    filmmakerId: string,
+    clickType: ClickType,
+    targetId: string
+): Promise<{ tracked: boolean }> {
+    return apiFetch('/api/v1/analytics/track', {
+        method: 'POST',
+        body: JSON.stringify({ type: 'click', filmmakerId, clickType, targetId }),
+    });
+}
+
+/**
+ * Get analytics for the current user's profile
+ */
+export async function getMyAnalytics(options?: {
+    days?: number;
+    includeTrend?: boolean;
+    includeClicks?: boolean;
+}): Promise<AnalyticsResponse> {
+    const params = new URLSearchParams();
+    if (options?.days) params.append('days', options.days.toString());
+    if (options?.includeTrend) params.append('trend', 'true');
+    if (options?.includeClicks) params.append('clicks', 'true');
+
+    const query = params.toString();
+    return apiFetch(`/api/v1/analytics/stats${query ? `?${query}` : ''}`);
+}
+
 

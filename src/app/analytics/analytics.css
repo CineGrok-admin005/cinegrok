@@ -1,0 +1,75 @@
+/* Analytics Dashboard Styles */
+
+/* Responsive chart containers */
+.analytics-chart-container {
+    position: relative;
+    width: 100%;
+    min-height: 200px;
+}
+
+/* Mobile-first responsive design */
+@media (max-width: 640px) {
+    .analytics-stat-card {
+        padding: 1rem;
+    }
+
+    .analytics-stat-value {
+        font-size: 1.5rem;
+    }
+}
+
+/* Smooth animations */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.analytics-card-enter {
+    animation: slideUp 0.3s ease-out forwards;
+}
+
+/* Progress bar animations */
+.analytics-progress-bar {
+    transition: width 0.7s ease-out;
+}
+
+/* Skeleton pulse animation (in addition to Tailwind's animate-pulse) */
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.analytics-skeleton-shimmer {
+    background: linear-gradient(90deg,
+            #f0f0f0 25%,
+            #e0e0e0 50%,
+            #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+/* Hover effects for stat cards */
+.analytics-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .analytics-stat-card {
+        background: #1f1f1f;
+        border-color: #333;
+    }
+}

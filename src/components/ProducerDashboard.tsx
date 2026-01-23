@@ -78,6 +78,65 @@ export default function ProducerDashboard({ films, filmmakerName }: ProducerDash
         .map(r => r[0])
         .join(', ');
 
+    // PREMIUM EMPTY STATE
+    if (!films || films.length === 0) {
+        return (
+            <div className="producer-dashboard">
+                <header className="dashboard-header" style={{ marginBottom: '2rem', paddingBottom: '1rem', borderBottom: '1px solid #eee' }}>
+                    <div className="dashboard-title">
+                        <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>Producer Evaluation View</h1>
+                        <p style={{ color: '#666' }}>Objective Data: {filmmakerName}</p>
+                    </div>
+                </header>
+
+                <div className="empty-state-container" style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '4rem 1rem',
+                    background: '#fcfcfa',
+                    borderRadius: '12px',
+                    border: '1px dashed #e2e2e2',
+                    textAlign: 'center'
+                }}>
+                    <div style={{
+                        width: '64px',
+                        height: '64px',
+                        background: '#f1f3f5',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginBottom: '1.5rem',
+                        color: '#adb5bd'
+                    }}>
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                            <line x1="7" y1="2" x2="7" y2="22"></line>
+                            <line x1="17" y1="2" x2="17" y2="22"></line>
+                            <line x1="2" y1="12" x2="22" y2="12"></line>
+                            <line x1="2" y1="7" x2="7" y2="7"></line>
+                            <line x1="2" y1="17" x2="7" y2="17"></line>
+                            <line x1="17" y1="17" x2="22" y2="17"></line>
+                            <line x1="17" y1="7" x2="22" y2="7"></line>
+                        </svg>
+                    </div>
+                    <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>No Film Data Available</h3>
+                    <p style={{ color: '#666', maxWidth: '400px', marginBottom: '2rem' }}>
+                        This profile hasn't added any projects yet. Share this profile to encourage them to update their filmography.
+                    </p>
+                    {/* Placeholder Charts to maintain structure feel */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', width: '100%', maxWidth: '600px', opacity: 0.3, filter: 'grayscale(1)' }}>
+                        <div style={{ height: '80px', background: '#e9ecef', borderRadius: '4px' }}></div>
+                        <div style={{ height: '80px', background: '#e9ecef', borderRadius: '4px' }}></div>
+                        <div style={{ height: '80px', background: '#e9ecef', borderRadius: '4px' }}></div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className="producer-dashboard">
             <header className="dashboard-header" style={{ marginBottom: '2rem', paddingBottom: '1rem', borderBottom: '1px solid #eee' }}>
@@ -99,7 +158,7 @@ export default function ProducerDashboard({ films, filmmakerName }: ProducerDash
             </header>
 
             {/* SUMMARY ROW: Objective Snapshots */}
-            <div className="dashboard-grid" style={{ marginBottom: '2rem', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
+            <div className="dashboard-grid dashboard-stats-grid" style={{ marginBottom: '2rem', gap: '1.5rem' }}>
                 <div className="summary-card" style={{ padding: '1rem', background: '#f8f9fa', borderRadius: '8px' }}>
                     <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', color: '#666', marginBottom: '4px' }}>Experience</div>
                     <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>Active Since {activeSince}</div>
@@ -126,7 +185,7 @@ export default function ProducerDashboard({ films, filmmakerName }: ProducerDash
             </div>
 
             {/* ANALYTICS GRID */}
-            <div className="dashboard-analytics-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '2rem', marginBottom: '3rem' }}>
+            <div className="dashboard-analytics-grid" style={{ gap: '2rem', marginBottom: '3rem' }}>
 
                 {/* 1. Project Lifecycle */}
                 <div className="chart-card" style={{ border: '1px solid #eee', padding: '1.5rem', borderRadius: '8px' }}>
@@ -210,8 +269,8 @@ export default function ProducerDashboard({ films, filmmakerName }: ProducerDash
                         </tr>
                     </thead>
                     <tbody>
-                        {sortedFilms.map((film, idx) => (
-                            <tr key={idx} style={{ borderBottom: '1px solid #eee' }}>
+                        {sortedFilms.map((film) => (
+                            <tr key={film.id || `film-${film.year}-${film.title}`} style={{ borderBottom: '1px solid #eee' }}>
                                 <td style={{ padding: '0.8rem' }}>{film.year}</td>
                                 <td style={{ padding: '0.8rem' }}><strong>{film.title}</strong></td>
                                 <td style={{ padding: '0.8rem' }}>{film.project_format}</td>

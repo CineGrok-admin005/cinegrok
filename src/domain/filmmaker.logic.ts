@@ -30,7 +30,13 @@ export class FilmmakerDomain {
     }
 
     async listFilmmakers(limit?: number): Promise<Filmmaker[]> {
-        return dbService.getAllFilmmakers(limit);
+        // Use DB-level filtering for performance
+        const { data } = await dbService.getFilmmakersWithFilters({
+            limit: limit || 50,
+            hasContents: true,
+            page: 1
+        });
+        return data;
     }
 
     async search(query: string, useVector: boolean = false): Promise<Filmmaker[]> {

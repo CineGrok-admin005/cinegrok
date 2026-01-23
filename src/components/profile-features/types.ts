@@ -52,6 +52,7 @@ export interface FilmographyEntry {
   crewScale?: string;
   synopsis: string;
   watchLink?: string; // Scalable used this
+  trailerUrl?: string; // Trailer/teaser link (YouTube/Vimeo)
   link?: string; // Production uses this
   posterUrl?: string; // Fixed typo from posterUr
   poster?: string; // Production

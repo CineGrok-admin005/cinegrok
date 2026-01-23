@@ -1,22 +1,43 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { User, Mail, Phone, MapPin, Calendar, Globe, Upload, FileText, MessageCircle } from 'lucide-react'
+import { User, Mail, Phone, MapPin, Calendar, Globe, Upload, MessageCircle, FileText } from 'lucide-react'
 import { getCurrentUser, uploadFile } from '@/lib/api'
-import { PRONOUNS } from '@/lib/constants'
-import { Country, State } from 'country-state-city'
+import { PRONOUNS, COUNTRIES, STATES } from '@/lib/constants'
+// import { Country, State } from 'country-state-city' // Heavy lib removed
 import { LanguageCombobox } from '@/components/ui/LanguageCombobox'
 import { Checkbox } from '@/components/ui/checkbox'
 
+// Define exact shape for better type safety
+interface ProfileData {
+    profilePhoto?: string;
+    stageName?: string;
+    legalName?: string;
+    email?: string;
+    phone?: string;
+    dateOfBirth?: string;
+    nationality?: string;
+    country?: string;
+    currentState?: string;
+    currentCity?: string;
+    nativeCountry?: string;
+    nativeState?: string;
+    nativeCity?: string;
+    preferredContact?: string;
+    languages?: string;
+    educationTraining?: string;
+    pronouns?: string;
+}
+
 interface PersonalInfoFormProps {
-    data: any
-    updateData: (data: any) => void
+    data: ProfileData
+    updateData: (data: Partial<ProfileData>) => void
     onNext: () => void
 }
 
 export default function PersonalInfoForm({ data, updateData, onNext }: PersonalInfoFormProps) {
     const [uploading, setUploading] = useState(false)
-    const [errors, setErrors] = useState<any>({})
+    const [errors, setErrors] = useState<Record<string, string | null>>({})
     const [nativeSameAsCurrent, setNativeSameAsCurrent] = useState(false)
 
     // Sync native location when checkbox is checked
@@ -53,7 +74,7 @@ export default function PersonalInfoForm({ data, updateData, onNext }: PersonalI
     // Helper to get states based on country code
     const getStatesRequest = (countryCode: string) => {
         if (!countryCode) return []
-        return State.getStatesOfCountry(countryCode)
+        return STATES[countryCode] || []
     }
 
     const handleChange = (field: string, value: any) => {
@@ -110,7 +131,7 @@ export default function PersonalInfoForm({ data, updateData, onNext }: PersonalI
     }
 
     const validate = () => {
-        const newErrors: any = {}
+        const newErrors: Record<string, string> = {}
 
         // Profile photo is essential for a professional filmmaker profile
         if (!data.profilePhoto?.trim()) {
@@ -303,7 +324,7 @@ export default function PersonalInfoForm({ data, updateData, onNext }: PersonalI
                         className={errors.country ? 'error' : ''}
                     >
                         <option value="">Select Country</option>
-                        {Country.getAllCountries().map((country) => (
+                        {COUNTRIES.map((country) => (
                             <option key={country.isoCode} value={country.isoCode}>
                                 {country.name}
                             </option>
@@ -324,7 +345,7 @@ export default function PersonalInfoForm({ data, updateData, onNext }: PersonalI
                         disabled={!data.country}
                     >
                         <option value="">Select State</option>
-                        {getStatesRequest(data.country).map((state) => (
+                        {getStatesRequest(data.country || '').map((state) => (
                             <option key={state.isoCode} value={state.name}>
                                 {state.name}
                             </option>
@@ -370,7 +391,7 @@ export default function PersonalInfoForm({ data, updateData, onNext }: PersonalI
                         disabled={nativeSameAsCurrent}
                     >
                         <option value="">Select Country</option>
-                        {Country.getAllCountries().map((country) => (
+                        {COUNTRIES.map((country) => (
                             <option key={country.isoCode} value={country.isoCode}>
                                 {country.name}
                             </option>
@@ -391,7 +412,7 @@ export default function PersonalInfoForm({ data, updateData, onNext }: PersonalI
                         disabled={nativeSameAsCurrent || !data.nativeCountry}
                     >
                         <option value="">Select State</option>
-                        {getStatesRequest(data.nativeCountry).map((state) => (
+                        {getStatesRequest(data.nativeCountry || '').map((state) => (
                             <option key={state.isoCode} value={state.name}>
                                 {state.name}
                             </option>

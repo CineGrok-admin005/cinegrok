@@ -9,7 +9,7 @@ import { getUser, getUserProfile } from '@/lib/supabase-server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import SignOutButton from '@/components/SignOutButton'
-import { Users, Handshake, Settings, HelpCircle } from 'lucide-react'
+import { Users, Handshake, Settings, HelpCircle, BarChart3 } from 'lucide-react'
 import './dashboard.css'
 
 import { Database } from '@/lib/supabase'
@@ -75,16 +75,6 @@ export default async function DashboardPage() {
                                 {(filmmaker as any).status === 'published' ? (
                                     <>
                                         <p>Your profile is live and visible to everyone.</p>
-                                        <div className="profile-stats">
-                                            <div className="stat">
-                                                <span className="stat-value">{(filmmaker as any).profile_views || 0}</span>
-                                                <span className="stat-label">Views</span>
-                                            </div>
-                                            <div className="stat">
-                                                <span className="stat-value">{(filmmaker as any).profile_clicks || 0}</span>
-                                                <span className="stat-label">Clicks</span>
-                                            </div>
-                                        </div>
                                         <div className="button-group">
                                             <Link href={`/filmmakers/${filmmaker.id}`} className="btn btn-primary btn-sm">
                                                 View Profile
@@ -129,6 +119,11 @@ export default async function DashboardPage() {
                         <Users className="action-icon-svg" size={32} strokeWidth={1.5} />
                         <h4>Browse Filmmakers</h4>
                         <p>Discover other talented filmmakers</p>
+                    </Link>
+                    <Link href="/analytics" className="action-card">
+                        <BarChart3 className="action-icon-svg" size={32} strokeWidth={1.5} />
+                        <h4>My Analytics</h4>
+                        <p>View your profile insights</p>
                     </Link>
                     <Link href="/collaboration-interests" className="action-card">
                         <Handshake className="action-icon-svg" size={32} strokeWidth={1.5} />

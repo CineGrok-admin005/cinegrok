@@ -112,9 +112,10 @@ export class SupabaseDBService implements IDBService {
         state?: string;
         genre?: string;
         collab?: boolean;
+        hasContents?: boolean;
     }): Promise<{ data: Filmmaker[], count: number }> {
         const supabase = await createSupabaseServerClient();
-        const { page = 1, limit = 12, search, role, state, genre, collab } = options;
+        const { page = 1, limit = 12, search, role, state, genre, collab, hasContents } = options;
         const from = (page - 1) * limit;
         const to = from + limit - 1;
 
@@ -148,6 +149,10 @@ export class SupabaseDBService implements IDBService {
             query = query.or(
                 `raw_form_data->>open_to_collab.eq.Yes,raw_form_data->>openToCollaborations.eq.Yes`
             );
+        }
+
+        if (hasContents) {
+            query = query.not('generated_bio', 'is', null);
         }
 
         query = query.order('created_at', { ascending: false }).range(from, to);

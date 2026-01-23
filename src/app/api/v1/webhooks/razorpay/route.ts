@@ -131,38 +131,28 @@ async function handleSubscriptionActivated(subscription: RazorpaySubscriptionPay
         return;
     }
 
-    // Update subscription record
-    await supabase
-        .from('subscriptions')
-        .upsert({
-            user_id: userId,
-            razorpay_subscription_id: subscription.id,
-            razorpay_plan_id: subscription.plan_id,
-            status: 'active',
-            current_start: subscription.current_start
-                ? new Date(subscription.current_start * 1000).toISOString()
-                : null,
-            current_end: subscription.current_end
-                ? new Date(subscription.current_end * 1000).toISOString()
-                : null,
-            payment_failure_count: 0,
-            grace_period_end: null,
-            updated_at: new Date().toISOString(),
-        }, {
-            onConflict: 'user_id',
+    // Use RPC for atomic transaction
+    const { error } = await supabase.rpc('handle_razorpay_subscription_success', {
+        p_user_id: userId,
+        p_subscription_id: subscription.id,
+        p_plan_id: subscription.plan_id,
+        p_current_start: subscription.current_start
+            ? new Date(subscription.current_start * 1000).toISOString()
+            : null,
+        p_current_end: subscription.current_end
+            ? new Date(subscription.current_end * 1000).toISOString()
+            : null,
+    });
+
+    if (error) {
+        logger.error('ERR_WEBHOOK_003', 'Failed to process subscription activation atomically', undefined, {
+            error: error.message,
+            subscriptionId: subscription.id,
         });
+        throw error;
+    }
 
-    // Update filmmaker profile
-    await supabase
-        .from('filmmakers')
-        .update({
-            subscription_status: 'active',
-            is_published: true,
-            grace_period_end: null,
-        })
-        .eq('user_id', userId);
-
-    logger.info('Subscription activated', userId, {
+    logger.info('Subscription activated atomically', userId, {
         code: 'INF_WEBHOOK_001',
         subscriptionId: subscription.id,
         planId: subscription.plan_id,

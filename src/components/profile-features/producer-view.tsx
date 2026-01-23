@@ -5,7 +5,7 @@ import { Card } from './ui/card';
 import { Badge } from './ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { Mail, Phone, MapPin, Download, Heart, HeartOff, Trophy, Award, Film, Star, FileText, FileCode, ChevronDown, Handshake } from 'lucide-react';
+import { Mail, Phone, MapPin, Download, Heart, HeartOff, Trophy, Award, Film, Star, FileText, FileCode, ChevronDown, ChevronUp, Handshake, Play, ExternalLink, Clock, Users } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
 import * as api from '@/lib/api';
@@ -23,6 +23,7 @@ export function ProducerView({ profile, isOwner = false, filmmakerId, filmmaker 
   const [isInterested, setIsInterested] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isCheckingInterest, setIsCheckingInterest] = useState(true);
+  const [expandedFilmIds, setExpandedFilmIds] = useState<Set<string>>(new Set());
 
   // Check if user is interested in this profile on mount
   useEffect(() => {
@@ -82,7 +83,27 @@ export function ProducerView({ profile, isOwner = false, filmmakerId, filmmaker 
     }
   };
 
-  // Calculate statistics from filmography
+  // Toggle film expansion in Individual Film Details section
+  const toggleFilmExpanded = (filmId: string) => {
+    setExpandedFilmIds(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(filmId)) {
+        newSet.delete(filmId);
+      } else {
+        newSet.add(filmId);
+      }
+      return newSet;
+    });
+  };
+
+  // Helper to format duration
+  const formatDuration = (film: any) => {
+    if (film.durationValue && film.durationUnit) {
+      return `${film.durationValue} ${film.durationUnit}`;
+    }
+    if (film.duration) return film.duration;
+    return null;
+  };
   const getProjectStats = () => {
     const statusCount: Record<string, number> = {};
     const formatCount: Record<string, number> = {};
@@ -533,6 +554,238 @@ export function ProducerView({ profile, isOwner = false, filmmakerId, filmmaker 
                   ))}
                 </TableBody>
               </Table>
+            </div>
+          </Card>
+        )}
+
+        {/* Individual Film Details - Collapsible Cards */}
+        {profile.filmography && profile.filmography.length > 0 && (
+          <Card className="p-6 mt-8">
+            <h3 className="text-xl mb-6" style={{ fontFamily: 'var(--font-serif)' }}>
+              Individual Film Details
+            </h3>
+            <p className="text-sm text-muted mb-6">
+              Click on any film to view detailed information including synopsis, achievements, and more.
+            </p>
+
+            <div className="space-y-3">
+              {profile.filmography
+                .sort((a, b) => (b.year || '').localeCompare(a.year || ''))
+                .map((film) => {
+                  const isExpanded = expandedFilmIds.has(film.id);
+                  const filmAchievements = film.achievements || [];
+                  const duration = formatDuration(film);
+                  const watchLink = film.watchLink || film.link;
+                  const posterUrl = film.posterUrl || film.poster;
+
+                  return (
+                    <div
+                      key={film.id}
+                      className="border border-border rounded-lg overflow-hidden transition-all duration-200 hover:border-zinc-400"
+                    >
+                      {/* Collapsed Header - Always visible */}
+                      <button
+                        onClick={() => toggleFilmExpanded(film.id)}
+                        className="w-full p-4 flex items-center gap-4 text-left hover:bg-accent/50 transition-colors"
+                      >
+                        {/* Poster Thumbnail */}
+                        <div className="w-12 h-16 flex-shrink-0 bg-zinc-100 rounded overflow-hidden border border-zinc-200">
+                          {posterUrl ? (
+                            <ImageWithFallback
+                              src={posterUrl}
+                              alt={film.title}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <Film className="w-5 h-5 text-muted" />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Film Info */}
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-semibold text-base truncate" style={{ fontFamily: 'var(--font-serif)' }}>
+                            {film.title}
+                          </h4>
+                          <div className="flex flex-wrap items-center gap-2 mt-1">
+                            <span className="text-sm text-muted">{film.year}</span>
+                            {film.format && (
+                              <>
+                                <span className="text-muted">•</span>
+                                <Badge variant="outline" className="text-xs">{film.format}</Badge>
+                              </>
+                            )}
+                            {film.status && (
+                              <>
+                                <span className="text-muted">•</span>
+                                <Badge variant="secondary" className="text-xs">{film.status}</Badge>
+                              </>
+                            )}
+                          </div>
+                          <p className="text-sm text-muted mt-1">
+                            Role: <span className="text-foreground">{film.primaryRole || film.role || 'Not specified'}</span>
+                          </p>
+                        </div>
+
+                        {/* Achievements count badge */}
+                        {filmAchievements.length > 0 && (
+                          <div className="flex items-center gap-1 px-2 py-1 bg-amber-50 text-amber-700 rounded-full text-xs font-medium">
+                            <Trophy className="w-3 h-3" />
+                            {filmAchievements.length}
+                          </div>
+                        )}
+
+                        {/* Expand/Collapse Icon */}
+                        <div className="flex-shrink-0 text-muted">
+                          {isExpanded ? (
+                            <ChevronUp className="w-5 h-5" />
+                          ) : (
+                            <ChevronDown className="w-5 h-5" />
+                          )}
+                        </div>
+                      </button>
+
+                      {/* Expanded Content */}
+                      {isExpanded && (
+                        <div className="border-t border-border bg-accent/30 p-4 space-y-4">
+                          {/* Logline */}
+                          {film.logline && (
+                            <div>
+                              <p className="text-xs uppercase tracking-wider text-muted mb-1">Logline</p>
+                              <p className="text-sm italic text-foreground leading-relaxed">
+                                "{film.logline}"
+                              </p>
+                            </div>
+                          )}
+
+                          {/* Synopsis */}
+                          {film.synopsis && (
+                            <div>
+                              <p className="text-xs uppercase tracking-wider text-muted mb-1">Synopsis</p>
+                              <p className="text-sm text-foreground leading-relaxed">
+                                {film.synopsis}
+                              </p>
+                            </div>
+                          )}
+
+                          {/* Quick Stats Grid */}
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            {film.genre && (
+                              <div className="p-3 bg-white rounded-lg border border-border">
+                                <p className="text-xs uppercase tracking-wider text-muted mb-1">Genre</p>
+                                <p className="text-sm font-medium">{film.genre}</p>
+                              </div>
+                            )}
+                            {duration && (
+                              <div className="p-3 bg-white rounded-lg border border-border">
+                                <p className="text-xs uppercase tracking-wider text-muted mb-1">Runtime</p>
+                                <p className="text-sm font-medium flex items-center gap-1">
+                                  <Clock className="w-3 h-3" />
+                                  {duration}
+                                </p>
+                              </div>
+                            )}
+                            {film.crewScale && (
+                              <div className="p-3 bg-white rounded-lg border border-border">
+                                <p className="text-xs uppercase tracking-wider text-muted mb-1">Crew Scale</p>
+                                <p className="text-sm font-medium flex items-center gap-1">
+                                  <Users className="w-3 h-3" />
+                                  {film.crewScale}
+                                </p>
+                              </div>
+                            )}
+                            {film.additionalRoles && film.additionalRoles.length > 0 && (
+                              <div className="p-3 bg-white rounded-lg border border-border">
+                                <p className="text-xs uppercase tracking-wider text-muted mb-1">Additional Roles</p>
+                                <p className="text-sm font-medium">{film.additionalRoles.join(', ')}</p>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Per-Film Achievements */}
+                          {filmAchievements.length > 0 && (
+                            <div>
+                              <p className="text-xs uppercase tracking-wider text-muted mb-2">Awards & Recognition</p>
+                              <div className="space-y-2">
+                                {filmAchievements.map((ach) => (
+                                  <div
+                                    key={ach.id}
+                                    className="flex items-center gap-2 p-2 bg-white rounded border border-border"
+                                  >
+                                    {ach.result === 'won' && <Trophy className="w-4 h-4 text-amber-500" />}
+                                    {ach.result === 'nominated' && <Award className="w-4 h-4 text-zinc-400" />}
+                                    {ach.result === 'selected' && <Star className="w-4 h-4 text-blue-500" />}
+                                    {ach.result === 'screened' && <Film className="w-4 h-4 text-green-500" />}
+                                    <span className="text-sm flex-1">
+                                      {ach.category && <span className="font-medium">{ach.category} - </span>}
+                                      {ach.eventName}
+                                      {ach.year && <span className="text-muted ml-1">({ach.year})</span>}
+                                    </span>
+                                    <Badge
+                                      variant={ach.result === 'won' ? 'default' : 'secondary'}
+                                      className="text-xs"
+                                    >
+                                      {ach.result.charAt(0).toUpperCase() + ach.result.slice(1)}
+                                    </Badge>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Press */}
+                          {film.press && (
+                            <div>
+                              <p className="text-xs uppercase tracking-wider text-muted mb-1">Press</p>
+                              <p className="text-sm italic text-foreground leading-relaxed">
+                                {film.press}
+                              </p>
+                            </div>
+                          )}
+
+                          {/* Action Buttons */}
+                          {(watchLink || film.trailerUrl) && (
+                            <div className="flex flex-wrap gap-2 pt-2">
+                              {watchLink && (
+                                <Button
+                                  variant="default"
+                                  size="sm"
+                                  onClick={() => {
+                                    // Track watch click
+                                    if (filmmakerId) {
+                                      api.trackClick(filmmakerId, 'watch', film.id).catch(() => { });
+                                    }
+                                    window.open(watchLink, '_blank');
+                                  }}
+                                >
+                                  <Play className="w-4 h-4 mr-2" />
+                                  Watch Film
+                                </Button>
+                              )}
+                              {film.trailerUrl && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    // Track trailer click
+                                    if (filmmakerId) {
+                                      api.trackClick(filmmakerId, 'trailer', film.id).catch(() => { });
+                                    }
+                                    window.open(film.trailerUrl, '_blank');
+                                  }}
+                                >
+                                  <ExternalLink className="w-4 h-4 mr-2" />
+                                  Trailer
+                                </Button>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
             </div>
           </Card>
         )}

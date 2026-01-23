@@ -172,8 +172,62 @@
 
 .action-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+/* Center the last 2 items in second row */
+.action-grid> :nth-child(4) {
+    grid-column: 1 / 2;
+    margin-left: auto;
+    margin-right: 0;
+    width: 100%;
+    max-width: calc((100% - 1.5rem) / 2 + 50%);
+    justify-self: end;
+}
+
+.action-grid> :nth-child(5) {
+    grid-column: 2 / 3;
+    margin-left: 0;
+    margin-right: auto;
+    width: 100%;
+    max-width: calc((100% - 1.5rem) / 2 + 50%);
+    justify-self: start;
+}
+
+/* Tablet: 2 columns */
+@media (max-width: 1024px) {
+    .action-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .action-grid> :nth-child(4),
+    .action-grid> :nth-child(5) {
+        grid-column: auto;
+        margin: 0;
+        max-width: none;
+        justify-self: stretch;
+    }
+
+    /* Center the 5th item when it's alone in its row */
+    .action-grid> :nth-child(5) {
+        grid-column: 1 / -1;
+        max-width: 50%;
+        justify-self: center;
+    }
+}
+
+/* Mobile: single column */
+@media (max-width: 640px) {
+    .action-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .action-grid> :nth-child(4),
+    .action-grid> :nth-child(5) {
+        max-width: none;
+        justify-self: stretch;
+    }
 }
 
 .action-card {

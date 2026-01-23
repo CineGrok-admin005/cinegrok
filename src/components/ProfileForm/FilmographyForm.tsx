@@ -33,6 +33,7 @@ export default function FilmographyForm({
             synopsis: '',
             watchLink: '',
             posterUrl: '',
+            trailerUrl: '',
             achievements: [], // NEW: Structured achievements array
         }
         updateData({ filmography: [...films, newFilm] })
@@ -287,6 +288,16 @@ export default function FilmographyForm({
                                     placeholder="Poster Image URL"
                                     value={film.posterUrl || ''}
                                     onChange={(e) => updateFilm(index, 'posterUrl', e.target.value)}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label><MonitorPlay size={18} /> Trailer URL</label>
+                                <input
+                                    type="url"
+                                    placeholder="YouTube/Vimeo trailer link"
+                                    value={film.trailerUrl || ''}
+                                    onChange={(e) => updateFilm(index, 'trailerUrl', e.target.value)}
                                 />
                             </div>
 

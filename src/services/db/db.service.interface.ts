@@ -42,6 +42,7 @@ export interface IDBService {
         state?: string;
         genre?: string;
         collab?: boolean;
+        hasContents?: boolean; // Filter for profiles with generated content
     }): Promise<{ data: Filmmaker[], count: number }>;
 
     // Interested Profiles (collaboration wishlist)

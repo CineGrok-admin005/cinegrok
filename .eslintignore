@@ -1,0 +1,8 @@
+node_modules
+.next
+build
+dist
+tests
+**/*.test.ts
+**/*.spec.ts
+coverage

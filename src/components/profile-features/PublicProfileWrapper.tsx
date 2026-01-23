@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ProfileData } from './types';
 import { AudienceView } from './audience-view';
 import { ProducerView } from './producer-view';
@@ -9,6 +9,7 @@ import { Button } from './ui/button';
 import { Download, ChevronDown } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { downloadAsHTML, printAsPDF } from '@/domain/profile-export.logic';
+import * as api from '@/lib/api';
 
 interface PublicProfileWrapperProps {
     profile: ProfileData;
@@ -21,7 +22,35 @@ interface PublicProfileWrapperProps {
 export function PublicProfileWrapper({ profile, isLoggedIn, isOwner, filmmakerId, filmmaker }: PublicProfileWrapperProps) {
     const [viewMode, setViewMode] = useState<'audience' | 'producer'>('audience');
 
+    // Track profile view with sessionStorage debounce
+    useEffect(() => {
+        // Don't track if:
+        // 1. Owner viewing their own profile
+        // 2. No filmmakerId available
+        // 3. Already tracked this session
+        if (isOwner || !filmmakerId) return;
+
+        const sessionKey = `cinegrok_viewed_${filmmakerId}`;
+        if (typeof window !== 'undefined' && sessionStorage.getItem(sessionKey)) {
+            return; // Already tracked this session
+        }
+
+        // Track the view
+        api.trackProfileView(filmmakerId)
+            .then(() => {
+                // Mark as tracked for this session
+                if (typeof window !== 'undefined') {
+                    sessionStorage.setItem(sessionKey, 'true');
+                }
+            })
+            .catch((err) => {
+                // Silent fail - don't break the page for analytics
+                console.warn('Analytics tracking failed:', err);
+            });
+    }, [filmmakerId, isOwner]);
+
     const handleViewToggle = (view: 'audience' | 'producer') => {
+
         if (view === 'producer' && !isLoggedIn) return;
         setViewMode(view);
     };
@@ -82,7 +111,7 @@ export function PublicProfileWrapper({ profile, isLoggedIn, isOwner, filmmakerId
 
             <div className="relative">
                 {viewMode === 'audience' ? (
-                    <AudienceView profile={profile} />
+                    <AudienceView profile={profile} filmmakerId={filmmakerId} />
                 ) : (
                     <ProducerView
                         profile={profile}
