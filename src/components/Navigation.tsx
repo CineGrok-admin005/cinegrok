@@ -298,19 +298,23 @@ export default function Navigation() {
         .mobile-menu {
           display: flex;
           flex-direction: column;
-          gap: 0;
+          gap: 1rem;
           padding: 1rem 1.5rem;
+          padding-top: 4rem; /* More breathing room from top */
           padding-bottom: env(safe-area-inset-bottom, 20px); /* Safe Area */
           background: rgba(252, 252, 250, 0.98);
           backdrop-filter: blur(20px);
           -webkit-backdrop-filter: blur(20px);
           border-top: 1px solid var(--border-light);
-          position: absolute;
+          position: fixed; /* Fixed to cover screen reliably */
           width: 100%;
           height: 100vh; /* Full screen menu feel */
           left: 0;
+          top: 0;
+          justify-content: flex-start; /* Ensure items cascade from top */
           box-shadow: 0 10px 30px rgba(0,0,0,0.1);
           animation: slideDown 0.3s ease-out forwards;
+          z-index: 99; /* Just below nav bar if needed, or above content */
         }
 
         @keyframes slideDown {

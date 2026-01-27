@@ -81,6 +81,30 @@ export default function ProfileView({
         data.primary_roles ? [] : (data.roles || []).slice(2)
     );
 
+    const handleShare = async () => {
+        const shareData = {
+            title: `Check out ${data.name} on CineGrok`,
+            text: `View ${data.name}'s filmmaker profile on CineGrok.`,
+            url: window.location.href
+        };
+
+        if (navigator.share) {
+            try {
+                await navigator.share(shareData);
+            } catch (err) {
+                console.log('Error sharing:', err);
+            }
+        } else {
+            // Fallback
+            try {
+                await navigator.clipboard.writeText(window.location.href);
+                alert('Profile link copied to clipboard!');
+            } catch (err) {
+                console.error('Failed to copy: ', err);
+            }
+        }
+    };
+
     return (
         <div className="profile-page" style={{ '--role-theme': themeGradient } as React.CSSProperties}>
             {showToggle && (
@@ -188,6 +212,20 @@ export default function ProfileView({
                                                 {s.type} ↗
                                             </a>
                                         ))}
+                                        <button
+                                            onClick={handleShare}
+                                            className="social-icon"
+                                            style={{
+                                                background: 'none',
+                                                border: 'none',
+                                                cursor: 'pointer',
+                                                fontFamily: 'inherit',
+                                                fontSize: 'inherit',
+                                                padding: 0
+                                            }}
+                                        >
+                                            Export / Share ↗
+                                        </button>
                                     </div>
 
                                     {/* Preferred Contact display could go here */}

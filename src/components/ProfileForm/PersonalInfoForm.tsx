@@ -338,19 +338,30 @@ export default function PersonalInfoForm({ data, updateData, onNext }: PersonalI
                     <label htmlFor="currentState">
                         <MapPin size={18} /> Current State/Province
                     </label>
-                    <select
-                        id="currentState"
-                        value={data.currentState || ''}
-                        onChange={(e) => handleChange('currentState', e.target.value)}
-                        disabled={!data.country}
-                    >
-                        <option value="">Select State</option>
-                        {getStatesRequest(data.country || '').map((state) => (
-                            <option key={state.isoCode} value={state.name}>
-                                {state.name}
-                            </option>
-                        ))}
-                    </select>
+                    {getStatesRequest(data.country || '').length > 0 ? (
+                        <select
+                            id="currentState"
+                            value={data.currentState || ''}
+                            onChange={(e) => handleChange('currentState', e.target.value)}
+                            disabled={!data.country}
+                        >
+                            <option value="">Select State</option>
+                            {getStatesRequest(data.country || '').map((state) => (
+                                <option key={state.isoCode} value={state.name}>
+                                    {state.name}
+                                </option>
+                            ))}
+                        </select>
+                    ) : (
+                        <input
+                            id="currentState"
+                            type="text"
+                            placeholder="Enter State/Province"
+                            value={data.currentState || ''}
+                            onChange={(e) => handleChange('currentState', e.target.value)}
+                            disabled={!data.country}
+                        />
+                    )}
                 </div>
 
                 {/* Current Location (City) */}
@@ -405,19 +416,30 @@ export default function PersonalInfoForm({ data, updateData, onNext }: PersonalI
                     <label htmlFor="nativeState">
                         <MapPin size={18} /> Native State/Province
                     </label>
-                    <select
-                        id="nativeState"
-                        value={data.nativeState || ''}
-                        onChange={(e) => handleChange('nativeState', e.target.value)}
-                        disabled={nativeSameAsCurrent || !data.nativeCountry}
-                    >
-                        <option value="">Select State</option>
-                        {getStatesRequest(data.nativeCountry || '').map((state) => (
-                            <option key={state.isoCode} value={state.name}>
-                                {state.name}
-                            </option>
-                        ))}
-                    </select>
+                    {getStatesRequest(data.nativeCountry || '').length > 0 ? (
+                        <select
+                            id="nativeState"
+                            value={data.nativeState || ''}
+                            onChange={(e) => handleChange('nativeState', e.target.value)}
+                            disabled={nativeSameAsCurrent || !data.nativeCountry}
+                        >
+                            <option value="">Select State</option>
+                            {getStatesRequest(data.nativeCountry || '').map((state) => (
+                                <option key={state.isoCode} value={state.name}>
+                                    {state.name}
+                                </option>
+                            ))}
+                        </select>
+                    ) : (
+                        <input
+                            id="nativeState"
+                            type="text"
+                            placeholder="Enter State/Province"
+                            value={data.nativeState || ''}
+                            onChange={(e) => handleChange('nativeState', e.target.value)}
+                            disabled={nativeSameAsCurrent || !data.nativeCountry}
+                        />
+                    )}
                 </div>
 
                 {/* Native Location (City) */}
